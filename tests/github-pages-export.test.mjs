@@ -47,6 +47,42 @@ test("exports Design 05 with working static navigation and self-contained imager
   }
 });
 
+test("exports Design 06 with complete archive links, accessible disclosures and resolved assets", async () => {
+  const html = await readFile(new URL("../github-pages/concepts/design-06/index.html", import.meta.url), "utf8");
+  const gallery = await readFile(new URL("../github-pages/concepts/index.html", import.meta.url), "utf8");
+  const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
+  for (const route of manifest.routes) {
+    if (route.pathname === "/concepts") continue;
+    const href = `/canyon-and-vine-electrology${route.pathname === "/" ? "/" : route.pathname + "/"}`;
+    assert.ok(gallery.includes(`href="${href}"`), `Gallery missing ${href}`);
+  }
+  assert.match(gallery, /The Clear Path/);
+  assert.match(html, /rel="canonical" href="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-06\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/clear-path-botanical.jpg"/);
+  assert.doesNotMatch(html, /<script\b|rel="modulepreload"|(?:href|src)="\/(?:assets\/|clear-path)/i);
+  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const match of html.matchAll(/\bhref="#([^"]+)"/g)) assert.ok(ids.includes(match[1]), `Missing anchor ${match[1]}`);
+  assert.equal((html.match(/<details\b/g) ?? []).length, 10);
+  assert.equal((html.match(/<summary\b/g) ?? []).length, 10);
+  for (const match of html.matchAll(/(?:href|src)="\/canyon-and-vine-electrology\/([^"?#]*)/g)) {
+    const relative = match[1];
+    await access(new URL(`../github-pages/${relative}${relative.endsWith("/") ? "index.html" : ""}`, import.meta.url));
+  }
+  for (const match of html.matchAll(/<img\b[^>]*>/g)) {
+    assert.match(match[0], /alt="[^"]+"/);
+    assert.match(match[0], /width="\d+"/);
+    assert.match(match[0], /height="\d+"/);
+  }
+  const original = await readFile(new URL("../public/clear-path-botanical.jpg", import.meta.url));
+  assert.deepEqual(original, await readFile(new URL("../github-pages/clear-path-botanical.jpg", import.meta.url)));
+  assert.ok(original.length < 500_000);
+  const stylesheet = html.match(/rel="stylesheet" href="([^"]+)"/)[1];
+  const css = await readFile(new URL(`../github-pages/${stylesheet.replace("/canyon-and-vine-electrology/", "")}`, import.meta.url), "utf8");
+  assert.doesNotMatch(css, /url\(["']?\/assets\//);
+  for (const match of css.matchAll(/url\(["']?(\.\/[^)"']+\.woff2)["']?\)/g)) await access(new URL(`../github-pages/assets/${match[1]}`, import.meta.url));
+});
+
 test("exports a self-contained GitHub Pages site", async () => {
   const html = await readFile(
     new URL("../github-pages/index.html", import.meta.url),

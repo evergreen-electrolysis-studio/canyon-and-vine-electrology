@@ -63,7 +63,9 @@ async function renderRoute(route) {
   const routePublicUrl = route.pathname === "/"
     ? `${publicSiteUrl}/`
     : `${publicSiteUrl}${route.pathname}/`;
-  const routeSocialImage = route.pathname === "/concepts/design-05"
+  const routeSocialImage = route.pathname === "/concepts/design-06"
+    ? `${publicSiteUrl}/clear-path-botanical.jpg`
+    : route.pathname === "/concepts/design-05"
     ? `${publicSiteUrl}/everyday-edit-portrait.jpg`
     : route.pathname === "/concepts/design-04"
     ? `${publicSiteUrl}/quiet-practice-hero.jpg?v=d04-20261111`
@@ -77,6 +79,8 @@ async function renderRoute(route) {
     .replaceAll('src="/assets/', `src="${basePath}/assets/`)
     .replaceAll('href="/concepts/', `href="${basePath}/concepts/`)
     .replaceAll('href="/"', `href="${basePath}/"`)
+    .replaceAll('src="/clear-path-botanical.jpg"', `src="${basePath}/clear-path-botanical.jpg"`)
+    .replaceAll('href="/clear-path-botanical.jpg"', `href="${basePath}/clear-path-botanical.jpg"`)
     .replaceAll('src="/everyday-edit-portrait.jpg"', `src="${basePath}/everyday-edit-portrait.jpg"`)
     .replaceAll('href="/everyday-edit-portrait.jpg"', `href="${basePath}/everyday-edit-portrait.jpg"`)
     .replaceAll(
@@ -174,6 +178,7 @@ await cp(
   path.join(outputDirectory, "everyday-edit-portrait.jpg"),
 );
 let rootHtml = "";
+await cp(path.join(clientDirectory, "clear-path-botanical.jpg"), path.join(outputDirectory, "clear-path-botanical.jpg"));
 for (const route of routes) {
   const outputPath = path.join(outputDirectory, route.output);
   const html = route.preserve

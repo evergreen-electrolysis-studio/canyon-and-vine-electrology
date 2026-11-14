@@ -43,6 +43,27 @@ test("renders Design 05 with accurate scope, credentials, metadata and explicit 
   assert.doesNotMatch(html, /href="(?:tel:|mailto:)|<form\b|stock image|representative image|not a client|before.and.after|FDA.approved/i);
 });
 
+test("renders Design 06 with accurate scope, actionable navigation and honest booking details", async () => {
+  const response = await render("/concepts/design-06");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /The Clear Path \| Evergreen Electrolysis/);
+  assert.match(html, /California-licensed electrologist/);
+  assert.match(html, /Microbiology from UC Davis/);
+  assert.match(html, /California Electrology Academy in Corona/);
+  assert.match(html, /Intimate-area services are not offered/);
+  assert.match(html, /Results and treatment timelines vary by individual/);
+  assert.match(html, /Online booking is not connected in this concept/);
+  for (const placeholder of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS", "ADD VERIFIED PRICES", "ADD VERIFIED LINK"]) {
+    assert.ok(html.includes(placeholder), `Missing ${placeholder}`);
+  }
+  assert.match(html, /name="robots" content="noindex, follow"/);
+  assert.match(html, /property="og:url" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-06\/"/);
+  assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
+  assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /href="(?:tel:|mailto:)|<form\b|stock image|representative image|not a client|FDA.approved|pain.free|guaranteed results/i);
+});
+
 test("server-renders the launch-ready Evergreen Electrolysis site", async () => {
   const response = await render();
   assert.equal(response.status, 200);

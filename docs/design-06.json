@@ -1,0 +1,64 @@
+{
+  "concept": "06",
+  "name": "The Clear Path",
+  "date": "2026-11-14",
+  "direction": "Mist blue, deep ink and muted leaf green; geometric sans typography; a sculptural botanical still life; open layouts and a numbered consultation roadmap.",
+  "intent": "Build trust through understandable treatment choices, visible practitioner education and training, clear expectations, and a direct path to a consultation.",
+  "sources_reviewed": [
+    {
+      "url": "https://marinelectrolysis.com/",
+      "used_for": "Practitioner-led local-service positioning and visible treatment/practical information. No borrowed outcomes, rates, testimonials, or additional services."
+    },
+    {
+      "url": "https://electrolysisatsofttouch.com/contact-us/",
+      "used_for": "A clear new-client conversation and treatment introduction. No copied scheduling, pricing, or cancellation policies."
+    },
+    {
+      "url": "https://www.sofiepavitt.com/",
+      "used_for": "Current premium skincare studio reference; search/open review. Site has limited machine-readable text."
+    },
+    {
+      "url": "https://www.the-well.com/",
+      "used_for": "Current wellness presentation: distinct service pathways, concise sections, and visible practitioner expertise."
+    },
+    {
+      "url": "https://electrology.com/faqs-about-permanent-hair-removal/what-is-the-electrolysis-process.php",
+      "used_for": "Fine-probe process, galvanic/thermolysis/blend definitions, individual planning and growth-cycle context."
+    },
+    {
+      "url": "https://www.ohsu.edu/cosmetic-plastics-services/electrolysis-faqs",
+      "used_for": "Hair-pigment independence, varied sensation, and multi-appointment planning."
+    },
+    {
+      "url": "https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf",
+      "used_for": "California consumer guidance, post-treatment redness and medical escalation for severe symptoms; linked on the page."
+    }
+  ],
+  "business_facts": "User-supplied practice details and approved website: American Canyon, California; Nav is a California-licensed electrologist with a bachelor's in Microbiology from UC Davis and completed professional electrology training at California Electrology Academy in Corona; face and selected body scope; intimate-area services not offered.",
+  "placeholders": [
+    "prices",
+    "address",
+    "phone",
+    "hours",
+    "license number",
+    "booking destination"
+  ],
+  "image": {
+    "file": "public/clear-path-botanical.jpg",
+    "mode": "Built-in image_gen tool",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "prompt": "Use case: photorealistic-natural. Asset type: hero photograph for a premium California electrolysis website with a cool blue and deep navy visual identity. Create a sculptural still life of a single elegant fresh green ginkgo branch with fan-shaped leaves, in a low, weighty translucent pale blue glass vessel containing clear water, on a matte powder-blue plinth against a seamless mist-blue background. Strong natural side light creates beautiful delicate leaf shadows and subtle water caustics across the surface. The branch rises diagonally, with organic asymmetry and generous breathing room. Sophisticated contemporary wellness art direction, tactile real materials, fine detail in the leaf veins and glass, restrained color, beautifully composed rather than cluttered. Vertical 4:5 composition. No people, no text, no logos, no treatment equipment, no products, no room or furniture."
+  },
+  "checks": {
+    "build": "passed",
+    "static_export": "passed",
+    "lint": "passed",
+    "tests": "10 passed",
+    "browser": "Safari desktop at 1324px and phone iframe viewports at 390px and 320px; no horizontal overflow; image and Manrope font loaded; all anchor targets resolve.",
+    "interaction": "Treatment navigation, practitioner navigation, first-visit navigation, mobile FAQ and consultation destination verified. Native disclosure expanded by click and collapsed by Return; visible keyboard focus verified.",
+    "preservation": "Earlier live home and Designs 02–05 matched repository snapshots before editing. SHA-256 regression checks protect earlier source, HTML and assets."
+  }
+}

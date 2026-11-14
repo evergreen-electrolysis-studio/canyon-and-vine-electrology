@@ -59,4 +59,14 @@ export const websiteConcepts: WebsiteConcept[] = [
     released: "November 12, 2026",
     status: "Alternate concept",
   },
+  {
+    id: "06",
+    title: "The Clear Path",
+    direction: "Cool modern · considered · reassuring",
+    description:
+      "A mist-blue and deep-ink direction with sculptural botanical imagery, a clear consultation roadmap, and an emphasis on informed, individual care.",
+    href: "/concepts/design-06/",
+    released: "November 14, 2026",
+    status: "Alternate concept",
+  },
 ];

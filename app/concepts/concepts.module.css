@@ -168,6 +168,23 @@
   width: min(26vw, 330px);
 }
 
+.card:nth-child(6) .preview {
+  background: #dceaf0;
+  color: #172f45;
+}
+
+.card:nth-child(6) .preview::after {
+  border-radius: 0;
+  transform: rotate(25deg);
+  border-color: #4c6170;
+  opacity: 0.35;
+}
+
+.card:nth-child(6) .previewWord {
+  font-family: "Avenir Next", Arial, sans-serif;
+  font-weight: 500;
+}
+
 .previewNumber {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1rem;
