@@ -1,7 +1,8 @@
 # Consultation request delivery
 
 The homepage form replaces the mail-app link. It requires first name, last name,
-and a full US phone number; email is optional. A standalone Cloudflare Worker lets
+and a full US phone number; email is optional unless an email reply is selected.
+A standalone Cloudflare Worker lets
 both the GitHub Pages export and existing Sites project use the same endpoint.
 Designs 01–06 remain archived; the original homepage is copied to `/concepts/design-01/`.
 
@@ -22,6 +23,33 @@ The existing domain already had Email Routing enabled and the destination was
 already verified. No DNS, MX, or mailbox changes were required. No additional
 form or email vendor is used. The temporary localhost origin used for browser QA
 must remain absent from the deployed production allowlist.
+
+## Optional answers and contact permission
+
+Visitors may select treatment areas, previous hair-removal methods, and a preferred
+contact method, or leave these questions unanswered. They may add a question or
+note of up to 500 characters. The form asks visitors to avoid medical or sensitive
+personal details; consultation requests are not a medical intake form.
+
+`config/consultation-fields.json` supplies the shared option lists and contact
+notice. The Worker accepts only listed options, rejects oversized lists and
+contradictory selections (`None` with a previous method, or `Not sure yet` with a
+treatment area), and removes duplicate selections. Notes may include line breaks
+but cannot include other unsafe control or formatting characters. Choosing Email
+requires a valid supplied email address; Call, Text, and no preference do not.
+
+Current forms send the notice version `2026-11-15` with the submission. The owner
+email includes all optional answers, a server-generated UTC receipt timestamp,
+the originating website, and the exact contact notice and version that were
+displayed. The notice permits contact about this consultation request and states
+that submission does not book an appointment; it is not a marketing subscription.
+During rollout, older forms without the optional fields or notice version remain
+valid. Their messages explicitly say the version was not supplied and do not
+claim that the new notice was presented. Any other supplied version is rejected.
+
+The website links its consultation privacy notice beside submission. Only after
+the Worker accepts the email does the form display its confirmation dialog. The
+visitor can return home with the dialog's button; there is no timed redirect.
 
 ## Maintenance and provisioning
 
@@ -50,8 +78,9 @@ form preview is not a substitute for a configured, verified release.
 ## Verification and publication
 
 Run `pnpm test` and `pnpm run lint`. Tests cover exported form semantics, client
-validation, optional email, failure retention, server validation, exact origins,
-Turnstile verification and provider rejection. These use mocks for external
+validation, optional email and answers, contact preferences, the versioned notice,
+failure retention, server validation, exact origins, Turnstile verification and
+provider rejection. These use mocks for external
 services and do not establish inbox delivery.
 
 On November 15, 2026, two synthetic requests were submitted through the real
@@ -73,7 +102,10 @@ methods. Approved JSON preflight succeeded. Unit tests verify that failed delive
 retains entered details and does not report success.
 
 After changes affecting delivery, repeat real browser submissions with and without
-optional email and inspect the intended owner's inbox and headers. Local email
+optional email, including optional answers and the preferred contact method.
+Check the confirmation dialog, return-home action, and the intended owner's inbox
+and headers. The historical receipts above predate the optional-answer and
+confirmation-dialog changes. Local email
 binding simulation and mocked tests do not establish real delivery.
 
 Publish the verified website commit to GitHub Pages and the identical clean source

@@ -5,17 +5,48 @@
 .names { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; margin-bottom: 8px; }
 .form label { display: block; font-weight: 600; }
 .form label > span { color: #cececa; font-size: 11px; font-weight: 400; }
-.form input { display: block; border: 1px solid #aaa; border-radius: 5px; min-height: 50px; width: 100%; background: #fff; color: #161616; font: inherit; font-size: 16px; padding: 12px; margin-top: 8px; }
-.form input:focus-visible, .form button:focus-visible { outline: 3px solid #f2d997; outline-offset: 4px; }
+.form input:not([type="checkbox"]):not([type="hidden"]), .form select, .form textarea { display: block; border: 1px solid #aaa; border-radius: 5px; min-height: 50px; width: 100%; max-width: 100%; background: #fff; color: #161616; font: inherit; font-size: 16px; padding: 12px; margin-top: 8px; }
+.form input:focus-visible, .form select:focus-visible, .form textarea:focus-visible, .form button:focus-visible, .form summary:focus-visible, .form a:focus-visible { outline: 3px solid #f2d997; outline-offset: 4px; }
+.form textarea { min-height: 116px; resize: vertical; }
+.form select { appearance: none; padding-right: 36px; background-image: linear-gradient(45deg, transparent 50%, #18382c 50%), linear-gradient(135deg, #18382c 50%, transparent 50%); background-position: calc(100% - 20px) 23px, calc(100% - 15px) 23px; background-size: 5px 5px; background-repeat: no-repeat; }
 .phone { display: flex; align-items: center; border: 1px solid #aaa; border-radius: 5px; background: white; color: #171717; }
 .phone > span { flex-shrink: 0; padding: 0 12px; border-right: 1px solid #ccc; font-size: 13px; }
-.phone input { border: 0; margin: 0; min-width: 0; }
+.form .phone input[type="tel"] { border: 0; margin: 0; min-width: 0; }
 .form .hint { font-size: 12px; margin: 0 0 12px; color: #d0d0cc; line-height: 1.6; }
 .form .note { font-size: 12px; color: #d0d0cc; line-height: 1.6; margin: 10px 0; }
+.optionalDetails { border: 1px solid #62625e; border-radius: 6px; margin: 2px 0 0; }
+.form .optionalDetails > summary { display: list-item; list-style: disclosure-closed inside; min-height: 50px; padding: 15px; color: #fff; font-size: 14px; font-weight: 600; line-height: 1.5; cursor: pointer; }
+.form .optionalDetails[open] > summary { list-style-type: disclosure-open; border-bottom: 1px solid #62625e; }
+.optionalContent { display: grid; gap: 20px; padding: 20px 15px 5px; }
+.choices { border: 0; margin: 0; padding: 0; min-width: 0; }
+.choices legend { padding: 0; margin-bottom: 7px; color: #fff; font-weight: 600; font-size: 14px; line-height: 1.5; }
+.choiceGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.form .choice { display: flex; align-items: flex-start; gap: 9px; min-height: 44px; padding: 10px; border: 1px solid #62625e; border-radius: 5px; cursor: pointer; }
+.form .choice:has(input:checked) { background: #253b32; border-color: #c2d5c5; }
+.choice input { flex: 0 0 17px; width: 17px; height: 17px; margin: 1px 0 0; accent-color: #f2d997; cursor: pointer; }
+.form .choice > span { color: #fff; font-size: 12px; font-weight: 400; line-height: 1.5; }
+.privacy { margin: -6px 0 8px; }
+.form .privacy > summary { display: list-item; list-style: disclosure-closed inside; min-height: 44px; padding: 12px 0; color: #e6e6e1; font-size: 12px; line-height: 1.6; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.form .privacy[open] > summary { list-style-type: disclosure-open; }
+.privacy p { margin: 0 0 12px; color: #d0d0cc; font-size: 12px; line-height: 1.7; }
+.privacy a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
 .form button { border: 1px solid #fff; border-radius: 5px; background: #fff; color: #151515; display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; min-height: 54px; font: inherit; font-weight: 700; cursor: pointer; gap: 15px; }
 .form button:disabled { background: #d0d0cc; border-color: #d0d0cc; cursor: not-allowed; }
 .form button span { font-size: 22px; }
 .form .status { font-size: 13px; line-height: 1.6; color: #fff; margin: 8px 0 0; }
 .status:empty { display: none; }
-.honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-@media (max-width: 560px) { .names { grid-template-columns: 1fr; } }
+.honeypot, .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.dialog { width: min(480px, 90vw); max-width: 90vw; max-height: 90vh; max-height: 90dvh; margin: auto; overflow-y: auto; border: 1px solid #d2d6cc; border-radius: 14px; padding: 40px; background: #f7f7f0; color: #18382c; box-shadow: 0 20px 80px #0005; }
+.dialog::backdrop { background: rgb(9 20 15 / 72%); }
+.closeDialog { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; padding: 0; background: transparent; color: #18382c; font: inherit; font-size: 28px; cursor: pointer; }
+.closeDialog:hover { background: #e5e9df; }
+.dialog button:focus-visible, .dialog a:focus-visible, .dialog h2:focus-visible { outline: 3px solid #2d634d; outline-offset: 4px; }
+.successMark { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: #dfe9dc; color: #2d634d; font-size: 27px; }
+.successEyebrow { margin: 24px 0 12px; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.dialog h2 { margin: 0 0 20px; color: #18382c; font-family: var(--serif); font-size: clamp(2rem, 6vw, 2.6rem); font-weight: 400; line-height: 1.1; letter-spacing: -.03em; }
+.successBody { font-size: 15px; line-height: 1.7; color: #35483d; }
+.successBody p { margin: 0 0 12px; }
+.successBody .appointmentNote { font-size: 13px; }
+.homeButton { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 52px; margin-top: 28px; padding: 15px 18px; border-radius: 5px; background: #18382c; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; }
+.homeButton:hover { background: #2d5140; }
+@media (max-width: 560px) { .names, .choiceGrid { grid-template-columns: 1fr; } .dialog { padding: 32px 25px; } .form .optionalDetails > summary { font-size: 13px; } }

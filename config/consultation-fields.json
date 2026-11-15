@@ -1,0 +1,11 @@
+{
+  "treatmentAreas": [
+    "Upper lip", "Chin & jawline", "Brows & between brows", "Cheeks & sideburns",
+    "Hairline & temples", "Ears & nose exterior", "Neck & nape", "Underarms",
+    "Arms & hands", "Legs & feet", "Chest & abdomen", "Shoulders & back", "Not sure yet"
+  ],
+  "previousMethods": ["Shaving", "Tweezing", "Waxing or threading", "Laser or IPL", "Electrolysis", "None"],
+  "contactPreferences": ["Call", "Text", "Email"],
+  "permissionVersion": "2026-11-15",
+  "permissionText": "By submitting, you agree that Evergreen Electrolysis may contact you by phone, text, or email about this consultation request. Submitting this form does not book an appointment."
+}

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import worker, { createHandler } from "../cloudflare/consultation/worker.mjs";
+import fields from "../config/consultation-fields.json" with { type: "json" };
 
 const ORIGIN = "https://tycheventuresllc.com";
 const validSubmission = {
@@ -86,6 +87,77 @@ test("accepts names with Unicode and punctuation", async () => {
   assert.match(sent[0].text, /María-José/);
 });
 
+test("includes optional answers, the exact versioned notice, and server receipt context in the owner email", async () => {
+  const { handler, env, sent } = harness();
+  const startedAt = Date.now();
+  const result = await handler(request({
+    ...validSubmission,
+    treatmentAreas: ["Upper lip", "Chin & jawline"],
+    previousMethods: ["Shaving", "Laser or IPL"],
+    contactPreference: "Email",
+    notes: "  I have a scheduling question.\r\nAre afternoons available?  ",
+    permissionVersion: fields.permissionVersion,
+  }), env);
+  assert.equal(result.status, 200);
+  const message = sent[0];
+  assert.equal(message.to, "sukhpalc@gmail.com");
+  assert.equal(message.replyTo, "jane@example.com");
+  assert.match(message.text, /Preferred contact method: Email\n/);
+  assert.match(message.text, /Treatment areas: Upper lip, Chin & jawline\n/);
+  assert.match(message.text, /Previous hair-removal methods: Shaving, Laser or IPL\n/);
+  assert.match(message.text, /Questions \/ notes:\n  I have a scheduling question\.\n  Are afternoons available\?\n/);
+  assert.ok(message.text.includes(`Contact permission notice version: ${fields.permissionVersion}\n${fields.permissionText}`));
+  assert.ok(message.text.includes(`Website: ${ORIGIN}\n`));
+  const timestamp = message.text.match(/Received \(UTC\): (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\n/)?.[1];
+  assert.ok(timestamp);
+  assert.ok(Date.parse(timestamp) >= startedAt && Date.parse(timestamp) <= Date.now());
+});
+
+test("legacy submissions remain valid without claiming the new contact notice was supplied", async () => {
+  const { handler, env, sent } = harness();
+  assert.equal((await handler(request(), env)).status, 200);
+  assert.match(sent[0].text, /Preferred contact method: Not specified/);
+  assert.match(sent[0].text, /Treatment areas: Not specified/);
+  assert.match(sent[0].text, /Previous hair-removal methods: Not specified/);
+  assert.match(sent[0].text, /Questions \/ notes:\n  Not provided/);
+  assert.match(sent[0].text, /Contact permission notice version: Not supplied \(legacy form\)/);
+  assert.equal(sent[0].text.includes(fields.permissionText), false);
+});
+
+for (const contactPreference of ["", "Call", "Text"]) {
+  test(`accepts blank optional answers without email when contact preference is ${JSON.stringify(contactPreference)}`, async () => {
+    const { handler, env, sent } = harness();
+    const result = await handler(request({
+      ...validSubmission, email: "", treatmentAreas: [], previousMethods: [],
+      contactPreference, notes: "  \n ", permissionVersion: fields.permissionVersion,
+    }), env);
+    assert.equal(result.status, 200);
+    assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
+    assert.ok(sent[0].text.includes(`Preferred contact method: ${contactPreference || "Not specified"}`));
+  });
+}
+
+test("deduplicates selections and accepts single exclusive options", async () => {
+  const { handler, env, sent } = harness();
+  const duplicate = await handler(request({
+    ...validSubmission, treatmentAreas: ["Upper lip", "Upper lip"], previousMethods: ["Shaving", "Shaving"],
+  }), env);
+  assert.equal(duplicate.status, 200);
+  assert.match(sent[0].text, /Treatment areas: Upper lip\n/);
+  assert.match(sent[0].text, /Previous hair-removal methods: Shaving\n/);
+  assert.equal((await handler(request({
+    ...validSubmission, treatmentAreas: ["Not sure yet"], previousMethods: ["None"],
+  }), env)).status, 200);
+});
+
+test("accepts the 500-character note boundary with Unicode and line breaks", async () => {
+  const { handler, env, sent } = harness();
+  const notes = `Café\n${"a".repeat(495)}`;
+  assert.equal(notes.length, 500);
+  assert.equal((await handler(request({ ...validSubmission, notes }), env)).status, 200);
+  assert.ok(sent[0].text.includes(`  Café\n  ${"a".repeat(495)}`));
+});
+
 for (const [label, values] of [
   ["short phone", { phone: "555-0123" }],
   ["international phone", { phone: "+44 20 7946 0958" }],
@@ -102,6 +174,32 @@ for (const [label, values] of [
   ["invalid optional email", { email: "not-an-email" }],
   ["email header injection", { email: "jane@example.com\r\nBcc:bad@example.com" }],
   ["non-string email", { email: false }],
+  ["email contact preference without email", { contactPreference: "Email", email: undefined }],
+  ["email contact preference with blank email", { contactPreference: "Email", email: " " }],
+  ["unknown contact preference", { contactPreference: "WhatsApp" }],
+  ["non-string contact preference", { contactPreference: false }],
+  ["null contact preference", { contactPreference: null }],
+  ["non-array treatment areas", { treatmentAreas: "Upper lip" }],
+  ["null treatment areas", { treatmentAreas: null }],
+  ["unknown treatment area", { treatmentAreas: ["Unsupported area"] }],
+  ["non-string treatment area", { treatmentAreas: [{}] }],
+  ["too many treatment area selections", { treatmentAreas: Array(fields.treatmentAreas.length + 1).fill("Upper lip") }],
+  ["uncertain area combined with an area", { treatmentAreas: ["Not sure yet", "Upper lip"] }],
+  ["non-array previous methods", { previousMethods: "Shaving" }],
+  ["null previous methods", { previousMethods: null }],
+  ["unknown previous method", { previousMethods: ["Unsupported method"] }],
+  ["non-string previous method", { previousMethods: [false] }],
+  ["too many previous methods", { previousMethods: Array(fields.previousMethods.length + 1).fill("Shaving") }],
+  ["no previous method combined with a method", { previousMethods: ["None", "Shaving"] }],
+  ["non-string notes", { notes: 42 }],
+  ["null notes", { notes: null }],
+  ["oversized notes", { notes: "a".repeat(501) }],
+  ["notes control character", { notes: "Question\u0000hidden" }],
+  ["notes direction override", { notes: "Question\u202ehidden" }],
+  ["unsupported permission version", { permissionVersion: "2026-11-14" }],
+  ["blank permission version", { permissionVersion: "" }],
+  ["non-string permission version", { permissionVersion: true }],
+  ["null permission version", { permissionVersion: null }],
   ["filled honeypot", { website: "https://spam.example" }],
   ["non-string honeypot", { website: false }],
   ["missing token", { turnstileToken: undefined }],

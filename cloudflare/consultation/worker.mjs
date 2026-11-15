@@ -1,3 +1,5 @@
+import fields from "../../config/consultation-fields.json" with { type: "json" };
+
 const MAX_BODY_BYTES = 8 * 1024;
 const DEFAULT_RECIPIENT = "sukhpalc@gmail.com";
 const TURNSTILE_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -86,6 +88,15 @@ function normalizePhone(value) {
   return `+1${digits}`;
 }
 
+function selectedOptions(value, options, exclusiveOption) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > options.length ||
+      value.some((option) => typeof option !== "string" || !options.includes(option))) return null;
+  const selected = [...new Set(value)];
+  if (selected.length > 1 && selected.includes(exclusiveOption)) return null;
+  return selected;
+}
+
 function validateSubmission(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) return null;
   if (!validName(body.firstName) || !validName(body.lastName)) return null;
@@ -94,6 +105,17 @@ function validateSubmission(body) {
   if (body.email !== undefined && typeof body.email !== "string") return null;
   const email = (body.email ?? "").trim();
   if (email && !isEmail(email)) return null;
+  const treatmentAreas = selectedOptions(body.treatmentAreas, fields.treatmentAreas, "Not sure yet");
+  const previousMethods = selectedOptions(body.previousMethods, fields.previousMethods, "None");
+  if (!treatmentAreas || !previousMethods) return null;
+  const contactPreference = body.contactPreference === undefined ? "" : body.contactPreference;
+  if (typeof contactPreference !== "string" ||
+      (contactPreference !== "" && !fields.contactPreferences.includes(contactPreference)) ||
+      (contactPreference === "Email" && !email)) return null;
+  if (body.notes !== undefined && (typeof body.notes !== "string" || body.notes.length > 500 ||
+      /[\p{Cc}\p{Cf}]/u.test(body.notes.replace(/[\r\n\t]/g, "")))) return null;
+  const notes = (body.notes ?? "").replace(/\r\n?/g, "\n").trim();
+  if (body.permissionVersion !== undefined && body.permissionVersion !== fields.permissionVersion) return null;
   if (body.website !== undefined && (typeof body.website !== "string" || body.website.trim())) return null;
   if (typeof body.turnstileToken !== "string" || !body.turnstileToken.trim() ||
       body.turnstileToken.length > 2048) return null;
@@ -102,6 +124,11 @@ function validateSubmission(body) {
     lastName: body.lastName.trim(),
     phone,
     email,
+    treatmentAreas,
+    previousMethods,
+    contactPreference,
+    notes,
+    permissionVersion: body.permissionVersion,
     turnstileToken: body.turnstileToken,
   };
 }
@@ -109,6 +136,7 @@ function validateSubmission(body) {
 // Dependencies make the complete request path testable without sending real email.
 export function createHandler({ fetch: fetcher = globalThis.fetch, verificationTimeoutMs = 5000 } = {}) {
   return async function handleRequest(request, env = {}) {
+    const receivedAt = new Date().toISOString();
     if (new URL(request.url).pathname !== "/request") return failure(404, "Not found.");
     const origins = allowedOrigins(env.ALLOWED_ORIGINS);
     if (!origins) return failure(503, UNAVAILABLE);
@@ -158,7 +186,7 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
     }
     const submission = validateSubmission(body);
     if (!submission) {
-      return failure(400, "Enter your first name, last name, complete US phone number, and complete the security check. Email is optional.", origin);
+      return failure(400, "Check your contact details and optional answers. Include an email address if you prefer an email reply, and keep questions within 500 characters.", origin);
     }
 
     const verificationBody = new URLSearchParams({
@@ -200,6 +228,20 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
           `Last name: ${submission.lastName}`,
           `Phone: ${submission.phone}`,
           `Email: ${submission.email || "Not provided"}`,
+          `Preferred contact method: ${submission.contactPreference || "Not specified"}`,
+          "",
+          "CONSULTATION DETAILS (OPTIONAL)",
+          `Treatment areas: ${submission.treatmentAreas.join(", ") || "Not specified"}`,
+          `Previous hair-removal methods: ${submission.previousMethods.join(", ") || "Not specified"}`,
+          "Questions / notes:",
+          ...((submission.notes || "Not provided").split("\n").map((line) => `  ${line}`)),
+          "",
+          `Received (UTC): ${receivedAt}`,
+          `Website: ${origin}`,
+          ...(submission.permissionVersion ? [
+            `Contact permission notice version: ${submission.permissionVersion}`,
+            fields.permissionText,
+          ] : ["Contact permission notice version: Not supplied (legacy form)."]),
         ].join("\n"),
         ...(submission.email ? { replyTo: submission.email } : {}),
       });

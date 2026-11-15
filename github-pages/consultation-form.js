@@ -7,13 +7,58 @@
     const button = form.querySelector('button[type="submit"]');
     const status = form.querySelector("[data-form-status]");
     const phone = form.elements.namedItem("phone");
+    const email = form.elements.namedItem("email");
+    const contactPreference = form.elements.namedItem("contactPreference");
+    const emailPreference = form.querySelector("[data-email-preference]");
+    const dialog = document.querySelector("[data-success-dialog]");
     const endpoint = form.dataset.endpoint;
     const siteKey = form.dataset.siteKey;
     let token = "";
     let widget;
     let pending = false;
     let sent = false;
+    let returningHome = false;
     const message = (text) => { status.textContent = text; };
+    function updateEmailPreference() {
+      if (!contactPreference || !emailPreference) return;
+      emailPreference.disabled = !email.value.trim() || !email.validity.valid;
+      if (emailPreference.disabled && contactPreference.value === "Email") contactPreference.value = "";
+    }
+    email.addEventListener("input", () => { email.setCustomValidity(""); updateEmailPreference(); });
+    updateEmailPreference();
+    for (const [name, exclusive] of [["treatmentAreas", "Not sure yet"], ["previousMethods", "None"]]) {
+      const options = [...form.querySelectorAll(`input[name="${name}"]`)];
+      for (const option of options) option.addEventListener("change", () => {
+        if (option.checked) for (const other of options) {
+          if (other !== option && (option.value === exclusive || other.value === exclusive)) other.checked = false;
+        }
+      });
+    }
+    if (dialog) {
+      dialog.querySelector("[data-success-close]").addEventListener("click", () => dialog.close());
+      dialog.addEventListener("close", () => { if (!returningHome) status.focus(); });
+      dialog.querySelector("[data-success-home]").addEventListener("click", (event) => {
+        const top = document.getElementById("top");
+        if (!top) return;
+        event.preventDefault();
+        returningHome = true;
+        dialog.close();
+        top.setAttribute("tabindex", "-1");
+        top.focus({ preventScroll: true });
+        top.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
+      });
+    }
+    function showConfirmation(firstName) {
+      if (dialog && typeof dialog.showModal === "function") {
+        dialog.querySelector("[data-success-name]").textContent = firstName;
+        try {
+          dialog.showModal();
+          dialog.querySelector("[data-success-title]").focus();
+          return;
+        } catch { /* Keep the visible inline confirmation if a dialog is unavailable. */ }
+      }
+      status.focus();
+    }
     function normalizedPhone() {
       const raw = phone.value.trim();
       if (!/^\+?[()\d .-]+$/.test(raw)) return null;
@@ -36,6 +81,7 @@
         const field = form.elements.namedItem(name);
         field.value = field.value.trim();
       }
+      email.setCustomValidity(contactPreference?.value === "Email" && !email.value.trim() ? "Enter an email address or choose another contact preference." : "");
       if (!form.reportValidity()) return;
       if (!endpoint || !siteKey || !token) { message("Please complete the security check before sending."); return; }
       pending = true; button.disabled = true; button.textContent = "Sending request…";
@@ -44,14 +90,21 @@
         const data = new FormData(form);
         const response = await fetch(endpoint, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ firstName: data.get("firstName"), lastName: data.get("lastName"), phone: normalized, email: String(data.get("email") || "").trim(), website: data.get("website"), turnstileToken: token }),
+          body: JSON.stringify({
+            firstName: data.get("firstName"), lastName: data.get("lastName"), phone: normalized,
+            email: String(data.get("email") || "").trim(), website: data.get("website"), turnstileToken: token,
+            treatmentAreas: data.getAll("treatmentAreas"), previousMethods: data.getAll("previousMethods"),
+            contactPreference: data.get("contactPreference") || "", notes: String(data.get("notes") || "").trim(),
+            permissionVersion: data.get("permissionVersion"),
+          }),
           signal: AbortSignal.timeout(20000),
         });
         const result = await response.json();
         if (!response.ok || result.ok !== true) throw new Error("Delivery not confirmed");
         sent = true; form.reset(); button.textContent = "Request sent";
+        updateEmailPreference();
         message("Thank you. Your consultation request has been sent. We’ll contact you to discuss the next step.");
-        status.focus();
+        showConfirmation(String(data.get("firstName")));
       } catch {
         message("We couldn’t confirm delivery. Your details are still here. Please complete the security check again and retry.");
         button.textContent = "Request a consultation";
