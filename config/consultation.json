@@ -1,4 +1,4 @@
 {
-  "endpoint": "",
-  "turnstileSiteKey": ""
+  "endpoint": "https://evergreen-consultation.sukhpalc.workers.dev/request",
+  "turnstileSiteKey": "0x4AAAAAAGCWAHgW9rYm_xma"
 }

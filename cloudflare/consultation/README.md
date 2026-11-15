@@ -5,28 +5,47 @@ and a full US phone number; email is optional. A standalone Cloudflare Worker le
 both the GitHub Pages export and existing Sites project use the same endpoint.
 Designs 01–06 remain archived; the original homepage is copied to `/concepts/design-01/`.
 
-## Deployment prerequisites
+## Configured service — November 15, 2026
 
-No additional form vendor is required. Use the existing Cloudflare account:
+The email handler is deployed at:
+
+`https://evergreen-consultation.sukhpalc.workers.dev/request`
+
+- Sender: `consultation@tycheventuresllc.com`.
+- Fixed destination: `sukhpalc@gmail.com`.
+- Production origins: `https://tycheventuresllc.com` and
+  `https://canyon-and-vine-electrology.sukhpalc.chatgpt.site`.
+- The endpoint and public Turnstile site key are in `config/consultation.json`.
+- `TURNSTILE_SECRET_KEY` is stored as a Worker secret, not in source.
+
+The existing domain already had Email Routing enabled and the destination was
+already verified. No DNS, MX, or mailbox changes were required. No additional
+form or email vendor is used. The temporary localhost origin used for browser QA
+must remain absent from the deployed production allowlist.
+
+## Maintenance and provisioning
+
+For redeployment or provisioning another environment in the existing Cloudflare
+account:
 
 1. Authenticate Wrangler with `pnpm exec wrangler login`.
-2. Verify `sukhpalc@gmail.com` as an Email Service destination. If another owner
-   inbox is selected, change both `RECIPIENT_EMAIL` and the binding's
-   `destination_address` together.
-3. Onboard an owned domain for Cloudflare Email Service sending and set
-   `SENDER_EMAIL` to an address on that domain. Preserve existing inbound email
-   and MX records; sending setup does not require replacing an existing mailbox.
-4. Create a managed Turnstile widget allowing `tycheventuresllc.com` and
-   `canyon-and-vine-electrology.sukhpalc.chatgpt.site`. Add the latter exact HTTPS
-   origin to `ALLOWED_ORIGINS` when enabling delivery from Sites.
+2. Keep `RECIPIENT_EMAIL` and the binding's `destination_address` aligned. A new
+   destination must be verified in Email Service before use.
+3. Keep `SENDER_EMAIL` on an onboarded Email Service domain. The current
+   Routing-enabled domain supports delivery to the verified owner. If moving to
+   a different domain, review Email Service onboarding and existing mail records;
+   do not replace working inbound MX records merely to enable form delivery.
+4. Keep the managed Turnstile widget's allowed hostnames aligned with the two
+   production origins. Use exact origins in `ALLOWED_ORIGINS`; remove temporary
+   QA origins after testing.
 5. Run `pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --config cloudflare/consultation/wrangler.jsonc`
-   and enter the secret privately. Never commit it.
+   when setting or rotating the secret, and enter it privately. Never commit it.
 6. Deploy with `pnpm exec wrangler deploy --config cloudflare/consultation/wrangler.jsonc`.
-7. Set `config/consultation.json` with the deployed HTTPS `/request` endpoint and
-   public Turnstile site key. The site key is public; the secret remains in Worker secrets.
+7. Update `config/consultation.json` if the HTTPS `/request` endpoint or public
+   Turnstile site key changes. The site key is public; the secret remains in Worker secrets.
 
-The empty sender, endpoint, and site key are intentional. Do not publish the form
-until these values are configured and delivery has been verified.
+The handler fails closed if required service configuration is missing. A disabled
+form preview is not a substitute for a configured, verified release.
 
 ## Verification and publication
 
@@ -35,11 +54,27 @@ validation, optional email, failure retention, server validation, exact origins,
 Turnstile verification and provider rejection. These use mocks for external
 services and do not establish inbox delivery.
 
-Before release, test the configured form on an allowed staging hostname with a
-real Turnstile challenge and verify that a clearly identified test request reaches
-the owner inbox. Test once with an email and once without one; verify the phone is
-complete and the optional address becomes Reply-To. Also verify a failed request
-retains the entered details and never reports success.
+On November 15, 2026, two synthetic requests were submitted through the real
+browser form with real Turnstile verification and the deployed email handler.
+Both showed success, reset the form, and arrived in `sukhpalc@gmail.com` Inbox:
+
+- `Website test / No email Nov15`, phone `+17075550123`, showed `Email: Not provided`.
+- `Website test / With email Nov15`, phone `+17075550124`, included
+  `sukhpalc@gmail.com` as the optional email and as the message's `Reply-To`.
+
+Gmail showed the intended `To` recipient, `tycheventuresllc.com` as mailed-by and
+signed-by domain, and TLS. These receipts were verified in Safari Gmail. The
+connected Gmail tool was associated with `paul.che1776` rather than the owner
+inbox, so connector search results were not used to establish delivery.
+
+Independent live HTTP checks rejected unapproved origins, malformed JSON,
+missing fields, unsupported content types, GET requests, and prohibited preflight
+methods. Approved JSON preflight succeeded. Unit tests verify that failed delivery
+retains entered details and does not report success.
+
+After changes affecting delivery, repeat real browser submissions with and without
+optional email and inspect the intended owner's inbox and headers. Local email
+binding simulation and mocked tests do not establish real delivery.
 
 Publish the verified website commit to GitHub Pages and the identical clean source
 to the existing Sites project, preserving its audience. Verify the live form and

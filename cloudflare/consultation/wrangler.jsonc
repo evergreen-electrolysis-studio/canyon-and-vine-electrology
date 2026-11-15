@@ -1,14 +1,15 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "evergreen-consultation",
+  "account_id": "4fe85a31fa782a90b1758694d2314e0a",
   "main": "worker.mjs",
   "compatibility_date": "2026-04-01",
   "workers_dev": true,
   "vars": {
-    "ALLOWED_ORIGINS": "https://tycheventuresllc.com",
+    "ALLOWED_ORIGINS": "https://tycheventuresllc.com,https://canyon-and-vine-electrology.sukhpalc.chatgpt.site",
     "RECIPIENT_EMAIL": "sukhpalc@gmail.com",
     // Required: an address on a domain onboarded to Cloudflare Email Service.
-    "SENDER_EMAIL": ""
+    "SENDER_EMAIL": "consultation@tycheventuresllc.com"
   },
   "send_email": [
     {
