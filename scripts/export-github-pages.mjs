@@ -132,6 +132,11 @@ async function renderRoute(route) {
       `$1${routePublicUrl}$2`,
     );
 
+  // Only this small, reviewed form script runs in the static export.
+  // React hydration payloads and all other scripts remain removed.
+  if (html.includes('data-consultation-form')) {
+    html = html.replace('</body>', `<script src="${basePath}/consultation-form.js" defer></script></body>`);
+  }
   return html;
 }
 
@@ -191,7 +196,8 @@ for (const route of routes) {
   }
 }
 
-await writeFile(path.join(outputDirectory, "404.html"), rootHtml);
+if (!preservedFiles["github-pages/404.html"]) await writeFile(path.join(outputDirectory, "404.html"), rootHtml);
+await cp(path.join(clientDirectory, "consultation-form.js"), path.join(outputDirectory, "consultation-form.js"));
 await writeFile(path.join(outputDirectory, ".nojekyll"), "");
 
 console.log(

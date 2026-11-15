@@ -122,7 +122,8 @@ test("exports a self-contained GitHub Pages site", async () => {
   );
   assert.match(html, /width="1003" height="1568"/);
   assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
-  assert.doesNotMatch(html, /<script\b/i);
+  assert.equal((html.match(/<script\b/g) ?? []).length, 1);
+  assert.match(html, /<script src="\/canyon-and-vine-electrology\/consultation-form.js" defer><\/script>/);
   assert.doesNotMatch(html, /rel="modulepreload"/i);
   assert.doesNotMatch(html, /(?:href|src)="\/assets\//);
   assert.doesNotMatch(html, /name="robots" content="noindex, nofollow"/i);

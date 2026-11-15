@@ -5,7 +5,7 @@ export type WebsiteConcept = {
   description: string;
   href: string;
   released: string;
-  status: "Current homepage" | "Alternate concept";
+  status: "Current homepage" | "Alternate concept" | "Archived concept";
 };
 
 export const websiteConcepts: WebsiteConcept[] = [
@@ -15,9 +15,9 @@ export const websiteConcepts: WebsiteConcept[] = [
     direction: "Editorial · precise · established",
     description:
       "The original launch-ready homepage with a high-contrast black-and-white treatment, comprehensive services, and detailed education.",
-    href: "/",
+    href: "/concepts/design-01/",
     released: "July 2026",
-    status: "Current homepage",
+    status: "Archived concept",
   },
   {
     id: "02",

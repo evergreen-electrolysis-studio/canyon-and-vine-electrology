@@ -1,0 +1,20 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "evergreen-consultation",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-04-01",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://tycheventuresllc.com",
+    "RECIPIENT_EMAIL": "sukhpalc@gmail.com",
+    // Required: an address on a domain onboarded to Cloudflare Email Service.
+    "SENDER_EMAIL": ""
+  },
+  "send_email": [
+    {
+      "name": "CONSULTATION_EMAIL",
+      "destination_address": "sukhpalc@gmail.com"
+    }
+  ]
+  // Set TURNSTILE_SECRET_KEY with `wrangler secret put`; never put it in this file.
+}

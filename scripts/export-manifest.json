@@ -2,12 +2,16 @@
   "routes": [
     {
       "pathname": "/",
-      "output": "index.html",
-      "preserve": true
+      "output": "index.html"
     },
     {
       "pathname": "/concepts",
       "output": "concepts/index.html"
+    },
+    {
+      "pathname": "/concepts/design-01",
+      "output": "concepts/design-01/index.html",
+      "preserve": true
     },
     {
       "pathname": "/concepts/design-02",
@@ -36,7 +40,6 @@
     }
   ],
   "preservedFiles": {
-    "app/page.tsx": "ce4c3a5eed9ead64db3689089638950a1774735e0e4ba2204b1f2d13ab64e59d",
     "app/layout.tsx": "8821aa112d7c9d8ac81a76bd134fbba76824425bb88344aaef946e897c70471d",
     "app/globals.css": "9bae0d86524c2477a0215a71815035b48a2237faa9a8a403cbe90dc5e156b322",
     "app/concepts/design-02/design02.module.css": "3e81929fcf1614314af65a83136a434329533d4e2aefeabe39755050317ab8f9",
@@ -46,7 +49,6 @@
     "app/concepts/design-04/design04.module.css": "f4c64e3c55629829f27efc6413b054dbf660cd2de88ac30c45fac4ff0f9a00ac",
     "app/concepts/design-04/page.tsx": "ee15a0371e7f57d16d8af3a2ad5439e1b1b6a33bcca5703f6233eef050a9f0c9",
     "github-pages/electrolysis-detail-v2.jpg": "c96fa9f43fbda8723b150f026ec27d237d3c9da10631f0fe4dfb290393042e06",
-    "github-pages/index.html": "2964a28f9b9866e50b8cf7da09c01d8755f8c1d4e717a766a605545d3ac7ae34",
     "github-pages/brand-mark.png": "8d3003bf25ea0ff07f1cf9c5e14a1212dcc9cd12b1989243779afb5df4d1c13b",
     "github-pages/hero-profile.jpg": "3057e0cbf02d13beae2c446f60a9ad2da1601a1b713f114da805cf2de4d45a29",
     "github-pages/quiet-practice-hero.jpg": "a28cb7617c39a1f5ddad44d9e4c102e227a9c0e24bed1d8779e1c16d29d12f76",
@@ -79,6 +81,8 @@
     "public/clear-path-botanical.jpg": "7568ba696f38cb545bd1854002bce76688b7f115203df403073c0f37a2dd5238",
     "github-pages/clear-path-botanical.jpg": "7568ba696f38cb545bd1854002bce76688b7f115203df403073c0f37a2dd5238",
     "github-pages/concepts/design-06/index.html": "9376dbc5eaf33b8203d9d49b09ab49eef5dadb432f9cd620ae4a0233eb44ce16",
-    "github-pages/assets/index-DV73IN7o.css": "5ab8efab8d143354d2da7bf0633559307dfb99256333065cd738385168d3de6e"
+    "github-pages/assets/index-DV73IN7o.css": "5ab8efab8d143354d2da7bf0633559307dfb99256333065cd738385168d3de6e",
+    "app/concepts/design-01/page.tsx": "ce4c3a5eed9ead64db3689089638950a1774735e0e4ba2204b1f2d13ab64e59d",
+    "github-pages/concepts/design-01/index.html": "2964a28f9b9866e50b8cf7da09c01d8755f8c1d4e717a766a605545d3ac7ae34"
   }
 }
