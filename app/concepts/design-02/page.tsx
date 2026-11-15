@@ -1,3 +1,5 @@
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates, { treatmentRateSummary } from "../../components/TreatmentRates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./design02.module.css";
@@ -59,7 +61,7 @@ const faqs = [
   {
     question: "How are sessions scheduled?",
     answer:
-      "Appointments are reserved by time. Your recommended session length and current rate are confirmed before booking, based on the area, density, skin response, and your schedule.",
+      `Appointments are reserved by time. ${treatmentRateSummary}. All prices are in USD. Your recommended session length is based on the area, density, skin response, and your schedule.`,
   },
   {
     question: "Do you offer laser hair removal?",
@@ -191,7 +193,7 @@ export default function WineCountryJournal() {
             <h2 id="services-journal-title">Focused care.<br /><em>Flexible timing.</em></h2>
             <p>
               Time-based appointments keep the plan responsive to the treatment area,
-              density, and your progress. Current rates are confirmed before booking.
+              density, and your progress. Prices are per session; total cost depends on the course of treatment.
             </p>
           </div>
           <div className={styles.serviceList}>
@@ -203,10 +205,7 @@ export default function WineCountryJournal() {
               </article>
             ))}
           </div>
-          <div className={styles.timeRail} aria-label="Available appointment lengths">
-            <span>15 minutes</span><span>30 minutes</span><span>45 minutes</span>
-            <span>60 minutes</span><span>90 minutes</span>
-          </div>
+          <div className={styles.rateRail} id="pricing"><TreatmentRates /></div>
         </section>
 
         <section className={styles.careGuide} aria-labelledby="care-title">
@@ -285,20 +284,18 @@ export default function WineCountryJournal() {
         </section>
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-journal-title">
-          <p className={styles.eyebrowLight}>Consultations</p>
-          <h2 id="contact-journal-title">Let’s begin with<br /><em>a conversation.</em></h2>
-          <p>
-            Get in touch to ask a question or request a private consultation. We’ll confirm
-            the treatment area, current rates, studio details, and an appointment time.
-          </p>
-          <a className={styles.contactButton} href="mailto:hello@example.com?subject=Evergreen%20Electrolysis%20consultation%20request">
-            Request by email ↗
-          </a>
-          <div className={styles.contactDetails}>
-            <div><span>Phone</span><a href="tel:+17075550147">(707) 555-0147</a></div>
-            <div><span>Email</span><a href="mailto:hello@example.com">hello@example.com</a></div>
-            <div><span>Studio</span><p>[ADD SUITE ADDRESS]<br />American Canyon, CA 94503</p></div>
-            <div><span>Hours</span><p>By appointment<br />[ADD BUSINESS HOURS]</p></div>
+          <div className={styles.contactGrid}>
+            <div className={styles.contactIntro}>
+              <p className={styles.eyebrowLight}>Consultations</p>
+              <h2 id="contact-journal-title">Let’s begin with<br /><em>a conversation.</em></h2>
+              <p>Request a private consultation using the form. We’ll contact you to discuss the treatment area, studio details, and an appointment time.</p>
+              <div className={styles.contactDetails}>
+                <div><span>Phone</span><p>[ADD PHONE NUMBER]</p></div>
+                <div><span>Studio</span><p>[ADD SUITE ADDRESS]<br />American Canyon, CA 94503</p></div>
+                <div><span>Hours</span><p>By appointment<br />[ADD BUSINESS HOURS]</p></div>
+              </div>
+            </div>
+            <ConsultationForm />
           </div>
         </section>
       </div>

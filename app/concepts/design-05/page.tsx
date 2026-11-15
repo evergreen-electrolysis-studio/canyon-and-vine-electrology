@@ -1,3 +1,5 @@
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates, { treatmentRateSummary } from "../../components/TreatmentRates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@fontsource-variable/manrope/wght.css";
@@ -30,7 +32,7 @@ const questions = [
   { question: "Is it one appointment or a series?", answer: "Plan for a series. Hair grows in cycles, and the visible hairs are only part of the picture. The area, hair density, previous removal methods, hormonal influences, and appointment consistency affect the schedule. There is no single treatment count or completion date for everyone." },
   { question: "What does electrolysis feel like?", answer: "You may feel a brief warmth, pinch, or sting. Sensation depends on the person, area, and settings. A small test treatment, when appropriate, gives you a chance to experience it and discuss comfort before planning longer sessions." },
   { question: "What about hair linked to hormonal changes?", answer: "Existing unwanted hair can be treated, including hair associated with PCOS or menopause. Electrolysis does not diagnose or treat the underlying condition, and hormonal changes can influence new growth. Discuss medical questions with your healthcare professional." },
-  { question: "How much will treatment cost?", answer: "Rates: [ADD VERIFIED PRICES]. Total cost depends on session length and the course of treatment. Your consultation is the place to discuss a practical starting schedule and fees before making a commitment." },
+  { question: "How much will treatment cost?", answer: `${treatmentRateSummary}. All prices are in USD. Total cost depends on session length and the course of treatment. Your consultation is the place to discuss a practical starting schedule before making a commitment.` },
 ];
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
@@ -127,6 +129,11 @@ export default function EverydayEdit() {
           </div>
         </section>
 
+        <section className={styles.pricingSection} id="pricing" aria-labelledby="pricing-title">
+          <div className={styles.pricingIntro}><p className={styles.eyebrow}>Treatment pricing</p><h2 id="pricing-title">A little clarity.<br /><em>Before you begin.</em></h2><p>Appointments are priced by time. Nav will help you choose a session length based on your treatment area and plan. Total cost depends on the course of treatment.</p></div>
+          <TreatmentRates />
+        </section>
+
         <section className={styles.faq} id="questions" aria-labelledby="questions-title">
           <div><p className={styles.eyebrow}>Good questions welcome</p><h2 id="questions-title">Let’s clear<br /><em>a few things up.</em></h2></div>
           <div>{questions.map(item => <details key={item.question}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div>
@@ -136,8 +143,10 @@ export default function EverydayEdit() {
           <div className={styles.contactTop}><p className={styles.eyebrow}>Your next step</p><span aria-hidden="true">↗</span></div>
           <h2 id="contact-title">Make room<br /><em>for you.</em></h2>
           <div className={styles.contactBottom}>
-            <div><p>A conversation about your goals.<br />A thoughtful place to begin.</p><p className={styles.bookingPlaceholder}>Booking destination: [ADD VERIFIED LINK]</p><small>Online booking is not connected in this concept.</small></div>
-            <dl><div><dt>Visit</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div><div><dt>Call</dt><dd>Phone: [ADD PHONE NUMBER]</dd></div><div><dt>Plan</dt><dd>Hours: [ADD BUSINESS HOURS]<br />Prices: [ADD VERIFIED PRICES]</dd></div></dl>
+            <div className={styles.contactIntro}><p>A conversation about your goals.<br />A thoughtful place to begin.</p><p>Send your request using the form. We’ll contact you to discuss your goals and an appointment time.</p>
+              <dl><div><dt>Visit</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div><div><dt>Call</dt><dd>Phone: [ADD PHONE NUMBER]</dd></div><div><dt>Plan</dt><dd>Hours: [ADD BUSINESS HOURS]</dd></div></dl>
+            </div>
+            <ConsultationForm tone="light" />
           </div>
         </section>
       </main>

@@ -5,12 +5,74 @@ import test from "node:test";
 
 const expectedUrl =
   "https://tycheventuresllc.com/canyon-and-vine-electrology";
+const expectedRates = [[15, 65], [30, 95], [45, 135], [60, 175], [90, 265], [120, 350]];
+const controllerTag = '<script src="/canyon-and-vine-electrology/consultation-form.js" defer></script>';
 
-test("keeps every earlier published page, asset, and source byte-for-byte intact", async () => {
+function assertConsultationControllerOnly(html) {
+  assert.deepEqual([...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map(([script]) => script), [controllerTag]);
+  assert.equal((html.match(/<script\b/gi) ?? []).length, 1);
+  assert.doesNotMatch(html, /rel="modulepreload"/i);
+}
+
+test("keeps the approved published baseline intact after the pricing and consultation update", async () => {
   const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
   for (const [file, expected] of Object.entries(manifest.preservedFiles)) {
     const bytes = await readFile(new URL(`../${file}`, import.meta.url));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), expected, file);
+  }
+});
+
+test("exports current prices and a usable consultation form on every public website route", async (t) => {
+  const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
+  const consultation = JSON.parse(await readFile(new URL("../config/consultation.json", import.meta.url), "utf8"));
+  for (const { pathname, output } of manifest.routes.filter(({ pathname }) => pathname !== "/concepts")) {
+    await t.test(pathname, async () => {
+      const html = await readFile(new URL(`../github-pages/${output}`, import.meta.url), "utf8");
+      assert.equal((html.match(/\bdata-treatment-pricing(?:=|\s|>)/g) ?? []).length, 1);
+      const rateRows = [...html.matchAll(/<div\b[^>]*data-minutes="(\d+)"[^>]*>([\s\S]*?)<\/div>/g)];
+      assert.equal(rateRows.length, expectedRates.length);
+      assert.deepEqual(rateRows.map(([, minutes, row]) => {
+        const duration = row.match(/<dt\b[^>]*>([\s\S]*?)<\/dt>/)?.[1].replace(/<[^>]*>/g, "").trim();
+        const amount = row.match(/<dd\b[^>]*>([\s\S]*?)<\/dd>/)?.[1].replace(/<[^>]*>/g, "").trim();
+        assert.equal(duration, `${minutes} minutes`);
+        assert.match(amount ?? "", /^\$\d+$/);
+        return [Number(minutes), Number(amount.slice(1))];
+      }), expectedRates);
+      assert.equal((html.match(/<form\b/g) ?? []).length, 1);
+      const form = html.match(/<form\b[^>]*>/)?.[0] ?? "";
+      assert.match(form, /\bdata-consultation-form(?:=|\s|>)/);
+      assert.ok(form.includes(`data-endpoint="${consultation.endpoint}"`));
+      assert.ok(form.includes(`data-site-key="${consultation.turnstileSiteKey}"`));
+      assertConsultationControllerOnly(html);
+      assert.doesNotMatch(html, /ADD VERIFIED PRICES|ADD VERIFIED LINK|hello@example\.com|href="tel:|Booking link added before launch|Online booking is not connected|appointment requests are not sent/i);
+      const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(([, id]) => id);
+      assert.equal(new Set(ids).size, ids.length, "Form and page IDs must be unique");
+      assert.ok(ids.includes("top"), "Confirmation must be able to return to the page top");
+      for (const [, anchor] of html.matchAll(/\bhref="#([^"]+)"/g)) assert.ok(ids.includes(anchor), `Missing anchor ${anchor}`);
+      for (const [, target] of html.matchAll(/\b(?:for|aria-labelledby|aria-describedby)="([^"]+)"/g)) {
+        for (const id of target.split(/\s+/)) assert.ok(ids.includes(id), `Missing accessible label or description ${id}`);
+      }
+      const canonical = `${expectedUrl}${pathname === "/" ? "/" : pathname + "/"}`;
+      assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
+      assert.ok(html.includes(`rel="canonical" href="${canonical}"`));
+      assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+      assert.doesNotMatch(html, /(?:href|src)="\/assets\//);
+      for (const [, relative] of html.matchAll(/(?:href|src)="\/canyon-and-vine-electrology\/([^"?#]*)/g)) {
+        await access(new URL(`../github-pages/${relative}${relative.endsWith("/") || !relative ? "index.html" : ""}`, import.meta.url));
+      }
+      for (const [img] of html.matchAll(/<img\b[^>]*>/g)) {
+        assert.match(img, /alt="[^"]*"/);
+        if (img.includes('alt=""')) assert.match(img, /src="\/canyon-and-vine-electrology\/brand-mark\.png\?/);
+        assert.match(img, /width="\d+"/);
+        assert.match(img, /height="\d+"/);
+      }
+      for (const [, href] of html.matchAll(/rel="stylesheet" href="([^"]+)"/g)) {
+        const cssPath = new URL(`../github-pages/${href.replace("/canyon-and-vine-electrology/", "")}`, import.meta.url);
+        const css = await readFile(cssPath, "utf8");
+        assert.doesNotMatch(css, /url\(["']?\/assets\//, "Font URLs must resolve beneath the repository path");
+        for (const [, font] of css.matchAll(/url\(["']?(\.\/[^)"']+\.woff2)["']?\)/g)) await access(new URL(font, cssPath));
+      }
+    });
   }
 });
 
@@ -22,7 +84,8 @@ test("exports Design 05 with working static navigation and self-contained imager
   assert.match(html, /rel="canonical" href="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-05\/"/);
   assert.match(html, /property="og:image" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/everyday-edit-portrait.jpg"/);
   assert.match(html, /src="\/canyon-and-vine-electrology\/everyday-edit-portrait.jpg"/);
-  assert.doesNotMatch(html, /<script\b|rel="modulepreload"|(?:href|src)="\/(?:assets\/|everyday-edit)/i);
+  assertConsultationControllerOnly(html);
+  assert.doesNotMatch(html, /(?:href|src)="\/(?:assets\/|everyday-edit)/i);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
   assert.equal(new Set(ids).size, ids.length, "IDs must be unique");
   for (const match of html.matchAll(/\bhref="#([^"]+)"/g)) assert.ok(ids.includes(match[1]), `Missing anchor ${match[1]}`);
@@ -59,12 +122,14 @@ test("exports Design 06 with complete archive links, accessible disclosures and 
   assert.match(gallery, /The Clear Path/);
   assert.match(html, /rel="canonical" href="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-06\/"/);
   assert.match(html, /property="og:image" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/clear-path-botanical.jpg"/);
-  assert.doesNotMatch(html, /<script\b|rel="modulepreload"|(?:href|src)="\/(?:assets\/|clear-path)/i);
+  assertConsultationControllerOnly(html);
+  assert.doesNotMatch(html, /(?:href|src)="\/(?:assets\/|clear-path)/i);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
   assert.equal(new Set(ids).size, ids.length);
   for (const match of html.matchAll(/\bhref="#([^"]+)"/g)) assert.ok(ids.includes(match[1]), `Missing anchor ${match[1]}`);
-  assert.equal((html.match(/<details\b/g) ?? []).length, 10);
-  assert.equal((html.match(/<summary\b/g) ?? []).length, 10);
+  const disclosures = [...html.matchAll(/<details\b[^>]*>([\s\S]*?)<\/details>/g)];
+  assert.ok(disclosures.length >= 10, "Treatment and consultation guidance must remain available");
+  for (const [, disclosure] of disclosures) assert.equal((disclosure.match(/<summary\b/g) ?? []).length, 1);
   for (const match of html.matchAll(/(?:href|src)="\/canyon-and-vine-electrology\/([^"?#]*)/g)) {
     const relative = match[1];
     await access(new URL(`../github-pages/${relative}${relative.endsWith("/") ? "index.html" : ""}`, import.meta.url));
@@ -242,7 +307,7 @@ test("exports the concepts index and alternate designs without replacing the hom
     /property="og:image" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/quiet-practice-hero\.jpg\?v=d04-20261111"/,
   );
   assert.match(quiet, /name="robots" content="noindex, follow"/i);
-  assert.doesNotMatch(quiet, /hello@example\.com|\(707\) 555|href="tel:/i);
+  assert.doesNotMatch(quiet, /hello@example\.com|\(707\) 555-0147|href="tel:/i);
   assert.doesNotMatch(
     quiet,
     /editorial image|representative only|not a client result|not an actual treatment|illustrative image|real portrait of Nav/i,
@@ -260,8 +325,9 @@ test("exports the concepts index and alternate designs without replacing the hom
   assert.match(exportedCss, /Newsreader Variable/);
   assert.match(exportedCss, /Manrope Variable/);
 
+  assert.doesNotMatch(concepts, /<script\b/i);
+  for (const html of [alternate, flagship, quiet]) assertConsultationControllerOnly(html);
   for (const html of [concepts, alternate, flagship, quiet]) {
-    assert.doesNotMatch(html, /<script\b/i);
     assert.doesNotMatch(html, /rel="modulepreload"/i);
     assert.doesNotMatch(html, /(?:href|src)="\/assets\//);
   }

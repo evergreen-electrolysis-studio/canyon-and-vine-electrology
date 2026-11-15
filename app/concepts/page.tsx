@@ -30,6 +30,7 @@ export default function ConceptsPage() {
         <p className={styles.lede}>
           Each concept is a complete, independent direction. Earlier versions stay available,
           so you can compare structure, tone, and visual style without losing prior work.
+          All designs include the current treatment prices and consultation request form.
         </p>
       </section>
 

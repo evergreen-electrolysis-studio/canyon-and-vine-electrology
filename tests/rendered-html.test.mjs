@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
+const expectedRates = [[15, 65], [30, 95], [45, 135], [60, 175], [90, 265], [120, 350]];
+
 async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
@@ -23,7 +25,51 @@ async function render(pathname = "/") {
   );
 }
 
-test("renders Design 05 with accurate scope, credentials, metadata and explicit placeholders", async () => {
+test("renders verified treatment prices and an actionable consultation form on every website design", async (t) => {
+  const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
+  const consultation = JSON.parse(await readFile(new URL("../config/consultation.json", import.meta.url), "utf8"));
+  for (const { pathname } of manifest.routes.filter(({ pathname }) => pathname !== "/concepts")) {
+    await t.test(pathname, async () => {
+      const response = await render(pathname);
+      assert.equal(response.status, 200);
+      const html = await response.text();
+      assert.equal((html.match(/\bdata-treatment-pricing(?:=|\s|>)/g) ?? []).length, 1);
+      const rateRows = [...html.matchAll(/<div\b[^>]*data-minutes="(\d+)"[^>]*>([\s\S]*?)<\/div>/g)];
+      assert.equal(rateRows.length, expectedRates.length);
+      assert.deepEqual(rateRows.map(([, minutes, row]) => {
+        const duration = row.match(/<dt\b[^>]*>([\s\S]*?)<\/dt>/)?.[1].replace(/<[^>]*>/g, "").trim();
+        const amount = row.match(/<dd\b[^>]*>([\s\S]*?)<\/dd>/)?.[1].replace(/<[^>]*>/g, "").trim();
+        assert.equal(duration, `${minutes} minutes`);
+        assert.match(amount ?? "", /^\$\d+$/);
+        return [Number(minutes), Number(amount.slice(1))];
+      }), expectedRates);
+      assert.match(html.replace(/<!--[\s\S]*?-->/g, ""), /Session prices · USD/);
+      assert.equal((html.match(/<form\b/g) ?? []).length, 1);
+      const form = html.match(/<form\b[^>]*>/)?.[0] ?? "";
+      assert.match(form, /\bdata-consultation-form(?:=|\s|>)/);
+      assert.ok(form.includes(`data-endpoint="${consultation.endpoint}"`));
+      assert.ok(form.includes(`data-site-key="${consultation.turnstileSiteKey}"`));
+      for (const name of ["firstName", "lastName", "phone"]) {
+        const input = html.match(new RegExp(`<input[^>]*name="${name}"[^>]*>`))?.[0] ?? "";
+        assert.match(input, /\brequired(?:=|\s|\/?>)/, `${name} must be required`);
+      }
+      const email = html.match(/<input[^>]*name="email"[^>]*>/)?.[0] ?? "";
+      assert.match(email, /type="email"/);
+      assert.doesNotMatch(email, /\brequired(?:=|\s|\/?>)/);
+      assert.match(html, /US \+1/);
+      assert.match(html, /By submitting, you agree that Evergreen Electrolysis may contact you/);
+      assert.match(html, /Submitting this form does not book an appointment/);
+      assert.match(html, /<dialog\b[^>]*data-success-dialog/);
+      assert.match(html, /Your request has been sent/);
+      assert.match(html, /id="top"/);
+      assert.equal((html.match(/<script\b[^>]*src="\/consultation-form\.js"/g) ?? []).length, 0, "Sites initializes the controller after hydration");
+      assert.doesNotMatch(html, /ADD VERIFIED PRICES|ADD VERIFIED LINK|hello@example\.com|href="tel:|Booking link added before launch|Online booking is not connected|appointment requests are not sent/i);
+      assert.match(html, /Results and treatment timelines vary by individual/);
+    });
+  }
+});
+
+test("renders Design 05 with accurate scope, credentials, metadata and unknown business details marked", async () => {
   const response = await render("/concepts/design-05");
   assert.equal(response.status, 200);
   const html = await response.text();
@@ -33,14 +79,14 @@ test("renders Design 05 with accurate scope, credentials, metadata and explicit 
   assert.match(html, /California Electrology Academy in Corona/);
   assert.match(html, /Intimate-area services are not offered/);
   assert.match(html, /Results and treatment timelines vary by individual/);
-  for (const placeholder of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS", "ADD VERIFIED PRICES", "ADD VERIFIED LINK"]) {
+  for (const placeholder of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS"]) {
     assert.ok(html.includes(placeholder), `Missing ${placeholder}`);
   }
   assert.match(html, /name="robots" content="noindex, follow"/);
   assert.match(html, /property="og:url" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-05\/"/);
   assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-  assert.doesNotMatch(html, /href="(?:tel:|mailto:)|<form\b|stock image|representative image|not a client|before.and.after|FDA.approved/i);
+  assert.doesNotMatch(html, /href="(?:tel:|mailto:)|stock image|representative image|not a client|before.and.after|FDA.approved/i);
 });
 
 test("renders Design 06 with accurate scope, actionable navigation and honest booking details", async () => {
@@ -53,15 +99,15 @@ test("renders Design 06 with accurate scope, actionable navigation and honest bo
   assert.match(html, /California Electrology Academy in Corona/);
   assert.match(html, /Intimate-area services are not offered/);
   assert.match(html, /Results and treatment timelines vary by individual/);
-  assert.match(html, /Online booking is not connected in this concept/);
-  for (const placeholder of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS", "ADD VERIFIED PRICES", "ADD VERIFIED LINK"]) {
+  assert.match(html, /Submitting this form does not book an appointment/);
+  for (const placeholder of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS"]) {
     assert.ok(html.includes(placeholder), `Missing ${placeholder}`);
   }
   assert.match(html, /name="robots" content="noindex, follow"/);
   assert.match(html, /property="og:url" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-06\/"/);
   assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-  assert.doesNotMatch(html, /href="(?:tel:|mailto:)|<form\b|stock image|representative image|not a client|FDA.approved|pain.free|guaranteed results/i);
+  assert.doesNotMatch(html, /href="(?:tel:|mailto:)|stock image|representative image|not a client|FDA.approved|pain.free|guaranteed results/i);
 });
 
 test("server-renders the launch-ready Evergreen Electrolysis site", async () => {
@@ -186,8 +232,8 @@ test("preserves the original homepage and renders the design archive and alterna
   assert.match(quiet, /A plan made for you/);
   assert.match(quiet, /What would you like to focus on/);
   assert.match(quiet, /Meet Nav/);
-  assert.match(quiet, /Concept preview: appointment requests are not sent/);
-  assert.doesNotMatch(quiet, /hello@example\.com|\(707\) 555|href="tel:/i);
+  assert.match(quiet, /Submitting this form does not book an appointment/);
+  assert.doesNotMatch(quiet, /hello@example\.com|\(707\) 555-0147|href="tel:/i);
   assert.match(quiet, /name="robots" content="noindex, follow"/i);
   assert.match(quiet, /Concept preview: a restrained, photograph-led direction/i);
   assert.match(quiet, /property="og:url" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/concepts\/design-04\/"/i);

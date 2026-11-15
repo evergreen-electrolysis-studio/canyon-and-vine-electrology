@@ -5,51 +5,97 @@ import test from "node:test";
 
 const controller = await readFile(new URL("../public/consultation-form.js", import.meta.url), "utf8");
 
-function fixture({ configured = true, modalSupported = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
+function eventTarget() {
+  return {
+    listeners: {}, handlers: new Map(),
+    addEventListener(event, fn) {
+      this.listeners[event] = fn;
+      if (!this.handlers.has(event)) this.handlers.set(event, new Set());
+      this.handlers.get(event).add(fn);
+    },
+    removeEventListener(event, fn) {
+      this.handlers.get(event)?.delete(fn);
+      if (this.listeners[event] === fn) delete this.listeners[event];
+    },
+    dispatch(event, details = {}) {
+      return Promise.all([...this.handlers.get(event) ?? []].map(fn => fn(details)));
+    },
+  };
+}
+
+function pageFixture({ configured = true, modalSupported = true, theme } = {}) {
   const initial = { firstName: " Alex ", lastName: " Example ", phone: "(707) 555-0123", email: "", website: "", contactPreference: "", notes: "", permissionVersion: "2026-11-15" };
   const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, {
-    value, customValidity: "", listeners: {},
+    ...eventTarget(), value, customValidity: "",
     get validity() { return { valid: !this.customValidity && (key !== "email" || !this.value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value)) }; },
-    addEventListener(event, fn) { this.listeners[event] = fn; },
     setCustomValidity(message) { this.customValidity = message; },
   }]));
-  const checkbox = (value) => ({ value, checked: false, listeners: {}, addEventListener(event, fn) { this.listeners[event] = fn; } });
+  const checkbox = (value) => ({ ...eventTarget(), value, checked: false });
   const choices = { treatmentAreas: ["Chin & jawline", "Underarms", "Not sure yet"].map(checkbox), previousMethods: ["Tweezing", "Laser or IPL", "None"].map(checkbox) };
   const button = { disabled: true, textContent: "Request a consultation" };
   const emailOption = { disabled: true };
   const status = { textContent: "", focused: false, focus() { this.focused = true; } };
-  const node = () => ({ textContent: "", focused: false, listeners: {}, focus() { this.focused = true; }, addEventListener(event, fn) { this.listeners[event] = fn; } });
+  const node = () => ({ ...eventTarget(), textContent: "", focused: false, focus() { this.focused = true; } });
   const dialogNodes = Object.fromEntries(["close", "home", "name", "title"].map((key) => [key, node()]));
-  const dialog = { open: false, listeners: {}, querySelector: (selector) => dialogNodes[selector.match(/data-success-(\w+)/)[1]], addEventListener(event, fn) { this.listeners[event] = fn; }, close() { this.open = false; this.listeners.close?.(); } };
+  const dialog = { ...eventTarget(), open: false, querySelector: (selector) => dialogNodes[selector.match(/data-success-(\w+)/)[1]], close() { this.open = false; this.dispatch("close"); } };
   if (modalSupported) dialog.showModal = () => { dialog.open = true; };
   const top = { focused: false, scrolled: false, setAttribute() {}, focus() { this.focused = true; }, scrollIntoView() { this.scrolled = true; } };
-  const calls = [];
-  let submit;
-  let widgetOptions;
-  let resetCount = 0;
+  const widgetContainer = {};
   const form = {
-    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key" } : {},
+    ...eventTarget(), isConnected: false,
+    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key", theme } : {},
+    fields, choices,
+    parentElement: { querySelector: () => dialog },
     elements: { namedItem: (name) => fields[name] },
-    querySelector: (selector) => selector.includes("button") ? button : selector.includes("status") ? status : selector.includes("email-preference") ? emailOption : {},
-    querySelectorAll: (selector) => choices[selector.match(/name="([^"]+)"/)[1]] ?? [],
-    addEventListener: (event, fn) => { if (event === "submit") submit = fn; },
+    querySelector: (selector) => selector.includes("button") ? button : selector.includes("status") ? status : selector.includes("email-preference") ? emailOption : widgetContainer,
+    querySelectorAll: (selector) => choices[selector.match(/name="([^\"]+)"/)[1]] ?? [],
     reportValidity: () => Boolean(fields.firstName.value && fields.lastName.value && fields.phone.validity.valid && fields.email.validity.valid),
     reset: () => { Object.entries(fields).forEach(([key, field]) => { field.value = key === "permissionVersion" ? initial.permissionVersion : ""; }); Object.values(choices).flat().forEach((choice) => { choice.checked = false; }); },
   };
-  const window = { matchMedia: () => ({ matches: false }), turnstile: {
-    render: (_, options) => { widgetOptions = options; return "widget"; },
+  return { form, fields, choices, button, emailOption, status, dialog, dialogNodes, top, get widgetOptions() { return widgetContainer.options; }, submit: () => form.dispatch("submit", { preventDefault() {} }) };
+}
+
+function fixture({ configured = true, modalSupported = true, theme, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
+  const page = pageFixture({ configured, modalSupported, theme });
+  let current = initiallyMounted ? page : null;
+  page.form.isConnected = initiallyMounted;
+  const calls = [], observers = [], scripts = [], removedWidgets = [];
+  let resetCount = 0, renderCount = 0;
+  const turnstile = {
+    render: (container, options) => { container.options = options; return `widget-${++renderCount}`; },
     reset: () => { resetCount++; },
-  } };
-  vm.runInNewContext(controller, {
-    window, document: { readyState: "complete", getElementById: () => top, querySelector: (selector) => selector.includes("success-dialog") ? dialog : form },
+    remove: (widget) => { removedWidgets.push(widget); },
+  };
+  const window = { matchMedia: () => ({ matches: false }), ...(apiReady ? { turnstile } : {}) };
+  const context = vm.createContext({
+    window,
+    document: {
+      readyState: "complete", body: {}, getElementById: () => current?.top,
+      querySelectorAll: () => current ? [current.form] : [],
+      createElement: () => ({}), head: { append: (script) => scripts.push(script) },
+    },
+    MutationObserver: class { constructor(callback) { observers.push(callback); } observe() {} },
     FormData: class {
-      constructor() { this.values = Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value])); this.multiple = Object.fromEntries(Object.entries(choices).map(([key, options]) => [key, options.filter((option) => option.checked).map((option) => option.value)])); }
+      constructor(form) { this.values = Object.fromEntries(Object.entries(form.fields).map(([key, field]) => [key, field.value])); this.multiple = Object.fromEntries(Object.entries(form.choices).map(([key, options]) => [key, options.filter((option) => option.checked).map((option) => option.value)])); }
       get(name) { return this.values[name]; }
       getAll(name) { return this.multiple[name] ?? []; }
     },
     AbortSignal, fetch: async (url, options) => { calls.push({ url, ...options }); if (response instanceof Error) throw response; return response; },
   });
-  return { fields, choices, button, emailOption, status, dialog, dialogNodes, top, calls, get widgetOptions() { return widgetOptions; }, get resetCount() { return resetCount; }, submit: () => submit({ preventDefault() {} }) };
+  const runController = () => vm.runInContext(controller, context);
+  const mutate = () => observers.forEach(callback => callback());
+  const navigate = (next = pageFixture({ configured, modalSupported })) => {
+    if (current) current.form.isConnected = false;
+    current = next;
+    if (current) current.form.isConnected = true;
+    mutate();
+    return next;
+  };
+  runController();
+  return { ...page, get widgetOptions() { return page.widgetOptions; }, calls, scripts, removedWidgets, runController, mutate, navigate,
+    get observerCount() { return observers.length; }, get renderCount() { return renderCount; }, get resetCount() { return resetCount; },
+    finishLoadingApi() { window.turnstile = turnstile; window.evergreenTurnstileReady(); },
+  };
 }
 
 test("exported form requires names and phone, leaves email optional, and loads its controller", async () => {
@@ -126,6 +172,13 @@ test("unconfigured form stays disabled without loading a security widget", () =>
   assert.equal(f.widgetOptions, undefined);
 });
 
+test("the security widget follows the form theme and safely defaults to dark", () => {
+  for (const theme of [undefined, "dark", "light", "invalid"]) {
+    const f = fixture({ theme });
+    assert.equal(f.widgetOptions.theme, theme === "light" ? "light" : "dark");
+  }
+});
+
 
 test("includes optional context and the contact-notice version in the actual request", async () => {
   const f = fixture();
@@ -188,4 +241,69 @@ test("a browser without modal support retains a visible success confirmation", a
   assert.match(f.status.textContent, /request has been sent/);
   assert.equal(f.status.focused, true);
   assert.equal(f.dialog.open, false);
+});
+
+test("initializes a form inserted after the gallery and follows subsequent route changes", async () => {
+  const f = fixture({ initiallyMounted: false });
+  assert.equal(f.renderCount, 0);
+  const first = f.navigate();
+  assert.equal(f.renderCount, 1);
+  first.widgetOptions.callback("first-token");
+  await first.submit();
+  assert.equal(first.dialog.open, true);
+  const second = f.navigate();
+  assert.equal(first.dialog.open, false);
+  assert.equal(first.form.handlers.get("submit").size, 0);
+  assert.deepEqual(f.removedWidgets, ["widget-1"]);
+  assert.equal(f.renderCount, 2);
+  second.fields.firstName.value = "Second";
+  second.widgetOptions.callback("second-token");
+  await second.submit();
+  assert.equal(f.calls.length, 2);
+  assert.equal(second.dialog.open, true);
+  assert.equal(second.dialogNodes.name.textContent, "Second");
+  assert.equal(first.dialogNodes.name.textContent, "Alex");
+  assert.equal(JSON.parse(f.calls[1].body).turnstileToken, "second-token");
+});
+
+test("repeated script execution and DOM changes do not duplicate widgets or listeners", async () => {
+  const f = fixture();
+  f.runController(); f.mutate(); f.mutate();
+  assert.equal(f.observerCount, 1);
+  assert.equal(f.renderCount, 1);
+  assert.equal(f.form.handlers.get("submit").size, 1);
+  assert.equal(f.dialogNodes.close.handlers.get("click").size, 1);
+  f.widgetOptions.callback("token");
+  await f.submit();
+  assert.equal(f.calls.length, 1);
+});
+
+test("navigation while Turnstile loads renders only the current form and loads its API once", async () => {
+  const f = fixture({ apiReady: false });
+  const second = f.navigate();
+  f.runController();
+  assert.equal(f.scripts.length, 1);
+  f.finishLoadingApi();
+  assert.equal(f.renderCount, 1);
+  assert.equal(f.widgetOptions, undefined);
+  second.widgetOptions.callback("current-token");
+  await second.submit();
+  assert.equal(f.calls.length, 1);
+  assert.equal(second.dialog.open, true);
+  assert.equal(f.dialog.open, false);
+});
+
+test("a response from a removed form cannot open its modal or reset the new widget", async () => {
+  let resolveResponse;
+  const f = fixture({ response: new Promise(resolve => { resolveResponse = resolve; }) });
+  f.widgetOptions.callback("token");
+  const pending = f.submit();
+  const second = f.navigate();
+  resolveResponse({ ok: true, json: async () => ({ ok: true }) });
+  await pending;
+  assert.equal(f.dialog.open, false);
+  assert.equal(second.dialog.open, false);
+  assert.equal(second.status.focused, false);
+  assert.equal(f.resetCount, 0);
+  assert.equal(f.calls.length, 1);
 });

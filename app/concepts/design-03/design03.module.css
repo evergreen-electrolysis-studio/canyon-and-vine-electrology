@@ -943,6 +943,7 @@
 }
 
 .contactSection {
+  --consultation-display: inherit;
   background: var(--mineral);
   color: white;
   display: grid;
@@ -950,6 +951,12 @@
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
   padding: clamp(5.5rem, 9vw, 10rem) clamp(1.1rem, 7vw, 8rem);
 }
+
+.pricingSection { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(3rem, 7vw, 7rem); padding: clamp(5.5rem, 9vw, 10rem) clamp(1.1rem, 7vw, 8rem); background: var(--mist); }
+.pricingIntro h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(3.5rem, 6vw, 7rem); font-weight: 400; letter-spacing: -.065em; line-height: .95; margin: 0; }
+.pricingIntro > p:last-child { font-size: 1.08rem; line-height: 1.8; color: #4b525e; margin-top: 2rem; max-width: 600px; }
+.contactCopy .contactDetails { margin-top: 2.5rem; }
+@media (max-width: 900px) { .pricingSection { grid-template-columns: 1fr; } }
 
 .contactCopy h2 {
   font-size: clamp(4rem, 7vw, 8rem);

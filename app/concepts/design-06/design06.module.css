@@ -198,3 +198,11 @@
   :global(html):has(.page) { scroll-behavior: auto; }
   .page *, .page { transition: none; animation: none; scroll-behavior: auto; }
 }
+
+.pricingSection { display: grid; grid-template-columns: 1fr 1.15fr; gap: 10%; padding: 80px 6%; border-bottom: 1px solid var(--line); }
+.pricingIntro h2 { margin: 25px 0; }
+.pricingIntro > p:last-child { font-size: 15px; color: var(--muted); max-width: 43ch; }
+.begin { --consultation-ink: var(--navy); --consultation-muted: var(--muted); --consultation-border: #93aab6; --consultation-display: inherit; gap: 10%; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.beginHeading .practical { margin-top: 40px; }
+@media (min-width: 1600px) { .pricingSection { padding-inline: max(6%, calc((100vw - 1460px) / 2)); } }
+@media (max-width: 800px) { .pricingSection { grid-template-columns: 1fr; gap: 28px; padding: 65px 6%; } .begin { grid-template-columns: 1fr; gap: 35px; } }

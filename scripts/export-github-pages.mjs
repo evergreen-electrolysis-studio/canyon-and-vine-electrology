@@ -24,7 +24,8 @@ const { routes, preservedFiles } = JSON.parse(
   await readFile(new URL("./export-manifest.json", import.meta.url), "utf8"),
 );
 
-// Published pages and their original styles remain byte-for-byte immutable.
+// Published snapshots and their styles remain frozen at the approved baseline.
+// Owner-authorized maintenance is re-rendered and re-frozen explicitly.
 // Fail before exporting if an earlier concept or its source has changed.
 for (const [file, expected] of Object.entries(preservedFiles)) {
   const actual = createHash("sha256").update(await readFile(path.join(projectRoot, file))).digest("hex");

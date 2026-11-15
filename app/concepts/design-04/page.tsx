@@ -1,3 +1,5 @@
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates from "../../components/TreatmentRates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@fontsource-variable/manrope/wght.css";
@@ -120,7 +122,7 @@ export default function QuietPractice() {
       <div className={styles.conceptBar}>
         <Link href="/concepts/">← Design archive</Link>
         <span>Design 04 · The Quiet Practice</span>
-        <span>Concept preview · contact details pending</span>
+        <span>Concept preview · studio details pending</span>
       </div>
 
       <header className={styles.header}>
@@ -273,8 +275,17 @@ export default function QuietPractice() {
           <aside className={styles.visitDetails}>
             <span>Consultation &amp; test treatment</span>
             <p>Your questions, an introduction to treatment, and a recommended next step.</p>
-            <strong>Appointment length and fee confirmed before booking.</strong>
+            <strong>Consultation details confirmed before booking.</strong>
           </aside>
+        </section>
+
+        <section className={styles.pricingSection} id="pricing" aria-labelledby="pricing-title">
+          <div className={styles.pricingIntro}>
+            <p className={styles.sectionLabel}>Treatment pricing</p>
+            <h2 id="pricing-title">Time for your priorities.</h2>
+            <p>Appointments are priced by time. Nav will help you choose a session length suited to your treatment area and plan. Total cost depends on the course of treatment.</p>
+          </div>
+          <TreatmentRates />
         </section>
 
         <section className={styles.navSection} id="nav" aria-labelledby="nav-title">
@@ -373,17 +384,14 @@ export default function QuietPractice() {
               Tell us which area you are considering and what you would like to understand.
               We’ll discuss a sensible first appointment.
             </p>
-            <span className={styles.previewButton} aria-disabled="true">Booking link added before launch</span>
-            <p className={styles.previewNotice}>
-              Concept preview: appointment requests are not sent from this page.
-            </p>
+            <dl className={styles.contactDetails} id="contact-details">
+              <div><dt>Studio</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div>
+              <div><dt>Appointments</dt><dd>By appointment<br />Hours: [ADD BUSINESS HOURS]</dd></div>
+              <div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div>
+              <div><dt>Service area</dt><dd>American Canyon · Vallejo · Napa · Benicia · Fairfield</dd></div>
+            </dl>
           </div>
-          <dl className={styles.contactDetails} id="contact-details">
-            <div><dt>Studio</dt><dd>American Canyon, California<br />Suite address added before launch</dd></div>
-            <div><dt>Appointments</dt><dd>By appointment<br />Schedule added before launch</dd></div>
-            <div><dt>Contact</dt><dd>Phone, email, and booking destination added before launch</dd></div>
-            <div><dt>Service area</dt><dd>American Canyon · Vallejo · Napa · Benicia · Fairfield</dd></div>
-          </dl>
+          <ConsultationForm tone="light" />
         </section>
       </main>
 

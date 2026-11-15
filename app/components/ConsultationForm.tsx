@@ -1,13 +1,14 @@
 import config from "../../config/consultation.json";
 import fields from "../../config/consultation-fields.json";
+import ConsultationController from "./ConsultationController";
 import styles from "./consultation-form.module.css";
 
-export default function ConsultationForm() {
+export default function ConsultationForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
   return (
-    <div className={styles.panel}>
-      <h3>Request a consultation</h3>
-      <p>Tell us how to reach you. First name, last name, and phone number are required.</p>
-      <form className={styles.form} data-consultation-form data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} method="post" action={config.endpoint || "#contact"}>
+    <div className={`${styles.panel} ${tone === "light" ? styles.light : ""}`}>
+      <h3 className={styles.heading}>Request a consultation</h3>
+      <p className={styles.description}>Tell us how to reach you. First name, last name, and phone number are required.</p>
+      <form className={styles.form} data-consultation-form data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} data-theme={tone} method="post" action={config.endpoint || "#contact"}>
         <div className={styles.names}>
           <label htmlFor="consultation-first-name">First name <span>(required)</span><input id="consultation-first-name" name="firstName" autoComplete="given-name" required maxLength={80} /></label>
           <label htmlFor="consultation-last-name">Last name <span>(required)</span><input id="consultation-last-name" name="lastName" autoComplete="family-name" required maxLength={80} /></label>
@@ -67,7 +68,7 @@ export default function ConsultationForm() {
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a className={styles.homeButton} href="/" data-success-home>Back to home <span aria-hidden="true">↗</span></a>
       </dialog>
-      <script src="/consultation-form.js" defer />
+      <ConsultationController />
     </div>
   );
 }

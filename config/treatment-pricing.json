@@ -1,0 +1,11 @@
+{
+  "currency": "USD",
+  "sessions": [
+    { "minutes": 15, "price": 65 },
+    { "minutes": 30, "price": 95 },
+    { "minutes": 45, "price": 135 },
+    { "minutes": 60, "price": 175 },
+    { "minutes": 90, "price": 265 },
+    { "minutes": 120, "price": 350 }
+  ]
+}

@@ -1,3 +1,5 @@
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates, { treatmentRateSummary } from "../../components/TreatmentRates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@fontsource-variable/manrope/wght.css";
@@ -29,7 +31,7 @@ const questions = [
   { question: "How many appointments will I need?", answer: "Expect a series, with a schedule tailored to you. Hair grows in cycles, so the hair visible today is only part of the picture. The area, hair density, previous removal methods, and hormonal influences all affect the course of treatment. A fixed completion date cannot be promised." },
   { question: "What does a treatment feel like?", answer: "You may feel brief warmth, stinging, or a pinch. Sensitivity varies by person and treatment area. A small test treatment, when appropriate, can help you understand the sensation and discuss comfort before planning longer appointments." },
   { question: "What if my hair growth is hormonal?", answer: "Electrolysis can treat existing unwanted hair, including hair associated with PCOS or menopause. It does not diagnose or treat hormonal conditions, and hormonal changes can influence new growth. Bring medical questions to a qualified healthcare professional." },
-  { question: "How are appointments priced?", answer: "Prices: [ADD VERIFIED PRICES]. Session length and your course of treatment determine the overall cost. Discuss recommended appointment lengths, fees, and scheduling at your consultation before committing to a plan." },
+  { question: "How are appointments priced?", answer: `${treatmentRateSummary}. All prices are in USD. Session length and your course of treatment determine the overall cost. Discuss recommended appointment lengths and scheduling at your consultation before committing to a plan.` },
 ];
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
@@ -83,11 +85,19 @@ export default function ClearPath() {
           <div className={styles.care}><div><span className={styles.eyebrow}>Before your appointment</span><h3>A little preparation.</h3><p>Ask how much visible hair to leave. Pause tweezing, waxing, and threading in the area, and discuss medications or recent skin treatments with Nav.</p></div><div><span className={styles.eyebrow}>After your appointment</span><h3>Give your skin some care.</h3><p>Temporary redness or irritation can occur. Follow your individual aftercare instructions. Contact a healthcare professional promptly for severe or unexpected symptoms.</p></div></div>
         </section>
 
+        <section className={styles.pricingSection} id="pricing" aria-labelledby="pricing-title">
+          <div className={styles.pricingIntro}><p className={styles.eyebrow}>Treatment pricing</p><h2 id="pricing-title">Clear prices.<br />A personal plan.</h2><p>Appointments are priced by time. Nav will help you choose a session length based on your treatment area and plan. Total cost depends on the course of treatment.</p></div>
+          <TreatmentRates />
+        </section>
+
         <section className={styles.faq} id="questions" aria-labelledby="faq-title"><div><p className={styles.eyebrow}>Before you decide</p><h2 id="faq-title">Good questions.<br />Clear answers.</h2><p>A little understanding can make the first step feel more familiar.</p></div><div>{questions.map(item => <details key={item.question}><summary>{item.question}<span className={styles.plus} aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div></section>
 
         <section className={styles.begin} id="begin" aria-labelledby="begin-title">
-          <div className={styles.beginHeading}><p className={styles.eyebrow}>Your next step / American Canyon</p><h2 id="begin-title">Let’s start<br />with you.</h2><p>A consultation is a place to talk about your goals, understand the treatment, and consider a plan.</p><div className={styles.booking}><strong>Booking destination: [ADD VERIFIED LINK]</strong><p>Online booking is not connected in this concept.</p></div></div>
-          <div className={styles.practical}><h3>Plan your visit</h3><dl><div><dt>Location</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div><div><dt>Prices</dt><dd>[ADD VERIFIED PRICES]</dd></div></dl><details><summary>Your consultation checklist<span className={styles.plus} aria-hidden="true">+</span></summary><ul><li>The area you would like to treat</li><li>Your recent hair-removal routine</li><li>Relevant medications and skin treatments</li><li>Questions about comfort, time, and cost</li></ul></details></div>
+          <div className={styles.beginHeading}>
+            <p className={styles.eyebrow}>Your next step / American Canyon</p><h2 id="begin-title">Let’s start<br />with you.</h2><p>A consultation is a place to talk about your goals, understand the treatment, and consider a plan. Send your request using the form, and we’ll contact you.</p>
+            <div className={styles.practical}><h3>Plan your visit</h3><dl><div><dt>Location</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div></dl><details><summary>Your consultation checklist<span className={styles.plus} aria-hidden="true">+</span></summary><ul><li>The area you would like to treat</li><li>Your recent hair-removal routine</li><li>Relevant medications and skin treatments</li><li>Questions about comfort, time, and cost</li></ul></details></div>
+          </div>
+          <ConsultationForm tone="light" />
         </section>
       </main>
       <footer className={styles.footer}><div className={styles.footerTop}><a className={styles.wordmark} href="#top">evergreen<span>ELECTROLYSIS</span></a><p>American Canyon, California<br />Serving the Napa–Solano community.</p><Link className={styles.textLink} href="/concepts/">Compare all designs <Arrow /></Link></div><p className={styles.disclaimer}>Results and treatment timelines vary by individual and cannot be guaranteed. This website provides general information only and is not medical advice. Services are subject to consultation and individual suitability; consult a qualified healthcare professional about medical conditions or medications.</p><div className={styles.footerEnd}><span>© 2026 Evergreen Electrolysis</span><span>Design 06 · The Clear Path</span><a href="#top">Back to top ↑</a></div></footer>

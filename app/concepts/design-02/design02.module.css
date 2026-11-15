@@ -713,6 +713,15 @@
   padding: clamp(6rem, 10vw, 11rem) clamp(1.25rem, 7vw, 8rem);
 }
 
+.rateRail { grid-column: 2 / -1; margin-top: 2rem; scroll-margin-top: 100px; }
+.contactGrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: clamp(3rem, 7vw, 7rem); }
+.contactGrid .contactIntro h2 { font-size: clamp(3rem, 5.1vw, 6rem); }
+.contactIntro > p:not(.eyebrowLight) { color: #d0d6cc; line-height: 1.8; margin: 2rem 0; max-width: 600px; }
+.contactGrid .contactDetails { grid-template-columns: 1fr; margin-top: 2rem; }
+.contactGrid .contactDetails > div { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 1.2rem; min-height: 0; padding: 1.2rem 0; border: 0; border-bottom: 1px solid #ffffff38; }
+.contactGrid .contactDetails span { margin: 0; }
+@media (max-width: 900px) { .contactGrid { grid-template-columns: 1fr; } }
+
 .contact h2 {
   font-size: clamp(4rem, 8vw, 9rem);
 }
@@ -1066,3 +1075,5 @@
     scroll-behavior: auto !important;
   }
 }
+
+@media (max-width: 760px) { .rateRail { grid-column: 1; } }

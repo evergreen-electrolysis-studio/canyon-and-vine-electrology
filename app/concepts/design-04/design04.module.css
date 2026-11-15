@@ -653,8 +653,17 @@
 
 .contact {
   align-items: end;
+  --consultation-ink: var(--evergreen);
+  --consultation-display: var(--display);
   scroll-margin-top: 88px;
 }
+
+.pricingSection { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); gap: clamp(3rem, 8vw, 8rem); max-width: 1440px; margin: 0 auto; padding: clamp(6rem, 9vw, 9rem) clamp(1.25rem, 6vw, 6rem); }
+.pricingIntro h2 { font-family: var(--display); font-size: clamp(3.1rem, 5vw, 5rem); font-weight: 400; line-height: 1.05; letter-spacing: -.04em; margin: 0 0 1.5rem; }
+.pricingIntro > p:last-child { font-size: 1.08rem; line-height: 1.75; margin: 0; }
+.contactCopy .contactDetails { margin-top: 2rem; }
+.contactCopy .contactDetails > div { grid-template-columns: 90px minmax(0, 1fr); gap: 1rem; font-size: .9rem; }
+@media (max-width: 900px) { .pricingSection { grid-template-columns: 1fr; padding: 3.25rem 1.25rem; } }
 
 .previewButton {
   background: var(--evergreen);

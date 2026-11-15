@@ -1,3 +1,5 @@
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates from "../../components/TreatmentRates";
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./design03.module.css";
@@ -240,8 +242,17 @@ export default function PortraitOfPrecision() {
           <aside className={styles.visitCard}>
             <p>Consultation &amp; test treatment</p>
             <strong>A calm introduction to the process.</strong>
-            <span>Details and current rates confirmed before booking.</span>
+            <span>Consultation details confirmed before booking.</span>
           </aside>
+        </section>
+
+        <section className={styles.pricingSection} id="pricing" aria-labelledby="pricing-title">
+          <div className={styles.pricingIntro}>
+            <p className={styles.kicker}>Treatment pricing</p>
+            <h2 id="pricing-title">Your time.<br /><em>Clearly priced.</em></h2>
+            <p>Choose a starting point with Nav. Session length depends on the treatment area and your plan; total cost depends on the course of treatment.</p>
+          </div>
+          <TreatmentRates />
         </section>
 
         <section className={styles.navSection} id="nav" aria-labelledby="nav-title">
@@ -334,19 +345,16 @@ export default function PortraitOfPrecision() {
             <p className={styles.kickerLight}>Begin here</p>
             <h2 id="contact-title">Tell us what<br /><em>you’re ready to change.</em></h2>
             <p>
-              Request a private consultation to discuss the area, your history, current
-              rates, and a sensible first appointment.
+              Request a private consultation using the form to discuss the area, your history,
+              and a sensible first appointment.
             </p>
-            <a className={styles.contactButton} href="mailto:hello@example.com?subject=Evergreen%20Electrolysis%20consultation%20request">
-              Request by email <span aria-hidden="true">↗</span>
-            </a>
+            <div className={styles.contactDetails}>
+              <div><span>Phone</span><p>[ADD PHONE NUMBER]</p></div>
+              <div><span>Studio</span><p>[ADD SUITE ADDRESS]<br />American Canyon, CA 94503</p></div>
+              <div><span>Hours</span><p>By appointment<br />[ADD BUSINESS HOURS]</p></div>
+            </div>
           </div>
-          <div className={styles.contactDetails}>
-            <div><span>Phone</span><a href="tel:+17075550147">(707) 555-0147</a></div>
-            <div><span>Email</span><a href="mailto:hello@example.com">hello@example.com</a></div>
-            <div><span>Studio</span><p>[ADD SUITE ADDRESS]<br />American Canyon, CA 94503</p></div>
-            <div><span>Hours</span><p>By appointment<br />[ADD BUSINESS HOURS]</p></div>
-          </div>
+          <ConsultationForm />
         </section>
       </div>
 

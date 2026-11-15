@@ -1,4 +1,5 @@
 import ConsultationForm from "./components/ConsultationForm";
+import TreatmentRates from "./components/TreatmentRates";
 
 const services = [
   {
@@ -66,7 +67,6 @@ const areas = [
   "Legs & feet",
 ];
 
-const appointmentLengths = ["15 min", "30 min", "45 min", "60 min", "90 min"];
 
 const faqs = [
   {
@@ -326,18 +326,16 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="appointments-section" aria-labelledby="appointments-title">
+        <section className="appointments-section" id="pricing" aria-labelledby="appointments-title">
           <div className="appointments-copy">
             <p className="eyebrow eyebrow-light">Straightforward scheduling</p>
             <h2 id="appointments-title">Time-based appointments.<br /><em>Clearly explained.</em></h2>
             <p>
               Electrology appointments are reserved by time because each client’s density, area,
-              and goals differ. Your recommended session length and current rate are confirmed
-              before booking.
+              and goals differ. Nav will recommend a session length based on your treatment
+              plan. Prices below are per session; total cost depends on the course of treatment.
             </p>
-            <div className="appointment-pills" aria-label="Appointment lengths">
-              {appointmentLengths.map((length) => <span key={length}>{length}</span>)}
-            </div>
+            <TreatmentRates />
           </div>
           <div className="consult-card">
             <span className="consult-label">First visit</span>
@@ -414,7 +412,7 @@ export default function Home() {
             <h2 id="contact-title">Ready when<br /><em>you are.</em></h2>
             <p>
               Request a consultation using the form. We’ll contact you to discuss your goals,
-              current rates, studio details, and an appointment time.
+              studio details, and an appointment time.
             </p>
             <address className="contact-details">
               <div><span>Studio</span><p>[ADD SUITE ADDRESS]<br />American Canyon, CA 94503</p></div>
