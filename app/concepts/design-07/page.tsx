@@ -1,0 +1,128 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import "@fontsource-variable/manrope/wght.css";
+import "@fontsource-variable/newsreader/wght.css";
+import ConsultationForm from "../../components/ConsultationForm";
+import TreatmentRates from "../../components/TreatmentRates";
+import styles from "./design07.module.css";
+
+const url = "https://tycheventuresllc.com/canyon-and-vine-electrology/concepts/design-07/";
+const image = "https://tycheventuresllc.com/canyon-and-vine-electrology/personal-edit-portrait.jpg";
+const description = "Discover personal electrolysis care with Nav in American Canyon, California. Explore treatment areas, session prices, and your first consultation.";
+
+export const metadata: Metadata = {
+  title: "The Personal Edit | Evergreen Electrolysis",
+  description,
+  alternates: { canonical: url },
+  robots: { index: false, follow: true },
+  openGraph: {
+    title: "The Personal Edit | Evergreen Electrolysis", description, url, type: "website",
+    images: [{ url: image, width: 1200, height: 1798, alt: "A woman with brown hair in soft evening light" }],
+  },
+  twitter: { card: "summary_large_image", title: "The Personal Edit | Evergreen Electrolysis", description, images: [image] },
+};
+
+const areas = [
+  { number: "01", title: "Face & neck", text: "Upper lip, chin, jawline, cheeks, sideburns, brows and between brows, hairline, temples, ears and nose exterior, neck and nape." },
+  { number: "02", title: "Selected body areas", text: "Underarms, arms and hands, legs and feet, chest and abdomen, shoulders and back. Choose the area that matters to you." },
+  { number: "03", title: "The finishing details", text: "Isolated persistent hairs, careful shaping, and hairs remaining after other removal methods. Small areas deserve a considered plan, too." },
+];
+
+const steps = [
+  { title: "A conversation first.", text: "Bring your goals and questions. Talk with Nav about the area, your previous hair removal, and what you hope to change." },
+  { title: "Get to know the process.", text: "Review your hair and skin, discuss suitability, and try a small test treatment if appropriate. There is room to ask questions." },
+  { title: "A next step that makes sense.", text: "Discuss session length, appointment spacing, preparation, aftercare, and costs before deciding how to move forward." },
+];
+
+const questions = [
+  { title: "How does electrolysis remove hair?", text: "A fine probe follows the natural opening of an individual hair follicle. A small electrical current treats the hair-growth cells. Galvanic uses a chemical reaction, thermolysis uses heat, and blend combines the two. The method and settings are selected for the hair, skin, and area." },
+  { title: "Does my hair color or skin tone matter?", text: "Electrolysis does not depend on hair pigment. It can treat every natural hair color, including blonde, red, gray, and white, across skin tones. Your consultation is the place to discuss your skin, hair, and individual suitability." },
+  { title: "Why is more than one visit needed?", text: "Hair grows in cycles, and not every hair is ready to treat at the same time. The amount and structure of hair, previous removal methods, hormones, and appointment consistency affect the course of treatment. Your schedule is reviewed as you go; there is no single timeline for everyone." },
+  { title: "What does a treatment feel like?", text: "You may feel brief heat, a pinch, or a sting. Sensitivity varies with the person and the area. Discuss comfort with Nav; a small test treatment, when appropriate, can help you understand the sensation before a longer session." },
+  { title: "What should I know before and after a visit?", text: "Ask Nav how much visible growth to leave, pause tweezing, waxing, and threading, and arrive with clean skin. Discuss medications and recent skin treatments at your consultation. Temporary redness or tenderness can follow treatment. Follow your individual aftercare guidance and seek medical advice for severe or unexpected symptoms." },
+  { title: "Can we discuss hair associated with hormonal changes?", text: "Yes. Visible hair associated with hormonal changes, including PCOS or menopause, can be part of your treatment discussion. Electrolysis removes hair; it does not diagnose or treat the underlying condition. Medical concerns belong with your healthcare professional." },
+];
+
+export default function PersonalEdit() {
+  return (
+    <div className={styles.page} id="top">
+      <a className={styles.skipLink} href="#main-content">Skip to content</a>
+      <div className={styles.archiveBar}>
+        <Link href="/concepts/">← All designs</Link>
+        <span>07 / The Personal Edit</span>
+      </div>
+      <header className={styles.header}>
+        <a className={styles.wordmark} href="#top" aria-label="Evergreen Electrolysis home"><span>Evergreen</span><small>Electrolysis</small></a>
+        <nav className={styles.navigation} aria-label="Primary navigation">
+          <a href="#care">Treatment</a><a href="#rates">Prices</a><a href="#nav">Meet Nav</a><a href="#questions">Questions</a>
+        </nav>
+        <a className={styles.headerCta} href="#contact">Let’s begin <span aria-hidden="true">↗</span></a>
+      </header>
+      <main id="main-content">
+        <section className={styles.hero} aria-labelledby="hero-title">
+          <div className={styles.heroHeading}>
+            <p className={styles.eyebrow}>American Canyon, California</p>
+            <h1 id="hero-title">Permanent<br />hair removal.<br /><em>Entirely personal.</em></h1>
+          </div>
+          <div className={styles.heroPhoto}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/personal-edit-portrait.jpg" alt="A woman with brown hair and a striped shirt in soft evening light" width="1200" height="1798" loading="eager" fetchPriority="high" />
+          </div>
+          <div className={styles.heroIntroduction}>
+            <p>One-on-one electrolysis with Nav, shaped around your hair, your skin, and what matters to you.</p>
+            <a className={styles.button} href="#contact">Request a consultation <span aria-hidden="true">↗</span></a>
+            <a className={styles.textLink} href="#first-visit">A look at your first visit <span aria-hidden="true">↓</span></a>
+          </div>
+          <div className={styles.heroFoot}><span>Face. Body. The small details.</span><span>Care, one follicle at a time.</span></div>
+        </section>
+
+        <section className={styles.care} id="care" aria-labelledby="care-title">
+          <div className={styles.sectionIntro}>
+            <p className={styles.eyebrow}>01 / Your treatment</p>
+            <h2 id="care-title">Start with what<br /><em>matters to you.</em></h2>
+            <p>A few persistent hairs or a larger area. A familiar routine you’re ready to change. We begin with your priorities.</p>
+            <p className={styles.scope}>Electrolysis for every natural hair color, across skin tones. Intimate-area services are not offered.</p>
+          </div>
+          <div className={styles.areaList}>
+            {areas.map(area => <article key={area.number}><span className={styles.areaNumber}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div></article>)}
+            <a className={styles.lightLink} href="#contact">Talk through your treatment area <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section className={styles.visit} id="first-visit" aria-labelledby="visit-title">
+          <div className={styles.sectionHeading}><p className={styles.eyebrow}>02 / The first visit</p><h2 id="visit-title">Less wondering.<br /><em>More understanding.</em></h2><p>You don’t need to know which treatment or session length to choose before getting in touch.</p></div>
+          <ol className={styles.steps}>{steps.map((step, index) => <li key={step.title}><span aria-hidden="true">0{index + 1}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
+        </section>
+
+        <section className={styles.ratesSection} id="rates" aria-labelledby="rates-title">
+          <div><p className={styles.eyebrow}>03 / Treatment prices</p><h2 id="rates-title">Your time.<br /><em>Clearly priced.</em></h2><p>Choose session length with Nav based on the area and your treatment plan. These are treatment rates; consultation details are discussed when we follow up.</p></div>
+          <div className={styles.rateSheet}><TreatmentRates /><p>Not sure where to start? Your consultation request can be as simple as a name and phone number.</p><a className={styles.textLink} href="#contact">Start the conversation <span aria-hidden="true">↗</span></a></div>
+        </section>
+
+        <section className={styles.practitioner} id="nav" aria-labelledby="nav-title">
+          <div className={styles.practitionerIntro}><p className={styles.eyebrow}>04 / Your electrologist</p><h2 id="nav-title">Meet Nav.</h2><p className={styles.largeCopy}>A scientific foundation.<br />A personal approach.</p><p>Nav is a California-licensed electrologist with a degree in Microbiology from UC Davis. She completed her professional electrology training at California Electrology Academy in Corona.</p><p>Your consultation brings that background to your individual questions, treatment options, and next steps.</p></div>
+          <dl className={styles.credentials}>
+            <div><dt>Education</dt><dd>UC Davis<span>Microbiology</span></dd></div>
+            <div><dt>Professional training</dt><dd>California Electrology Academy<span>Corona, California</span></dd></div>
+            <div><dt>California licensure</dt><dd>Licensed electrologist<span>License # [ADD NUMBER]</span></dd></div>
+          </dl>
+        </section>
+
+        <section className={styles.questions} id="questions" aria-labelledby="questions-title">
+          <div><p className={styles.eyebrow}>05 / A little clarity</p><h2 id="questions-title">Good questions.<br /><em>Thoughtful answers.</em></h2><p>Understanding the process is part of feeling ready.</p></div>
+          <div className={styles.answers}>{questions.map(question => <details key={question.title}><summary>{question.title}<span className={styles.plus} aria-hidden="true">+</span></summary><p>{question.text}</p></details>)}</div>
+        </section>
+
+        <section className={styles.contact} id="contact" aria-labelledby="contact-title">
+          <div className={styles.contactIntro}><p className={styles.eyebrow}>06 / Let’s begin</p><h2 id="contact-title">A small step.<br /><em>A personal plan.</em></h2><p>Tell us how to reach you. Nav will follow up to discuss your questions and arrange next steps.</p><p>There’s no need to have it all figured out.</p><div className={styles.location}><h3>Evergreen Electrolysis</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Studio address</dt><dd>[ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div><div><dt>Appointment booking destination</dt><dd>[TO BE CONFIRMED]</dd></div></dl></div></div>
+          <div className={styles.formWrap}><ConsultationForm tone="light" /></div>
+        </section>
+      </main>
+      <footer className={styles.footer}>
+        <div className={styles.footerTop}><a href="#top">Evergreen<span>Electrolysis</span></a><p>Personal care.<br />American Canyon, California.</p></div>
+        <p className={styles.disclaimer}>Results and treatment timelines vary by individual. Suitability is assessed during consultation. Information on this site is educational and is not medical advice; consult a qualified healthcare professional about medical concerns.</p>
+        <div className={styles.footerBottom}><span>Design 07 · The Personal Edit</span><Link href="/concepts/">Compare all designs ↗</Link><Link href="/">Current homepage ↗</Link><a href="#top">Back to top ↑</a></div>
+      </footer>
+    </div>
+  );
+}

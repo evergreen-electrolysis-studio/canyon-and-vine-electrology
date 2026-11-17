@@ -306,3 +306,6 @@
     min-height: 250px;
   }
 }
+
+.card:nth-child(7) .preview { background: #f5f2ea; color: #2e433b; }
+.card:nth-child(7) .preview::after { border-radius: 48% 48% 0 0; top: 15%; right: 7%; height: 70%; width: 30%; opacity: .25; }

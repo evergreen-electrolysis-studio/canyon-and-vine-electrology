@@ -2,7 +2,8 @@
   "routes": [
     {
       "pathname": "/",
-      "output": "index.html"
+      "output": "index.html",
+      "preserve": true
     },
     {
       "pathname": "/concepts",
@@ -37,6 +38,10 @@
       "pathname": "/concepts/design-06",
       "output": "concepts/design-06/index.html",
       "preserve": true
+    },
+    {
+      "pathname": "/concepts/design-07",
+      "output": "concepts/design-07/index.html"
     }
   ],
   "preservedFiles": {
@@ -94,7 +99,9 @@
     "config/consultation-fields.json": "4e99757f5a193138fbb926458f19f1593369a809a32a26a6b77195a9d983b0c3",
     "public/consultation-form.js": "21cf31fb540b072004b08295f0a87fe14f3a70a14ab7e2d42f300e4eb411c673",
     "github-pages/consultation-form.js": "21cf31fb540b072004b08295f0a87fe14f3a70a14ab7e2d42f300e4eb411c673",
-    "github-pages/assets/index-B2L8c3HN.css": "324efd8ed678eaedd026f9d82c39cb702e6a452ed549f9bb4e96ddbbfbcbd9f9"
+    "github-pages/assets/index-B2L8c3HN.css": "324efd8ed678eaedd026f9d82c39cb702e6a452ed549f9bb4e96ddbbfbcbd9f9",
+    "app/page.tsx": "2009fe61ab3bb57b360f3b1f151da4bb113a3bcd1b96116296d2cdbd84f49d0a",
+    "github-pages/index.html": "0b9feaa7832bbf36ed7be1f48147404d72f497fed5c17361473c0105fc716bf3"
   },
   "maintenance": {
     "date": "2026-11-15",

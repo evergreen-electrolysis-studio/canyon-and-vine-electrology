@@ -69,4 +69,14 @@ export const websiteConcepts: WebsiteConcept[] = [
     released: "November 14, 2026",
     status: "Alternate concept",
   },
+  {
+    id: "07",
+    title: "The Personal Edit",
+    direction: "Quiet editorial · natural · personal",
+    description:
+      "Warm ivory and muted evergreen, a natural portrait, generous serif typography, and a clear progression through treatment, prices, and your first conversation with Nav.",
+    href: "/concepts/design-07/",
+    released: "November 17, 2026",
+    status: "Alternate concept",
+  },
 ];

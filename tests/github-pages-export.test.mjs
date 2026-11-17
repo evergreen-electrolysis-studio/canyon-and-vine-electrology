@@ -332,3 +332,25 @@ test("exports the concepts index and alternate designs without replacing the hom
     assert.doesNotMatch(html, /(?:href|src)="\/assets\//);
   }
 });
+
+test("Design 07 publishes its own portrait metadata and preserves the approved homepage", async () => {
+  const html = await readFile(new URL("../github-pages/concepts/design-07/index.html", import.meta.url), "utf8");
+  const gallery = await readFile(new URL("../github-pages/concepts/index.html", import.meta.url), "utf8");
+  assert.match(gallery, /The Personal Edit/);
+  assert.match(gallery, /href="\/canyon-and-vine-electrology\/concepts\/design-07\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/tycheventuresllc\.com\/canyon-and-vine-electrology\/personal-edit-portrait.jpg"/);
+  assert.match(html, /src="\/canyon-and-vine-electrology\/personal-edit-portrait.jpg"/);
+  assert.match(html, /California-licensed electrologist/);
+  assert.match(html, /Microbiology from UC Davis/);
+  assert.match(html, /California Electrology Academy in Corona/);
+  for (const detail of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS", "TO BE CONFIRMED"]) assert.ok(html.includes(detail));
+  assert.match(html, /Intimate-area services are not offered/);
+  assert.doesNotMatch(html, /stock image|representative image|not a client|FDA.approved|pain.free|guaranteed results|mailto:/i);
+  const portrait = await readFile(new URL("../public/personal-edit-portrait.jpg", import.meta.url));
+  assert.ok(portrait.length < 500_000);
+  assert.deepEqual(portrait, await readFile(new URL("../github-pages/personal-edit-portrait.jpg", import.meta.url)));
+  const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
+  assert.equal(manifest.routes.find(route => route.pathname === "/").preserve, true);
+  assert.ok(manifest.preservedFiles["app/page.tsx"]);
+  assert.ok(manifest.preservedFiles["github-pages/index.html"]);
+});

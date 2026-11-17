@@ -1,0 +1,36 @@
+{
+  "id": "07",
+  "title": "The Personal Edit",
+  "date": "2026-11-17",
+  "route": "/concepts/design-07/",
+  "direction": "An asymmetrical editorial composition in warm ivory, muted evergreen and soft sage. Large Newsreader typography, a softly arched natural portrait, visible treatment-area rows, an open first-visit sequence, and a dedicated rate sheet lead to the shared consultation form.",
+  "owner_feedback": "Design 04 is the strongest reference for restrained colors, calmness and readable type. Distinct composition and content hierarchy; no generated portrait/treatment imagery or botanical hero.",
+  "research": [
+    { "url": "https://badbettyelectrolysis.com/", "use": "Reviewed current electrology conversion structure: prominent scope, practitioner credentials and accessible prices. No claims, certifications, services or outcomes copied." },
+    { "url": "https://www.danaelise.com/", "use": "Reviewed practitioner-led positioning and the relationship between personal care and scientific training. No credentials or testimonials transferred." },
+    { "url": "https://www.heydayskincare.com/", "use": "Reviewed benefit-led service hierarchy, readable session options and direct conversion paths. No promotions, memberships or unrelated services transferred." },
+    { "url": "https://www.sofiepavitt.com/about", "use": "Reviewed concise practitioner-led studio positioning." },
+    { "url": "https://electrology.com/faqs-about-permanent-hair-removal/", "use": "Hair colors, follicle treatment, modalities and individualized repeat-session guidance." },
+    { "url": "https://electrology.com/faqs-about-permanent-hair-removal/what-is-the-electrolysis-process.php", "use": "Treatment process, sensation, factors affecting timing and temporary skin responses." },
+    { "url": "https://electrology.com/hair-removal-information/", "use": "All skin tones and hormonal-hair context; medical diagnosis remains outside electrology scope." },
+    { "url": "https://electrology.com/faqs-about-permanent-hair-removal/choosing-an-electrologist.php", "use": "Consultation discussion, possible sample treatment, credentials and privacy as trust signals." }
+  ],
+  "image": {
+    "file": "public/personal-edit-portrait.jpg",
+    "photographer": "Štefan Štefančík",
+    "source": "https://unsplash.com/photos/smiling-woman-wearing-white-and-black-pinstriped-collared-top-QXevDflbl8A",
+    "download": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=max&w=1200&q=85",
+    "license": "Unsplash License; image page explicitly marks free use. Commercial use permitted; attribution not required.",
+    "license_url": "https://unsplash.com/license",
+    "checked": "2026-11-17",
+    "dimensions": [1200, 1798],
+    "bytes": 461576,
+    "treatment": "Downloaded photograph at display-appropriate resolution. No AI generation, retouching or skin alteration. CSS crop only.",
+    "placement": "General hero image; no identification as Nav, a client, a treatment outcome or the studio. Practitioner section is typographic and separate."
+  },
+  "business_facts": "Owner-supplied baseline: Nav is a California-licensed electrologist with Microbiology education from UC Davis and completed professional electrology training at California Electrology Academy in Corona. Face and selected non-intimate body scope retained.",
+  "prices": "Read from config/treatment-pricing.json through unchanged TreatmentRates: USD 15m65, 30m95, 45m135, 60m175, 90m265, 120m350. No consultation fee inferred.",
+  "consultation": "Unchanged ConsultationForm includes hydration-safe ConsultationController, verified endpoint and Turnstile config, required names/full US phone, optional email/context, permission/privacy, and accessible success dialog.",
+  "placeholders": ["studio address", "phone", "hours", "California license number", "appointment-booking destination"],
+  "preservation": "All prior numbered routes and their approved November 15 source/static/assets are preserved. Current homepage source and HTML explicitly added to the frozen manifest without changing their bytes."
+}
