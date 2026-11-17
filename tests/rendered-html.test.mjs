@@ -57,7 +57,7 @@ test("renders verified treatment prices and an actionable consultation form on e
       assert.match(email, /type="email"/);
       assert.doesNotMatch(email, /\brequired(?:=|\s|\/?>)/);
       assert.match(html, /US \+1/);
-      const interest = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08"].includes(pathname);
+      const interest = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08", "/concepts/design-09"].includes(pathname);
       assert.match(html, interest ? /By joining, you agree that Evergreen Electrolysis Studio may contact you/ : /By submitting, you agree that Evergreen Electrolysis may contact you/);
       assert.match(html, interest ? /Joining the interest list does not book an appointment/ : /Submitting this form does not book an appointment/);
       assert.match(html, /<dialog\b[^>]*data-success-dialog/);

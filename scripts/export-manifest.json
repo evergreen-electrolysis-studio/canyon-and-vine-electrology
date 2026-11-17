@@ -48,6 +48,11 @@
       "pathname": "/concepts/design-08",
       "output": "concepts/design-08/index.html",
       "preserve": true
+    },
+    {
+      "pathname": "/concepts/design-09",
+      "output": "concepts/design-09/index.html",
+      "preserve": true
     }
   ],
   "preservedFiles": {
@@ -118,7 +123,11 @@
     "github-pages/concepts/design-04/index.html": "9c5f90dfcedd937cb26d48fcfbb255526209fb7be3defd6aa4e2a033224c191a",
     "app/concepts/design-07/page.tsx": "fa9fad47405147ba9b68b6033aabe9ccf90353acec0fd7abf42da8a90aa18250",
     "app/concepts/design-04/page.tsx": "9e7d635a6315353eb8bdf60debf8a3df0cfbb6c7140dc5d85e04d2bc9799fe25",
-    "github-pages/concepts/design-08/index.html": "8dda093b043546b728dc162f26e397252f04f7f1c7cc6c0c246d36e278844bcb"
+    "github-pages/concepts/design-08/index.html": "8dda093b043546b728dc162f26e397252f04f7f1c7cc6c0c246d36e278844bcb",
+    "app/concepts/design-09/page.tsx": "1080576463c123ddb6717182606baee1812e7373f1083ce8c099332678ce849b",
+    "app/concepts/design-09/design09.module.css": "999b94b22725e7fed3846dc8cc87c30169d37db9741d27e671922b2888eb996e",
+    "github-pages/concepts/design-09/index.html": "490e41598a3aaad08220b7b5f8230d5b41f90405b2696a348fd9d527d52ca508",
+    "github-pages/assets/index-BkgCzuLf.css": "ac79e6e789bee59f84db490984c1f7394ad09dd2ba9abf9a757e724a79c4f830"
   },
   "maintenance": {
     "date": "2026-11-17",

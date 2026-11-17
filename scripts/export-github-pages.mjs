@@ -64,7 +64,7 @@ async function renderRoute(route) {
   const routePublicUrl = route.pathname === "/"
     ? `${publicSiteUrl}/`
     : `${publicSiteUrl}${route.pathname}/`;
-  const routeSocialImage = route.pathname === "/concepts/design-08"
+  const routeSocialImage = ["/concepts/design-08", "/concepts/design-09"].includes(route.pathname)
     ? `${publicSiteUrl}/quiet-practice-hero.jpg?v=d04-20261111`
     : route.pathname === "/concepts/design-07"
     ? `${publicSiteUrl}/personal-edit-portrait.jpg`

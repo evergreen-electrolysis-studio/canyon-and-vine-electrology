@@ -1,0 +1,22 @@
+{
+  "id": "09",
+  "title": "At Home in Your Skin",
+  "date": "2026-11-17",
+  "route": "/concepts/design-09/",
+  "owner_request": "Use Design02 color scheme for text and images, with exact Design01 headline and intro. Nav finds prices too prominent; prepare a quieter alternative in09.",
+  "foundation": "Design08 retains the favored07 layout and04 faces/rectangular frames.",
+  "headline": "Feel at home in your skin.",
+  "intro": "Thoughtful, one-follicle-at-a-time care for every skin tone and hair color, with a treatment plan tailored to your goals.",
+  "palette": {
+    "paper": "#f5f1e7",
+    "charcoal": "#171812",
+    "forest": "#273028",
+    "moss": "#737c6e",
+    "body": "#55584f",
+    "warm": "#ded8c9"
+  },
+  "images": "Same04 hero and treatment portraits, with the exact Design02 CSS treatment grayscale(1) contrast(0.94). Original image files unchanged. No new AI imagery or bitmap edits.",
+  "pricing": "Proposed lower-emphasis presentation: below Meet Nav, same paper background, smaller heading, native details/summary closed by default, six canonical rates in a compact16px list. Rates remain reachable from navigation and usable withoutJavaScript; no prices or fees changed.",
+  "preserved": "All prior homepage and01\u201308 source/static/assets remain at approved baselines. Shared interest-list form, live backend, phone controller, consent/privacy, exactprices and studiofacts unchanged.",
+  "launch": "Evergreen Electrolysis Studio; Coming summer2027; American Canyon, CA; Monday\u2013Friday8am\u20134pm; blankphonelisting; licensedNav."
+}

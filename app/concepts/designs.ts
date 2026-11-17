@@ -89,4 +89,14 @@ export const websiteConcepts: WebsiteConcept[] = [
     released: "November 17, 2026",
     status: "Alternate concept",
   },
+  {
+    id: "09",
+    title: "At Home in Your Skin",
+    direction: "Warm cream · monochrome portraits · quiet rates",
+    description:
+      "Design 08’s layout in Design 02’s cream, charcoal, and moss palette, with black-and-white portraits, Design 01’s welcoming introduction, and a compact expandable rate list.",
+    href: "/concepts/design-09/",
+    released: "November 17, 2026",
+    status: "Alternate concept",
+  },
 ];

@@ -30,7 +30,7 @@ export default function ConceptsPage() {
         <p className={styles.lede}>
           Each concept is a complete, independent direction. Earlier versions stay available,
           so you can compare structure, tone, and visual style without losing prior work.
-          All designs include the current treatment prices. Designs 04, 07, and 08 now feature
+          All designs include the current treatment prices. Designs 04, 07, 08, and 09 feature
           the finalized studio name and a summer 2027 interest list.
         </p>
       </section>

@@ -357,11 +357,11 @@ test("Design 07 publishes its own portrait metadata and preserves the approved h
 });
 
 
-test("only Designs 04, 07, and 08 use the approved studio details and summer 2027 interest list", async () => {
+test("selected prelaunch designs use the approved studio details and summer 2027 interest list", async () => {
   const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
   for (const { pathname, output } of manifest.routes.filter(route => route.pathname !== "/concepts")) {
     const html = await readFile(new URL(`../github-pages/${output}`, import.meta.url), "utf8");
-    const updated = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08"].includes(pathname);
+    const updated = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08", "/concepts/design-09"].includes(pathname);
     if (!updated) { assert.doesNotMatch(html, /data-request-type="interest"/); continue; }
     for (const text of ["Evergreen Electrolysis Studio", "Coming summer 2027", "Join interest list", "American Canyon, CA", "Monday–Friday · 8am–4pm", 'data-request-type="interest"', 'value="interest-2026-11-17"']) assert.ok(html.includes(text), `${pathname}: ${text}`);
     assert.match(html, /<dt>Phone<\/dt><dd><\/dd>/);
