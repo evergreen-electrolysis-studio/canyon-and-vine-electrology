@@ -41,7 +41,8 @@
     },
     {
       "pathname": "/concepts/design-07",
-      "output": "concepts/design-07/index.html"
+      "output": "concepts/design-07/index.html",
+      "preserve": true
     }
   ],
   "preservedFiles": {
@@ -101,7 +102,13 @@
     "github-pages/consultation-form.js": "21cf31fb540b072004b08295f0a87fe14f3a70a14ab7e2d42f300e4eb411c673",
     "github-pages/assets/index-B2L8c3HN.css": "324efd8ed678eaedd026f9d82c39cb702e6a452ed549f9bb4e96ddbbfbcbd9f9",
     "app/page.tsx": "2009fe61ab3bb57b360f3b1f151da4bb113a3bcd1b96116296d2cdbd84f49d0a",
-    "github-pages/index.html": "0b9feaa7832bbf36ed7be1f48147404d72f497fed5c17361473c0105fc716bf3"
+    "github-pages/index.html": "0b9feaa7832bbf36ed7be1f48147404d72f497fed5c17361473c0105fc716bf3",
+    "app/concepts/design-07/page.tsx": "e9c8e1f318b415950d71b72650006dfc1539579487e9cf517bfd5283c3c445c5",
+    "app/concepts/design-07/design07.module.css": "bff3a827ce0d9596246ccd887df7ee5f2e3e592235a6b194ed6d15675ffee1d1",
+    "public/personal-edit-portrait.jpg": "76c0d3b628ef76c9cbc457fd032978b6c57ff5864a876f10881f6f4cb4fa6659",
+    "github-pages/personal-edit-portrait.jpg": "76c0d3b628ef76c9cbc457fd032978b6c57ff5864a876f10881f6f4cb4fa6659",
+    "github-pages/concepts/design-07/index.html": "7846ba9b774b7627a7edc5ee1dbf5fe115d77c2121144f12581107816f429da0",
+    "github-pages/assets/index-BIXVCIfZ.css": "ee5fefbbbe3b66506a4ab4ac245bf008d87a7b2b0e5882426ce212fdef31cc7d"
   },
   "maintenance": {
     "date": "2026-11-15",

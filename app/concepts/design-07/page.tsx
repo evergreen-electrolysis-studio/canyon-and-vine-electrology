@@ -114,7 +114,7 @@ export default function PersonalEdit() {
         </section>
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-title">
-          <div className={styles.contactIntro}><p className={styles.eyebrow}>06 / Let’s begin</p><h2 id="contact-title">A small step.<br /><em>A personal plan.</em></h2><p>Tell us how to reach you. Nav will follow up to discuss your questions and arrange next steps.</p><p>There’s no need to have it all figured out.</p><div className={styles.location}><h3>Evergreen Electrolysis</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Studio address</dt><dd>[ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div><div><dt>Appointment booking destination</dt><dd>[TO BE CONFIRMED]</dd></div></dl></div></div>
+          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Let’s begin</p><h2 id="contact-title">A small step.<br /><em>A personal plan.</em></h2><p>Tell us how to reach you. Nav will follow up to discuss your questions and arrange next steps.</p><p>There’s no need to have it all figured out.</p></div><div className={styles.location}><h3>Evergreen Electrolysis</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Studio address</dt><dd>[ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div><div><dt>Appointment booking destination</dt><dd>[TO BE CONFIRMED]</dd></div></dl></div></div>
           <div className={styles.formWrap}><ConsultationForm tone="light" /></div>
         </section>
       </main>
