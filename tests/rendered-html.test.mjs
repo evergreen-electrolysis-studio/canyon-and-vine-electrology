@@ -57,10 +57,11 @@ test("renders verified treatment prices and an actionable consultation form on e
       assert.match(email, /type="email"/);
       assert.doesNotMatch(email, /\brequired(?:=|\s|\/?>)/);
       assert.match(html, /US \+1/);
-      assert.match(html, /By submitting, you agree that Evergreen Electrolysis may contact you/);
-      assert.match(html, /Submitting this form does not book an appointment/);
+      const interest = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08"].includes(pathname);
+      assert.match(html, interest ? /By joining, you agree that Evergreen Electrolysis Studio may contact you/ : /By submitting, you agree that Evergreen Electrolysis may contact you/);
+      assert.match(html, interest ? /Joining the interest list does not book an appointment/ : /Submitting this form does not book an appointment/);
       assert.match(html, /<dialog\b[^>]*data-success-dialog/);
-      assert.match(html, /Your request has been sent/);
+      assert.match(html, interest ? /You’re on the interest list/ : /Your request has been sent/);
       assert.match(html, /id="top"/);
       assert.equal((html.match(/<script\b[^>]*src="\/consultation-form\.js"/g) ?? []).length, 0, "Sites initializes the controller after hydration");
       assert.doesNotMatch(html, /ADD VERIFIED PRICES|ADD VERIFIED LINK|hello@example\.com|href="tel:|Booking link added before launch|Online booking is not connected|appointment requests are not sent/i);
@@ -232,7 +233,7 @@ test("preserves the original homepage and renders the design archive and alterna
   assert.match(quiet, /A plan made for you/);
   assert.match(quiet, /What would you like to focus on/);
   assert.match(quiet, /Meet Nav/);
-  assert.match(quiet, /Submitting this form does not book an appointment/);
+  assert.match(quiet, /Joining the interest list does not book an appointment/);
   assert.doesNotMatch(quiet, /hello@example\.com|\(707\) 555-0147|href="tel:/i);
   assert.match(quiet, /name="robots" content="noindex, follow"/i);
   assert.match(quiet, /Concept preview: a restrained, photograph-led direction/i);

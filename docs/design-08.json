@@ -1,0 +1,32 @@
+{
+  "id": "08",
+  "title": "The Evergreen Edit",
+  "date": "2026-11-17",
+  "route": "/concepts/design-08/",
+  "direction": "Owner-requested combination of Design 07 layout and Design 04 female portraits, with rectangular image shapes in place of the arched hero. Warm ivory, evergreen and sage; Newsreader/Manrope typography and existing section hierarchy retained.",
+  "owner_feedback": "Latest name is Evergreen Electrolysis Studio. Name/business details/prelaunch updates apply only to04,07,08. Owner reconfirmed Nav is already licensed.",
+  "images": [
+    {
+      "file": "public/quiet-practice-hero.jpg",
+      "use": "Rectangular hero, unchanged Design 04 original; CSS crop at90%50%."
+    },
+    {
+      "file": "public/editorial-portrait-v2.jpg",
+      "use": "Rectangular treatment-area portrait, unchanged Design 04 original."
+    }
+  ],
+  "image_authorization": "Owner specifically requested these existing Design 04 images. No new image generation, image alteration, download, or identification as Nav/client/result/studio.",
+  "business": {
+    "name": "Evergreen Electrolysis Studio",
+    "address": "American Canyon, CA",
+    "hours": "Monday\u2013Friday \u00b7 8am\u20134pm",
+    "phone": "",
+    "opening": "Summer2027",
+    "booking_destination": "Removed"
+  },
+  "interest_list": "Shared ConsultationForm intent=interest; distinct requestType, Turnstile action, strict versioned permission, owner email subject/text, privacy wording and accessible success dialog. Existing consultation mode retained for other routes and eventual owner-approved switch.",
+  "phone": "Shared controller formats during input, handles +1 paste and caret-aware edits/deletion, keeps invalid or extra digits visible for rejection. Reproduced original unformatted typing failure; targeted regression now passes. New frontend script is versioned to avoid stale consultation-only JS on interest-list pages.",
+  "prices": "All six owner-approved rates unchanged, from canonical config.",
+  "preservation": "Current homepage and01,02,03,05,06 source/static snapshots preserved.04/07/08 use approved new content;04/07 visual imagery/layout preserved. Shared phone-formatting fix applies across forms.",
+  "validation": "146 tests and clean full lint; responsive DOM checks at320,390,768,1280 on04/07/08; all widths fit, hydration-safe initialization verified. Production backend version e0caa369-d7eb-4bfb-b691-f077b34d74c0."
+}

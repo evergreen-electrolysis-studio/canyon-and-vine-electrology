@@ -9,12 +9,12 @@ import styles from "./design04.module.css";
 const conceptUrl =
   "https://tycheventuresllc.com/canyon-and-vine-electrology/concepts/design-04/";
 const conceptDescription =
-  "Concept preview: a restrained, photograph-led direction for Evergreen Electrolysis in American Canyon, California.";
+  "Concept preview: a restrained, photograph-led direction for Evergreen Electrolysis Studio in American Canyon, California.";
 const conceptImage =
   "https://tycheventuresllc.com/canyon-and-vine-electrology/quiet-practice-hero.jpg?v=d04-20261111";
 
 export const metadata: Metadata = {
-  title: "The Quiet Practice | Evergreen Electrolysis",
+  title: "The Quiet Practice | Evergreen Electrolysis Studio",
   description: conceptDescription,
   alternates: {
     canonical: conceptUrl,
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "The Quiet Practice | Evergreen Electrolysis",
+    title: "The Quiet Practice | Evergreen Electrolysis Studio",
     description: conceptDescription,
     type: "website",
     url: conceptUrl,
@@ -33,13 +33,13 @@ export const metadata: Metadata = {
         url: conceptImage,
         width: 1586,
         height: 992,
-        alt: "Evergreen Electrolysis Design 04 concept preview",
+        alt: "Evergreen Electrolysis Studio Design 04 concept preview",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Quiet Practice | Evergreen Electrolysis",
+    title: "The Quiet Practice | Evergreen Electrolysis Studio",
     description: conceptDescription,
     images: [conceptImage],
   },
@@ -122,13 +122,13 @@ export default function QuietPractice() {
       <div className={styles.conceptBar}>
         <Link href="/concepts/">← Design archive</Link>
         <span>Design 04 · The Quiet Practice</span>
-        <span>Concept preview · studio details pending</span>
+        <span>Coming summer 2027</span>
       </div>
 
       <header className={styles.header}>
-        <a className={styles.brand} href="#top" aria-label="Evergreen Electrolysis home">
+        <a className={styles.brand} href="#top" aria-label="Evergreen Electrolysis Studio home">
           <span>Evergreen</span>
-          <small>Electrolysis</small>
+          <small>Electrolysis Studio</small>
         </a>
 
         <nav className={styles.desktopNav} aria-label="Primary navigation">
@@ -138,7 +138,7 @@ export default function QuietPractice() {
           <a href="#questions">Questions</a>
         </nav>
 
-        <a className={styles.headerCta} href="#contact">Request a consultation</a>
+        <a className={styles.headerCta} href="#contact">Join interest list</a>
 
         <a
           className={styles.mobileMenuToggle}
@@ -157,7 +157,7 @@ export default function QuietPractice() {
           <a href="#first-visit">First visit</a>
           <a href="#nav">Meet Nav</a>
           <a href="#questions">Questions</a>
-          <a href="#contact">Request a consultation</a>
+          <a href="#contact">Join interest list</a>
         </nav>
       </header>
 
@@ -181,11 +181,11 @@ export default function QuietPractice() {
               areas, and every natural hair color.
             </p>
             <div className={styles.heroActions}>
-              <a className={styles.primaryButton} href="#contact">Request a consultation <span aria-hidden="true">→</span></a>
+              <a className={styles.primaryButton} href="#contact">Join interest list <span aria-hidden="true">→</span></a>
               <a className={styles.secondaryLink} href="#treatment">Explore treatment areas</a>
             </div>
             <p className={styles.heroNote}>
-              Start with a conversation, a small test treatment if appropriate, and a clear next step.
+              Coming summer 2027. Join the interest list for opening updates and consultation availability.
             </p>
           </div>
         </section>
@@ -243,7 +243,7 @@ export default function QuietPractice() {
                   <summary><span>{area.number}</span><strong>{area.title}</strong><span aria-hidden="true">+</span></summary>
                   <div>
                     <p>{area.text}</p>
-                    <a href="#contact">Discuss this at a consultation <span aria-hidden="true">→</span></a>
+                    <a href="#contact">Join the interest list <span aria-hidden="true">→</span></a>
                   </div>
                 </details>
               ))}
@@ -378,34 +378,34 @@ export default function QuietPractice() {
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-title">
           <div className={styles.contactCopy}>
-            <p className={styles.sectionLabel}>Consultations</p>
-            <h2 id="contact-title">Let’s make a plan.</h2>
+            <p className={styles.sectionLabel}>Coming summer 2027</p>
+            <h2 id="contact-title">Join the interest list.</h2>
             <p>
-              Tell us which area you are considering and what you would like to understand.
-              We’ll discuss a sensible first appointment.
+              Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for
+              opening updates and first news of consultation availability.
             </p>
             <dl className={styles.contactDetails} id="contact-details">
-              <div><dt>Studio</dt><dd>American Canyon, California<br />Address: [ADD STUDIO ADDRESS]</dd></div>
-              <div><dt>Appointments</dt><dd>By appointment<br />Hours: [ADD BUSINESS HOURS]</dd></div>
-              <div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div>
+              <div><dt>Studio</dt><dd>American Canyon, CA</dd></div>
+              <div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div>
+              <div><dt>Phone</dt><dd></dd></div>
               <div><dt>Service area</dt><dd>American Canyon · Vallejo · Napa · Benicia · Fairfield</dd></div>
             </dl>
           </div>
-          <ConsultationForm tone="light" />
+          <ConsultationForm tone="light" intent="interest" />
         </section>
       </main>
 
       <footer className={styles.footer}>
         <div className={styles.footerWordmark}>Evergreen</div>
         <div className={styles.footerLower}>
-          <p>Electrolysis · American Canyon, California</p>
+          <p>Electrolysis Studio · American Canyon, California</p>
           <p className={styles.disclaimer}>
             Results and treatment timelines vary by individual and cannot be guaranteed.
             This website provides general information only and is not medical advice.
             Services are subject to consultation and individual suitability; consult a qualified
             healthcare professional about medical conditions or medications.
           </p>
-          <div><span>© 2027 Evergreen Electrolysis</span><Link href="/concepts/">Compare all designs</Link></div>
+          <div><span>© 2027 Evergreen Electrolysis Studio</span><Link href="/concepts/">Compare all designs</Link></div>
         </div>
       </footer>
     </div>

@@ -1,14 +1,19 @@
 import config from "../../config/consultation.json";
 import fields from "../../config/consultation-fields.json";
+import interestList from "../../config/interest-list.json";
 import ConsultationController from "./ConsultationController";
 import styles from "./consultation-form.module.css";
 
-export default function ConsultationForm({ tone = "dark" }: { tone?: "dark" | "light" }) {
+export default function ConsultationForm({ tone = "dark", intent = "consultation" }: { tone?: "dark" | "light"; intent?: "consultation" | "interest" }) {
+  const interest = intent === "interest";
+  const notice = interest ? interestList : fields;
+  const action = interest ? "Join interest list" : "Request a consultation";
+  const brand = interest ? "Evergreen Electrolysis Studio" : "Evergreen Electrolysis";
   return (
     <div className={`${styles.panel} ${tone === "light" ? styles.light : ""}`}>
-      <h3 className={styles.heading}>Request a consultation</h3>
+      <h3 className={styles.heading}>{action}</h3>
       <p className={styles.description}>Tell us how to reach you. First name, last name, and phone number are required.</p>
-      <form className={styles.form} data-consultation-form data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} data-theme={tone} method="post" action={config.endpoint || "#contact"}>
+      <form className={styles.form} data-consultation-form data-request-type={interest ? "interest" : undefined} data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} data-theme={tone} method="post" action={config.endpoint || "#contact"}>
         <div className={styles.names}>
           <label htmlFor="consultation-first-name">First name <span>(required)</span><input id="consultation-first-name" name="firstName" autoComplete="given-name" required maxLength={80} /></label>
           <label htmlFor="consultation-last-name">Last name <span>(required)</span><input id="consultation-last-name" name="lastName" autoComplete="family-name" required maxLength={80} /></label>
@@ -29,7 +34,7 @@ export default function ConsultationForm({ tone = "dark" }: { tone?: "dark" | "l
           <div className={styles.optionalContent}>
             <fieldset className={styles.choices}>
               <legend>Areas you’re interested in treating</legend>
-              <p className={styles.hint}>Choose any that apply, or leave this for your consultation.</p>
+              <p className={styles.hint}>{interest ? "Choose any that apply, or leave this for a future conversation." : "Choose any that apply, or leave this for your consultation."}</p>
               <div className={styles.choiceGrid}>{fields.treatmentAreas.map((area) => <label key={area} className={styles.choice}><input type="checkbox" name="treatmentAreas" value={area} /><span>{area}</span></label>)}</div>
             </fieldset>
             <fieldset className={styles.choices}>
@@ -42,27 +47,27 @@ export default function ConsultationForm({ tone = "dark" }: { tone?: "dark" | "l
           </div>
         </details>
         <div className={styles.honeypot} aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-        <input type="hidden" name="permissionVersion" value={fields.permissionVersion} />
+        <input type="hidden" name="permissionVersion" value={notice.permissionVersion} />
         <div data-turnstile-container />
-        <p className={styles.note}>{fields.permissionText}</p>
+        <p className={styles.note}>{notice.permissionText}</p>
         <details className={styles.privacy}>
           <summary>How we use your information</summary>
-          <p>Evergreen Electrolysis uses your contact details and any optional answers to respond to your request and arrange next steps. Your submission is sent through Cloudflare to the practice’s email inbox and retained there for follow-up.</p>
+          <p>{brand} uses your contact details and any optional answers {interest ? "to share studio opening updates and consultation availability" : "to respond to your request and arrange next steps"}. Your submission is sent through Cloudflare to the practice’s email inbox and retained there for follow-up.</p>
           <p>Cloudflare Turnstile processes technical information, such as your IP address and browser information, to help prevent spam. Read <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s privacy policy<span className={styles.srOnly}> (opens in a new tab)</span></a>.</p>
-          <p>This form does not subscribe you to marketing. You can ask Nav about the information you submitted when she contacts you.</p>
+          <p>{interest ? "You can ask Nav to remove you from the interest list at any time by replying to an update or letting her know when she contacts you. We will use this list only for studio opening updates and consultation availability." : "This form does not subscribe you to marketing. You can ask Nav about the information you submitted when she contacts you."}</p>
         </details>
-        <button type="submit" disabled>Request a consultation <span aria-hidden="true">↗</span></button>
+        <button type="submit" disabled>{action} <span aria-hidden="true">↗</span></button>
         <p data-form-status role="status" aria-live="polite" tabIndex={-1} className={styles.status}>{config.endpoint && config.turnstileSiteKey ? "Loading the request form…" : "Preview only: request delivery is not connected yet."}</p>
-        <noscript>Please enable JavaScript to send your consultation request.</noscript>
+        <noscript>Please enable JavaScript to {interest ? "join the interest list" : "send your consultation request"}.</noscript>
       </form>
       <dialog className={styles.dialog} data-success-dialog aria-labelledby="consultation-success-title" aria-describedby="consultation-success-body">
         <button className={styles.closeDialog} type="button" data-success-close aria-label="Close confirmation"><span aria-hidden="true">×</span></button>
         <span className={styles.successMark} aria-hidden="true">✓</span>
-        <p className={styles.successEyebrow}>Evergreen Electrolysis</p>
-        <h2 id="consultation-success-title" tabIndex={-1} data-success-title>Your request has been sent</h2>
+        <p className={styles.successEyebrow}>{brand}</p>
+        <h2 id="consultation-success-title" tabIndex={-1} data-success-title>{interest ? "You’re on the interest list" : "Your request has been sent"}</h2>
         <div id="consultation-success-body" className={styles.successBody}>
-          <p>Thank you, <span data-success-name />. Nav will contact you to discuss your consultation and next steps.</p>
-          <p className={styles.appointmentNote}>Your appointment is not confirmed yet.</p>
+          <p>Thank you, <span data-success-name />. {interest ? "We’ll share opening updates and let you know when consultations are available." : "Nav will contact you to discuss your consultation and next steps."}</p>
+          <p className={styles.appointmentNote}>{interest ? "Coming summer 2027 · American Canyon, CA. Joining the list does not book an appointment." : "Your appointment is not confirmed yet."}</p>
         </div>
         {/* The static form controller closes the dialog and returns to the page top. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}

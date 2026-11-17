@@ -43,6 +43,8 @@
     const dialog = form.parentElement.querySelector("[data-success-dialog]");
     const endpoint = form.dataset.endpoint;
     const siteKey = form.dataset.siteKey;
+    const interest = form.dataset.requestType === "interest";
+    const actionLabel = interest ? "Join interest list" : "Request a consultation";
     let token = "";
     let widget;
     let pending = false;
@@ -103,7 +105,50 @@
       if (digits.length === 11 && digits.startsWith("1")) digits = digits.slice(1);
       return /^[2-9]\d{2}[2-9]\d{6}$/.test(digits) ? `+1${digits}` : null;
     }
-    listen(phone, "input", () => phone.setCustomValidity(""));
+    function formatPhone(event = {}) {
+      phone.setCustomValidity("");
+      if (event.isComposing) return;
+      const raw = phone.value;
+      // Leave invalid or overlong input visible so validation cannot silently
+      // turn an international number or an extra digit into a different number.
+      if (raw && !/^\+?[()\d .-]+$/.test(raw)) return;
+      let digits = raw.replace(/\D/g, "");
+      let before = raw.slice(0, phone.selectionStart ?? raw.length).replace(/\D/g, "").length;
+      if (raw.startsWith("+") && (!digits.startsWith("1") || digits.length !== 11)) return;
+      if (digits.length === 11 && digits.startsWith("1")) { digits = digits.slice(1); before = Math.max(0, before - 1); }
+      if (digits.length > 10) return;
+      const formatted = !digits ? "" : digits.length <= 3 ? `(${digits}` : digits.length <= 6
+        ? `(${digits.slice(0, 3)}) ${digits.slice(3)}`
+        : `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      phone.value = formatted;
+      let cursor = 0, seen = 0;
+      while (cursor < formatted.length && seen < before) {
+        if (/\d/.test(formatted[cursor])) seen++;
+        cursor++;
+      }
+      phone.setSelectionRange?.(cursor, cursor);
+    }
+    listen(phone, "input", formatPhone);
+    listen(phone, "compositionend", formatPhone);
+    // Backspace/delete beside an inserted separator should remove the adjacent
+    // digit, rather than repeatedly restoring the same punctuation.
+    listen(phone, "beforeinput", (event) => {
+      const start = phone.selectionStart, end = phone.selectionEnd;
+      if (start == null || start !== end || event.isComposing) return;
+      const backward = event.inputType === "deleteContentBackward";
+      const forward = event.inputType === "deleteContentForward";
+      if (!backward && !forward) return;
+      let index = backward ? start - 1 : start;
+      if (index < 0 || index >= phone.value.length || /\d/.test(phone.value[index])) return;
+      while (index >= 0 && index < phone.value.length && !/\d/.test(phone.value[index])) index += backward ? -1 : 1;
+      if (index < 0 || index >= phone.value.length) return;
+      event.preventDefault();
+      const from = backward ? index : start;
+      const to = backward ? start : index + 1;
+      phone.value = phone.value.slice(0, from) + phone.value.slice(to);
+      phone.setSelectionRange?.(from, from);
+      formatPhone();
+    });
     listen(phone, "blur", () => {
       const normalized = normalizedPhone();
       if (normalized) { const d = normalized.slice(2); phone.value = `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`; }
@@ -120,7 +165,7 @@
       email.setCustomValidity(contactPreference?.value === "Email" && !email.value.trim() ? "Enter an email address or choose another contact preference." : "");
       if (!form.reportValidity()) return;
       if (!endpoint || !siteKey || !token) { message("Please complete the security check before sending."); return; }
-      pending = true; button.disabled = true; button.textContent = "Sending request…";
+      pending = true; button.disabled = true; button.textContent = interest ? "Joining…" : "Sending request…";
       message("");
       try {
         const data = new FormData(form);
@@ -132,20 +177,21 @@
             treatmentAreas: data.getAll("treatmentAreas"), previousMethods: data.getAll("previousMethods"),
             contactPreference: data.get("contactPreference") || "", notes: String(data.get("notes") || "").trim(),
             permissionVersion: data.get("permissionVersion"),
+            ...(interest ? { requestType: "interest" } : {}),
           }),
           signal: AbortSignal.timeout(20000),
         });
         const result = await response.json();
         if (!active) return;
         if (!response.ok || result.ok !== true) throw new Error("Delivery not confirmed");
-        sent = true; form.reset(); button.textContent = "Request sent";
+        sent = true; form.reset(); button.textContent = interest ? "You’re on the list" : "Request sent";
         updateEmailPreference();
-        message("Thank you. Your consultation request has been sent. We’ll contact you to discuss the next step.");
+        message(interest ? "Thank you. You’re on the interest list. We’ll share studio opening updates and consultation availability." : "Thank you. Your consultation request has been sent. We’ll contact you to discuss the next step.");
         showConfirmation(String(data.get("firstName")));
       } catch {
         if (!active) return;
         message("We couldn’t confirm delivery. Your details are still here. Please complete the security check again and retry.");
-        button.textContent = "Request a consultation";
+        button.textContent = actionLabel;
         status.focus();
       } finally {
         pending = false; token = "";
@@ -158,7 +204,7 @@
     const render = () => {
       if (!active || widget !== undefined) return;
       widget = window.turnstile.render(form.querySelector("[data-turnstile-container]"), {
-        sitekey: siteKey, action: "consultation", size: "flexible", theme: form.dataset.theme === "light" ? "light" : "dark",
+        sitekey: siteKey, action: interest ? "interest_list" : "consultation", size: "flexible", theme: form.dataset.theme === "light" ? "light" : "dark",
         callback: (value) => { if (!active) return; token = value; button.disabled = pending || sent; if (!pending && !sent) message(""); },
         "expired-callback": () => { if (!active || sent) return; token = ""; button.disabled = true; message("The security check expired. Please complete it again."); },
         "error-callback": () => { if (!active || sent) return; token = ""; button.disabled = true; fail(); },

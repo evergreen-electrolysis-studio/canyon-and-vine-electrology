@@ -410,3 +410,34 @@ test("supports comma-separated origins with a matching Turnstile hostname", asyn
   assert.equal(result.headers.get("Access-Control-Allow-Origin"), secondOrigin);
   assert.equal(sent.length, 1);
 });
+
+
+test("delivers interest signups with purpose-specific consent and no appointment promise", async () => {
+  const { handler, env, sent } = harness({ verify: async () => Response.json({ success: true, hostname: new URL(ORIGIN).hostname, action: "interest_list" }) });
+  const result = await handler(request({ ...validSubmission, email: "", requestType: "interest", permissionVersion: "interest-2026-11-17" }), env);
+  assert.equal(result.status, 200);
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].to, "sukhpalc@gmail.com");
+  assert.equal(sent[0].subject, "New Evergreen Electrolysis Studio interest-list signup");
+  assert.match(sent[0].text, /summer 2027 opening/);
+  assert.match(sent[0].text, /No appointment was requested or booked/);
+  assert.match(sent[0].text, /opening updates and consultation availability/);
+  assert.match(sent[0].text, /removed at any time/);
+  assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
+});
+
+test("rejects mismatched interest-list consent, unknown intent, and a consultation security token", async () => {
+  const cases = [
+    { requestType: "unknown" },
+    { requestType: "interest" },
+    { requestType: "interest", permissionVersion: "2026-11-15" },
+    { requestType: "consultation", permissionVersion: "interest-2026-11-17" },
+    { requestType: "interest", permissionVersion: "interest-2026-11-17" },
+  ];
+  for (const extra of cases) {
+    const { handler, env, sent } = harness();
+    const result = await handler(request({ ...validSubmission, ...extra }), env);
+    assert.equal(result.status, 400);
+    assert.equal(sent.length, 0);
+  }
+});

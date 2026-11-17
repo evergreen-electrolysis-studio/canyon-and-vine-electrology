@@ -9,7 +9,8 @@ const expectedRates = [[15, 65], [30, 95], [45, 135], [60, 175], [90, 265], [120
 const controllerTag = '<script src="/canyon-and-vine-electrology/consultation-form.js" defer></script>';
 
 function assertConsultationControllerOnly(html) {
-  assert.deepEqual([...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map(([script]) => script), [controllerTag]);
+  const expected = html.includes('data-request-type="interest"') ? controllerTag.replace('.js"', '.js?v=20261117-interest"') : controllerTag;
+  assert.deepEqual([...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map(([script]) => script), [expected]);
   assert.equal((html.match(/<script\b/gi) ?? []).length, 1);
   assert.doesNotMatch(html, /rel="modulepreload"/i);
 }
@@ -343,7 +344,7 @@ test("Design 07 publishes its own portrait metadata and preserves the approved h
   assert.match(html, /California-licensed electrologist/);
   assert.match(html, /Microbiology from UC Davis/);
   assert.match(html, /California Electrology Academy in Corona/);
-  for (const detail of ["ADD NUMBER", "ADD STUDIO ADDRESS", "ADD PHONE NUMBER", "ADD BUSINESS HOURS", "TO BE CONFIRMED"]) assert.ok(html.includes(detail));
+  assert.match(html, /License # \[ADD NUMBER\]/);
   assert.match(html, /Intimate-area services are not offered/);
   assert.doesNotMatch(html, /stock image|representative image|not a client|FDA.approved|pain.free|guaranteed results|mailto:/i);
   const portrait = await readFile(new URL("../public/personal-edit-portrait.jpg", import.meta.url));
@@ -353,4 +354,25 @@ test("Design 07 publishes its own portrait metadata and preserves the approved h
   assert.equal(manifest.routes.find(route => route.pathname === "/").preserve, true);
   assert.ok(manifest.preservedFiles["app/page.tsx"]);
   assert.ok(manifest.preservedFiles["github-pages/index.html"]);
+});
+
+
+test("only Designs 04, 07, and 08 use the approved studio details and summer 2027 interest list", async () => {
+  const manifest = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
+  for (const { pathname, output } of manifest.routes.filter(route => route.pathname !== "/concepts")) {
+    const html = await readFile(new URL(`../github-pages/${output}`, import.meta.url), "utf8");
+    const updated = ["/concepts/design-04", "/concepts/design-07", "/concepts/design-08"].includes(pathname);
+    if (!updated) { assert.doesNotMatch(html, /data-request-type="interest"/); continue; }
+    for (const text of ["Evergreen Electrolysis Studio", "Coming summer 2027", "Join interest list", "American Canyon, CA", "Monday–Friday · 8am–4pm", 'data-request-type="interest"', 'value="interest-2026-11-17"']) assert.ok(html.includes(text), `${pathname}: ${text}`);
+    assert.match(html, /<dt>Phone<\/dt><dd><\/dd>/);
+    assert.doesNotMatch(html, /ADD STUDIO ADDRESS|ADD PHONE NUMBER|ADD BUSINESS HOURS|Appointment booking destination|TO BE CONFIRMED|Let’s begin|This form does not subscribe you to marketing/);
+    assert.match(html, /You’re on the interest list/);
+    assert.match(html, /removed at any time/);
+  }
+  const eight = await readFile(new URL("../github-pages/concepts/design-08/index.html", import.meta.url), "utf8");
+  for (const photo of ["quiet-practice-hero.jpg", "editorial-portrait-v2.jpg"]) assert.ok(eight.includes(photo));
+  assert.doesNotMatch(eight, /personal-edit-portrait.jpg/);
+  const css = await readFile(new URL("../app/concepts/design-08/design08.module.css", import.meta.url), "utf8");
+  assert.match(css, /grid-template-areas: "heading photo" "intro photo" "foot foot"/);
+  assert.doesNotMatch(css, /border-radius: (?:48|42)%/);
 });

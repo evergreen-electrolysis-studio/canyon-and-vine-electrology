@@ -64,7 +64,9 @@ async function renderRoute(route) {
   const routePublicUrl = route.pathname === "/"
     ? `${publicSiteUrl}/`
     : `${publicSiteUrl}${route.pathname}/`;
-  const routeSocialImage = route.pathname === "/concepts/design-07"
+  const routeSocialImage = route.pathname === "/concepts/design-08"
+    ? `${publicSiteUrl}/quiet-practice-hero.jpg?v=d04-20261111`
+    : route.pathname === "/concepts/design-07"
     ? `${publicSiteUrl}/personal-edit-portrait.jpg`
     : route.pathname === "/concepts/design-06"
     ? `${publicSiteUrl}/clear-path-botanical.jpg`
@@ -140,7 +142,8 @@ async function renderRoute(route) {
   // Only this small, reviewed form script runs in the static export.
   // React hydration payloads and all other scripts remain removed.
   if (html.includes('data-consultation-form')) {
-    html = html.replace('</body>', `<script src="${basePath}/consultation-form.js" defer></script></body>`);
+    const version = html.includes('data-request-type="interest"') ? "?v=20261117-interest" : "";
+    html = html.replace('</body>', `<script src="${basePath}/consultation-form.js${version}" defer></script></body>`);
   }
   return html;
 }

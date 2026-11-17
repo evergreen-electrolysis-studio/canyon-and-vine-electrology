@@ -43,6 +43,11 @@
       "pathname": "/concepts/design-07",
       "output": "concepts/design-07/index.html",
       "preserve": true
+    },
+    {
+      "pathname": "/concepts/design-08",
+      "output": "concepts/design-08/index.html",
+      "preserve": true
     }
   ],
   "preservedFiles": {
@@ -77,11 +82,9 @@
     "app/concepts/design-03/design03.module.css": "a8a4e948d3de396827a4264131c6503c2ff650333d5cbb94f1ffd8a2e75388cf",
     "app/concepts/design-03/page.tsx": "c669fe4848147371f8394d1ae33ecab5f388d0014e40752f9d21d5684256e41a",
     "app/concepts/design-04/design04.module.css": "a452ae77dd9847a6cddd159566a650848852600d9627aeeaf6f071d9ae0b5eca",
-    "app/concepts/design-04/page.tsx": "a42107719fba8d5c01222545c66a93af7b8ef4f5e5abaf56c4007e197748df07",
     "github-pages/404.html": "0b9feaa7832bbf36ed7be1f48147404d72f497fed5c17361473c0105fc716bf3",
     "github-pages/concepts/design-02/index.html": "3a44918346837fa29b953bbf53e413d903ef13db1c324e9485d10f5ea07a3422",
     "github-pages/concepts/design-03/index.html": "ae8b0f6196963904c3b58100d38878ab76c88f5b776c8be20be7930120ac7154",
-    "github-pages/concepts/design-04/index.html": "37d0f0b0dea538c313d61e76d21e4718ffe0e40afe76b215459d685da7c0fbf9",
     "app/concepts/design-05/page.tsx": "edad2f8e645948fc6178dc9d31dc01523a15926992eb24a1d28825712f912a8e",
     "app/concepts/design-05/design05.module.css": "34e3425657f58e7036cd6052005549c8ab332570962205901ab3a51eedd9933f",
     "github-pages/concepts/design-05/index.html": "0fe6134cd265bbcb02af8c7285cdcdec4c75d5fb450ee709936438016ba0e080",
@@ -90,28 +93,35 @@
     "github-pages/concepts/design-06/index.html": "e49dd013aef1e76cfa2f0cdeaa5b29b6bd3b1aaf38911ffc2403a6bbebb480ad",
     "app/concepts/design-01/page.tsx": "97e88e0b1c38cce009bb9d7d2017016298bc85e7b6925a18d1630f8e7bd37a8b",
     "github-pages/concepts/design-01/index.html": "dd43365e194a46b41ec6aa80e8dd96988461847790b12fb1155459d653282b2a",
-    "app/components/ConsultationForm.tsx": "e77bba18fcd8a0f2cb175826c5ebeed37875d4311ac274266ee9c75edc3d5664",
-    "app/components/ConsultationController.tsx": "4cc40dcab8bfe6ed1d66c1241b6485ebad55bf1ece54103c2f31eac8a9a837f5",
     "app/components/consultation-form.module.css": "788cfc6f9fd9dceeb36d5b3d36d5f0bd2e17789c69bf0be9337a6159ebfaf378",
     "app/components/TreatmentRates.tsx": "6652d006aff302c43a378f4e9f892b53f707838e9e4fd390e9876f196b3ee902",
     "app/components/treatment-rates.module.css": "6836ef6ee5d07297842a2c1ec641ffe4796e6e7e5367c25c957924e0ce56cc73",
     "config/treatment-pricing.json": "7938ae488f0ae83955dacbc1b49ee86dfe6c22e179243bb242d6564c36b15681",
     "config/consultation.json": "7e12fbca4e902664bdb3fe0e59795c71eba30be02bc4a40c3e82d77a536dc999",
     "config/consultation-fields.json": "4e99757f5a193138fbb926458f19f1593369a809a32a26a6b77195a9d983b0c3",
-    "public/consultation-form.js": "21cf31fb540b072004b08295f0a87fe14f3a70a14ab7e2d42f300e4eb411c673",
-    "github-pages/consultation-form.js": "21cf31fb540b072004b08295f0a87fe14f3a70a14ab7e2d42f300e4eb411c673",
     "github-pages/assets/index-B2L8c3HN.css": "324efd8ed678eaedd026f9d82c39cb702e6a452ed549f9bb4e96ddbbfbcbd9f9",
     "app/page.tsx": "2009fe61ab3bb57b360f3b1f151da4bb113a3bcd1b96116296d2cdbd84f49d0a",
     "github-pages/index.html": "0b9feaa7832bbf36ed7be1f48147404d72f497fed5c17361473c0105fc716bf3",
-    "app/concepts/design-07/page.tsx": "e9c8e1f318b415950d71b72650006dfc1539579487e9cf517bfd5283c3c445c5",
     "app/concepts/design-07/design07.module.css": "bff3a827ce0d9596246ccd887df7ee5f2e3e592235a6b194ed6d15675ffee1d1",
     "public/personal-edit-portrait.jpg": "76c0d3b628ef76c9cbc457fd032978b6c57ff5864a876f10881f6f4cb4fa6659",
     "github-pages/personal-edit-portrait.jpg": "76c0d3b628ef76c9cbc457fd032978b6c57ff5864a876f10881f6f4cb4fa6659",
-    "github-pages/concepts/design-07/index.html": "7846ba9b774b7627a7edc5ee1dbf5fe115d77c2121144f12581107816f429da0",
-    "github-pages/assets/index-BIXVCIfZ.css": "ee5fefbbbe3b66506a4ab4ac245bf008d87a7b2b0e5882426ce212fdef31cc7d"
+    "github-pages/assets/index-BIXVCIfZ.css": "ee5fefbbbe3b66506a4ab4ac245bf008d87a7b2b0e5882426ce212fdef31cc7d",
+    "app/concepts/design-08/design08.module.css": "a73a44f57b5ec61bbebc55bc1768e7a0850606154b962c7b6463db02820c4c03",
+    "github-pages/assets/index-CmRsbMM0.css": "41350ffc12c01213cca18eb3ae04db20fd9d057f184859d2b0dfd6a4f32b79ff",
+    "github-pages/concepts/design-07/index.html": "a66e561223ad2da9fd90f74de32525cc5c497ea081cb3621f8d173fa77e501e3",
+    "app/components/ConsultationController.tsx": "8d5f748d855071c273788db54b5f2be6e911b581b7aab41b23158f6f615d7f9a",
+    "config/interest-list.json": "02120da8715467dd480b9f6b283b3e763451325cafc01f71db1d08bf136cbdf6",
+    "github-pages/consultation-form.js": "772d4d24d6515f82c9c61af450de208aa97bb2925dc6405ccd66fccd9e17f5e2",
+    "public/consultation-form.js": "772d4d24d6515f82c9c61af450de208aa97bb2925dc6405ccd66fccd9e17f5e2",
+    "app/concepts/design-08/page.tsx": "9f4ec0af92b83ebc5f2d044559515db79edcc1754c6d30680bda8e8d3f16d995",
+    "app/components/ConsultationForm.tsx": "fa5d6e6b2efd9d282f1f29133391e7a368bb54cbcda1f16e3fd49f6813c66389",
+    "github-pages/concepts/design-04/index.html": "9c5f90dfcedd937cb26d48fcfbb255526209fb7be3defd6aa4e2a033224c191a",
+    "app/concepts/design-07/page.tsx": "fa9fad47405147ba9b68b6033aabe9ccf90353acec0fd7abf42da8a90aa18250",
+    "app/concepts/design-04/page.tsx": "9e7d635a6315353eb8bdf60debf8a3df0cfbb6c7140dc5d85e04d2bc9799fe25",
+    "github-pages/concepts/design-08/index.html": "8dda093b043546b728dc162f26e397252f04f7f1c7cc6c0c246d36e278844bcb"
   },
   "maintenance": {
-    "date": "2026-11-15",
-    "authorization": "Owner requested exact treatment pricing and existing consultation form on homepage and every published design. Updated snapshots are frozen again; all other prior assets retain their original hashes."
+    "date": "2026-11-17",
+    "authorization": "Owner requested Design 08 with Design 07 layout and Design 04 portraits/rectangular shapes. Final studio name, American Canyon address, weekday hours, blank phone, and summer 2027 interest list apply only to Designs 04, 07, and 08. Shared phone input formats during typing. Other page snapshots remain unchanged."
   }
 }

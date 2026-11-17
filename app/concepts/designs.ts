@@ -44,7 +44,7 @@ export const websiteConcepts: WebsiteConcept[] = [
     title: "The Quiet Practice",
     direction: "Photograph-led · restrained · specific",
     description:
-      "A premium editorial direction with a disciplined evergreen palette, practical treatment guidance, and a direct consultation request path.",
+      "A premium editorial direction with a disciplined evergreen palette, practical treatment guidance, and a summer 2027 interest list.",
     href: "/concepts/design-04/",
     released: "November 2026",
     status: "Alternate concept",
@@ -74,8 +74,18 @@ export const websiteConcepts: WebsiteConcept[] = [
     title: "The Personal Edit",
     direction: "Quiet editorial · natural · personal",
     description:
-      "Warm ivory and muted evergreen, a natural portrait, generous serif typography, and a clear progression through treatment, prices, and your first conversation with Nav.",
+      "Warm ivory and muted evergreen, a natural portrait, generous serif typography, and a clear progression through treatment, prices, and the summer 2027 studio opening.",
     href: "/concepts/design-07/",
+    released: "November 17, 2026",
+    status: "Alternate concept",
+  },
+  {
+    id: "08",
+    title: "The Evergreen Edit",
+    direction: "Personal layout · favorite portraits · opening soon",
+    description:
+      "Design 07’s spacious layout with Design 04’s portraits and rectangular image shapes. Evergreen Electrolysis Studio, coming summer 2027.",
+    href: "/concepts/design-08/",
     released: "November 17, 2026",
     status: "Alternate concept",
   },

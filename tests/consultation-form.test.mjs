@@ -23,10 +23,11 @@ function eventTarget() {
   };
 }
 
-function pageFixture({ configured = true, modalSupported = true, theme } = {}) {
+function pageFixture({ configured = true, modalSupported = true, theme, requestType } = {}) {
   const initial = { firstName: " Alex ", lastName: " Example ", phone: "(707) 555-0123", email: "", website: "", contactPreference: "", notes: "", permissionVersion: "2026-11-15" };
   const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, {
-    ...eventTarget(), value, customValidity: "",
+    ...eventTarget(), value, customValidity: "", selectionStart: value.length, selectionEnd: value.length,
+    setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; },
     get validity() { return { valid: !this.customValidity && (key !== "email" || !this.value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value)) }; },
     setCustomValidity(message) { this.customValidity = message; },
   }]));
@@ -43,7 +44,7 @@ function pageFixture({ configured = true, modalSupported = true, theme } = {}) {
   const widgetContainer = {};
   const form = {
     ...eventTarget(), isConnected: false,
-    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key", theme } : {},
+    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key", theme, requestType } : {},
     fields, choices,
     parentElement: { querySelector: () => dialog },
     elements: { namedItem: (name) => fields[name] },
@@ -55,8 +56,8 @@ function pageFixture({ configured = true, modalSupported = true, theme } = {}) {
   return { form, fields, choices, button, emailOption, status, dialog, dialogNodes, top, get widgetOptions() { return widgetContainer.options; }, submit: () => form.dispatch("submit", { preventDefault() {} }) };
 }
 
-function fixture({ configured = true, modalSupported = true, theme, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
-  const page = pageFixture({ configured, modalSupported, theme });
+function fixture({ configured = true, modalSupported = true, theme, requestType, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
+  const page = pageFixture({ configured, modalSupported, theme, requestType });
   let current = initiallyMounted ? page : null;
   page.form.isConnected = initiallyMounted;
   const calls = [], observers = [], scripts = [], removedWidgets = [];
@@ -150,6 +151,17 @@ test("blocks missing names, incomplete phones, and absent security tokens", asyn
   }
   const f = fixture(); await f.submit(); assert.equal(f.calls.length, 0);
   assert.match(f.status.textContent, /security check/);
+});
+
+test("formats phone digits during typing, before blur", async () => {
+  const f = fixture();
+  f.fields.phone.value = "";
+  for (const digit of "7075550123") {
+    f.fields.phone.value += digit;
+    f.fields.phone.selectionStart = f.fields.phone.value.length;
+    await f.fields.phone.dispatch("input", { inputType: "insertText" });
+  }
+  assert.equal(f.fields.phone.value, "(707) 555-0123");
 });
 
 test("retains details and requires a fresh security check after network or delivery errors", async () => {
@@ -306,4 +318,55 @@ test("a response from a removed form cannot open its modal or reset the new widg
   assert.equal(second.status.focused, false);
   assert.equal(f.resetCount, 0);
   assert.equal(f.calls.length, 1);
+});
+
+
+test("phone formatting handles country-code paste, middle edits, separators, and full deletion", async () => {
+  const f = fixture(), phone = f.fields.phone;
+  phone.value = "+1 707 555 0123"; phone.selectionStart = phone.value.length;
+  await phone.dispatch("input", { inputType: "insertFromPaste" });
+  assert.equal(phone.value, "(707) 555-0123");
+  assert.equal(phone.selectionStart, 14);
+  phone.value = "(707) 655-0123"; phone.selectionStart = 7;
+  await phone.dispatch("input", { inputType: "insertText" });
+  assert.equal(phone.value, "(707) 655-0123");
+  assert.equal(phone.selectionStart, 7, "middle edits do not jump to the end");
+  phone.setSelectionRange(6, 6);
+  let prevented = false;
+  await phone.dispatch("beforeinput", { inputType: "deleteContentBackward", preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(phone.value, "(706) 550-123");
+  assert.equal(phone.selectionStart, 3);
+  phone.value = ""; phone.selectionStart = 0;
+  await phone.dispatch("input", { inputType: "deleteContentBackward" });
+  assert.equal(phone.value, "");
+  for (const invalid of ["70755501234", "+44 7700 900123", "7075550123 ext 2"]) {
+    phone.value = invalid; phone.selectionStart = invalid.length;
+    await phone.dispatch("input", { inputType: "insertFromPaste" });
+    assert.equal(phone.value, invalid, "invalid digits remain visible, never silently discarded");
+    f.widgetOptions.callback("token"); await f.submit();
+    assert.equal(f.calls.length, 0);
+  }
+});
+
+test("interest-list submission sends its explicit intent and shows the matching success", async () => {
+  const f = fixture({ requestType: "interest" });
+  f.fields.permissionVersion.value = "interest-2026-11-17";
+  assert.equal(f.widgetOptions.action, "interest_list");
+  f.widgetOptions.callback("token"); await f.submit();
+  const payload = JSON.parse(f.calls[0].body);
+  assert.equal(payload.requestType, "interest");
+  assert.equal(payload.permissionVersion, "interest-2026-11-17");
+  assert.match(f.status.textContent, /on the interest list/);
+  assert.doesNotMatch(f.status.textContent, /consultation request/);
+  assert.equal(f.button.textContent, "You’re on the list");
+  assert.equal(f.dialog.open, true);
+});
+
+test("failed interest-list delivery retains details and restores the correct action", async () => {
+  const f = fixture({ requestType: "interest", response: new Error("offline") });
+  f.widgetOptions.callback("token"); await f.submit();
+  assert.equal(f.button.textContent, "Join interest list");
+  assert.equal(f.fields.phone.value, "(707) 555-0123");
+  assert.equal(f.dialog.open, false);
 });

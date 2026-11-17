@@ -4,9 +4,9 @@ import { websiteConcepts } from "./designs";
 import styles from "./concepts.module.css";
 
 export const metadata: Metadata = {
-  title: "Website Design Concepts | Evergreen Electrolysis",
+  title: "Website Design Concepts | Evergreen Electrolysis Studio",
   description:
-    "Compare preserved website concepts for Evergreen Electrolysis in American Canyon, California.",
+    "Compare preserved website concepts for Evergreen Electrolysis Studio in American Canyon, California.",
   alternates: {
     canonical:
       "https://tycheventuresllc.com/canyon-and-vine-electrology/concepts/",
@@ -17,9 +17,9 @@ export default function ConceptsPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <Link className={styles.wordmark} href="/" aria-label="Evergreen Electrolysis home">
+        <Link className={styles.wordmark} href="/" aria-label="Evergreen Electrolysis Studio home">
           <span>Evergreen</span>
-          <small>Electrolysis</small>
+          <small>Electrolysis Studio</small>
         </Link>
         <p>Website concept archive</p>
       </header>
@@ -30,7 +30,8 @@ export default function ConceptsPage() {
         <p className={styles.lede}>
           Each concept is a complete, independent direction. Earlier versions stay available,
           so you can compare structure, tone, and visual style without losing prior work.
-          All designs include the current treatment prices and consultation request form.
+          All designs include the current treatment prices. Designs 04, 07, and 08 now feature
+          the finalized studio name and a summer 2027 interest list.
         </p>
       </section>
 
@@ -59,7 +60,7 @@ export default function ConceptsPage() {
       </section>
 
       <footer className={styles.footer}>
-        <p>Evergreen Electrolysis · American Canyon, California</p>
+        <p>Evergreen Electrolysis Studio · American Canyon, California</p>
         <p>New concepts are added without replacing earlier versions.</p>
       </footer>
     </main>

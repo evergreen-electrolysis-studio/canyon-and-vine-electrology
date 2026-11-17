@@ -8,18 +8,18 @@ import styles from "./design07.module.css";
 
 const url = "https://tycheventuresllc.com/canyon-and-vine-electrology/concepts/design-07/";
 const image = "https://tycheventuresllc.com/canyon-and-vine-electrology/personal-edit-portrait.jpg";
-const description = "Discover personal electrolysis care with Nav in American Canyon, California. Explore treatment areas, session prices, and your first consultation.";
+const description = "Discover personal electrolysis care with Nav in American Canyon, California. Coming summer 2027. Explore treatment areas and prices, and join the interest list.";
 
 export const metadata: Metadata = {
-  title: "The Personal Edit | Evergreen Electrolysis",
+  title: "The Personal Edit | Evergreen Electrolysis Studio",
   description,
   alternates: { canonical: url },
   robots: { index: false, follow: true },
   openGraph: {
-    title: "The Personal Edit | Evergreen Electrolysis", description, url, type: "website",
+    title: "The Personal Edit | Evergreen Electrolysis Studio", description, url, type: "website",
     images: [{ url: image, width: 1200, height: 1798, alt: "A woman with brown hair in soft evening light" }],
   },
-  twitter: { card: "summary_large_image", title: "The Personal Edit | Evergreen Electrolysis", description, images: [image] },
+  twitter: { card: "summary_large_image", title: "The Personal Edit | Evergreen Electrolysis Studio", description, images: [image] },
 };
 
 const areas = [
@@ -52,16 +52,16 @@ export default function PersonalEdit() {
         <span>07 / The Personal Edit</span>
       </div>
       <header className={styles.header}>
-        <a className={styles.wordmark} href="#top" aria-label="Evergreen Electrolysis home"><span>Evergreen</span><small>Electrolysis</small></a>
+        <a className={styles.wordmark} href="#top" aria-label="Evergreen Electrolysis Studio home"><span>Evergreen</span><small>Electrolysis Studio</small></a>
         <nav className={styles.navigation} aria-label="Primary navigation">
           <a href="#care">Treatment</a><a href="#rates">Prices</a><a href="#nav">Meet Nav</a><a href="#questions">Questions</a>
         </nav>
-        <a className={styles.headerCta} href="#contact">Let’s begin <span aria-hidden="true">↗</span></a>
+        <a className={styles.headerCta} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
       </header>
       <main id="main-content">
         <section className={styles.hero} aria-labelledby="hero-title">
           <div className={styles.heroHeading}>
-            <p className={styles.eyebrow}>American Canyon, California</p>
+            <p className={styles.eyebrow}>American Canyon, California · Coming summer 2027</p>
             <h1 id="hero-title">Permanent<br />hair removal.<br /><em>Entirely personal.</em></h1>
           </div>
           <div className={styles.heroPhoto}>
@@ -70,7 +70,7 @@ export default function PersonalEdit() {
           </div>
           <div className={styles.heroIntroduction}>
             <p>One-on-one electrolysis with Nav, shaped around your hair, your skin, and what matters to you.</p>
-            <a className={styles.button} href="#contact">Request a consultation <span aria-hidden="true">↗</span></a>
+            <a className={styles.button} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
             <a className={styles.textLink} href="#first-visit">A look at your first visit <span aria-hidden="true">↓</span></a>
           </div>
           <div className={styles.heroFoot}><span>Face. Body. The small details.</span><span>Care, one follicle at a time.</span></div>
@@ -85,7 +85,7 @@ export default function PersonalEdit() {
           </div>
           <div className={styles.areaList}>
             {areas.map(area => <article key={area.number}><span className={styles.areaNumber}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div></article>)}
-            <a className={styles.lightLink} href="#contact">Talk through your treatment area <span aria-hidden="true">↗</span></a>
+            <a className={styles.lightLink} href="#contact">Join the interest list <span aria-hidden="true">↗</span></a>
           </div>
         </section>
 
@@ -95,8 +95,8 @@ export default function PersonalEdit() {
         </section>
 
         <section className={styles.ratesSection} id="rates" aria-labelledby="rates-title">
-          <div><p className={styles.eyebrow}>03 / Treatment prices</p><h2 id="rates-title">Your time.<br /><em>Clearly priced.</em></h2><p>Choose session length with Nav based on the area and your treatment plan. These are treatment rates; consultation details are discussed when we follow up.</p></div>
-          <div className={styles.rateSheet}><TreatmentRates /><p>Not sure where to start? Your consultation request can be as simple as a name and phone number.</p><a className={styles.textLink} href="#contact">Start the conversation <span aria-hidden="true">↗</span></a></div>
+          <div><p className={styles.eyebrow}>03 / Treatment prices</p><h2 id="rates-title">Your time.<br /><em>Clearly priced.</em></h2><p>Choose session length with Nav based on the area and your treatment plan. These are treatment rates; consultation availability will be shared as opening approaches.</p></div>
+          <div className={styles.rateSheet}><TreatmentRates /><p>Be the first to hear when consultations become available. Join with your name and phone number.</p><a className={styles.textLink} href="#contact">Join interest list <span aria-hidden="true">↗</span></a></div>
         </section>
 
         <section className={styles.practitioner} id="nav" aria-labelledby="nav-title">
@@ -114,12 +114,12 @@ export default function PersonalEdit() {
         </section>
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-title">
-          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Let’s begin</p><h2 id="contact-title">A small step.<br /><em>A personal plan.</em></h2><p>Tell us how to reach you. Nav will follow up to discuss your questions and arrange next steps.</p><p>There’s no need to have it all figured out.</p></div><div className={styles.location}><h3>Evergreen Electrolysis</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Studio address</dt><dd>[ADD STUDIO ADDRESS]</dd></div><div><dt>Phone</dt><dd>[ADD PHONE NUMBER]</dd></div><div><dt>Hours</dt><dd>[ADD BUSINESS HOURS]</dd></div><div><dt>Appointment booking destination</dt><dd>[TO BE CONFIRMED]</dd></div></dl></div></div>
-          <div className={styles.formWrap}><ConsultationForm tone="light" /></div>
+          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Coming summer 2027</p><h2 id="contact-title">Join the<br /><em>interest list.</em></h2><p>Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for opening updates and first news of consultation availability.</p><p>A little closer to a routine that feels like you.</p></div><div className={styles.location}><h3>Evergreen Electrolysis Studio</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Address</dt><dd>American Canyon, CA</dd></div><div><dt>Phone</dt><dd></dd></div><div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div></dl></div></div>
+          <div className={styles.formWrap}><ConsultationForm tone="light" intent="interest" /></div>
         </section>
       </main>
       <footer className={styles.footer}>
-        <div className={styles.footerTop}><a href="#top">Evergreen<span>Electrolysis</span></a><p>Personal care.<br />American Canyon, California.</p></div>
+        <div className={styles.footerTop}><a href="#top">Evergreen<span>Electrolysis Studio</span></a><p>Personal care.<br />American Canyon, California.</p></div>
         <p className={styles.disclaimer}>Results and treatment timelines vary by individual. Suitability is assessed during consultation. Information on this site is educational and is not medical advice; consult a qualified healthcare professional about medical concerns.</p>
         <div className={styles.footerBottom}><span>Design 07 · The Personal Edit</span><Link href="/concepts/">Compare all designs ↗</Link><Link href="/">Current homepage ↗</Link><a href="#top">Back to top ↑</a></div>
       </footer>

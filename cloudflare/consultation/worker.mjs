@@ -1,5 +1,7 @@
 import fields from "../../config/consultation-fields.json" with { type: "json" };
 
+import interestList from "../../config/interest-list.json" with { type: "json" };
+
 const MAX_BODY_BYTES = 8 * 1024;
 const DEFAULT_RECIPIENT = "sukhpalc@gmail.com";
 const TURNSTILE_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -99,6 +101,10 @@ function selectedOptions(value, options, exclusiveOption) {
 
 function validateSubmission(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) return null;
+  const requestType = body.requestType ?? "consultation";
+  if (!["consultation", "interest"].includes(requestType)) return null;
+  const notice = requestType === "interest" ? interestList : fields;
+  if (requestType === "interest" && body.permissionVersion !== notice.permissionVersion) return null;
   if (!validName(body.firstName) || !validName(body.lastName)) return null;
   const phone = normalizePhone(body.phone);
   if (!phone) return null;
@@ -115,11 +121,12 @@ function validateSubmission(body) {
   if (body.notes !== undefined && (typeof body.notes !== "string" || body.notes.length > 500 ||
       /[\p{Cc}\p{Cf}]/u.test(body.notes.replace(/[\r\n\t]/g, "")))) return null;
   const notes = (body.notes ?? "").replace(/\r\n?/g, "\n").trim();
-  if (body.permissionVersion !== undefined && body.permissionVersion !== fields.permissionVersion) return null;
+  if (body.permissionVersion !== undefined && body.permissionVersion !== notice.permissionVersion) return null;
   if (body.website !== undefined && (typeof body.website !== "string" || body.website.trim())) return null;
   if (typeof body.turnstileToken !== "string" || !body.turnstileToken.trim() ||
       body.turnstileToken.length > 2048) return null;
   return {
+    requestType,
     firstName: body.firstName.trim(),
     lastName: body.lastName.trim(),
     phone,
@@ -212,17 +219,19 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
       clearTimeout(timer);
     }
     if (verification?.success !== true || verification.hostname !== new URL(origin).hostname ||
-        verification.action !== "consultation") {
+        verification.action !== (submission.requestType === "interest" ? "interest_list" : "consultation")) {
       return failure(400, VERIFICATION_FAILED, origin);
     }
 
+    const interest = submission.requestType === "interest";
+    const notice = interest ? interestList : fields;
     try {
       await env.CONSULTATION_EMAIL.send({
         to: recipient,
         from: env.SENDER_EMAIL,
-        subject: "New Evergreen Electrolysis consultation request",
+        subject: interest ? "New Evergreen Electrolysis Studio interest-list signup" : "New Evergreen Electrolysis consultation request",
         text: [
-          "A visitor requested a consultation with Evergreen Electrolysis.",
+          interest ? "A visitor joined the Evergreen Electrolysis Studio interest list for the summer 2027 opening. No appointment was requested or booked." : "A visitor requested a consultation with Evergreen Electrolysis.",
           "",
           `First name: ${submission.firstName}`,
           `Last name: ${submission.lastName}`,
@@ -230,7 +239,7 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
           `Email: ${submission.email || "Not provided"}`,
           `Preferred contact method: ${submission.contactPreference || "Not specified"}`,
           "",
-          "CONSULTATION DETAILS (OPTIONAL)",
+          interest ? "INTEREST LIST DETAILS (OPTIONAL)" : "CONSULTATION DETAILS (OPTIONAL)",
           `Treatment areas: ${submission.treatmentAreas.join(", ") || "Not specified"}`,
           `Previous hair-removal methods: ${submission.previousMethods.join(", ") || "Not specified"}`,
           "Questions / notes:",
@@ -240,7 +249,7 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
           `Website: ${origin}`,
           ...(submission.permissionVersion ? [
             `Contact permission notice version: ${submission.permissionVersion}`,
-            fields.permissionText,
+            notice.permissionText,
           ] : ["Contact permission notice version: Not supplied (legacy form)."]),
         ].join("\n"),
         ...(submission.email ? { replyTo: submission.email } : {}),

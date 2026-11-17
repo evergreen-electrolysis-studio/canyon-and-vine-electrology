@@ -1,4 +1,4 @@
-# Consultation request delivery
+# Consultation and interest-list delivery
 
 The homepage form replaces the mail-app link. It requires first name, last name,
 and a full US phone number; email is optional unless an email reply is selected.
@@ -23,6 +23,26 @@ The existing domain already had Email Routing enabled and the destination was
 already verified. No DNS, MX, or mailbox changes were required. No additional
 form or email vendor is used. The temporary localhost origin used for browser QA
 must remain absent from the deployed production allowlist.
+
+## Prelaunch interest list — November 17, 2026
+
+Designs 04, 07, and 08 use `ConsultationForm intent="interest"`. The homepage
+and other archived designs retain consultation mode. The owner confirmed the
+name Evergreen Electrolysis Studio and the summer 2027 opening message.
+
+Interest submissions include `requestType: "interest"`, the required
+`interest-2026-11-17` permission version from `config/interest-list.json`, and a
+Turnstile token with action `interest_list`. The handler validates all three,
+then sends a clearly labeled interest-list signup to the same fixed owner inbox.
+It includes the exact permission to share opening updates and consultation
+availability, plus removal on request. The inbox is the list of record; this
+change does not add an automatic mailing campaign. Confirmation appears only
+after email-provider acceptance and does not claim that an appointment is booked.
+
+The default/legacy consultation request keeps action `consultation` and its own
+notice. To switch a selected design to consultation mode at launch, change its
+form intent and related CTA/availability copy together after owner authorization.
+Phone formatting now happens while typing and preserves normal caret editing.
 
 ## Optional answers and contact permission
 
