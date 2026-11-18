@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import worker, { createHandler } from "../cloudflare/consultation/worker.mjs";
 import fields from "../config/consultation-fields.json" with { type: "json" };
+import { inquiryEmail, INQUIRY_SENDER } from "../cloudflare/consultation/inquiry.mjs";
 
 const ORIGIN = "https://tycheventuresllc.com";
 const validSubmission = {
@@ -37,12 +38,17 @@ function harness({ verify, send, env: overrides, timeout = 5000 } = {}) {
   const env = {
     ALLOWED_ORIGINS: ORIGIN,
     TURNSTILE_SECRET_KEY: "test-secret",
-    SENDER_EMAIL: "consultations@example.com",
-    RECIPIENT_EMAIL: "sukhpalc@gmail.com",
-    CONSULTATION_EMAIL: {
-      async send(message) {
+    INQUIRY_MAIL: {
+      async fetch(request) {
+        assert.equal(request.url, "https://delivery.internal/inquiry");
+        assert.equal(request.headers.has("authorization"), false);
+        assert.equal(request.headers.has("cookie"), false);
+        const { submission, origin } = await request.json();
+        assert.equal(Object.hasOwn(submission, "turnstileToken"), false);
+        const message = inquiryEmail(submission, origin, new Date().toISOString());
         sent.push(message);
-        return send ? send(message) : { messageId: "test-id" };
+        if (send) await send(message);
+        return Response.json({ outcome: "accepted" });
       },
     },
     ...overrides,
@@ -58,8 +64,8 @@ test("sends a validated consultation to the fixed owner and normalizes the US ph
   assert.equal(result.headers.get("Access-Control-Allow-Origin"), ORIGIN);
   assert.equal(result.headers.get("Cache-Control"), "no-store");
   assert.equal(sent.length, 1);
-  assert.equal(sent[0].to, "sukhpalc@gmail.com");
-  assert.equal(sent[0].from, "consultations@example.com");
+  assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
+  assert.equal(sent[0].from, INQUIRY_SENDER);
   assert.equal(sent[0].replyTo, "jane@example.com");
   assert.match(sent[0].text, /First name: Jane\n/);
   assert.match(sent[0].text, /Phone: \+17075550123/);
@@ -73,10 +79,10 @@ test("sends a validated consultation to the fixed owner and normalizes the US ph
 
 for (const email of [undefined, "", "   "]) {
   test(`optional email can be ${JSON.stringify(email)}`, async () => {
-    const { handler, env, sent } = harness({ env: { RECIPIENT_EMAIL: undefined } });
+    const { handler, env, sent } = harness();
     const result = await handler(request({ ...validSubmission, email }), env);
     assert.equal(result.status, 200);
-    assert.equal(sent[0].to, "sukhpalc@gmail.com");
+    assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
     assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
     assert.match(sent[0].text, /Email: Not provided/);
   });
@@ -101,7 +107,7 @@ test("includes optional answers, the exact versioned notice, and server receipt 
   }), env);
   assert.equal(result.status, 200);
   const message = sent[0];
-  assert.equal(message.to, "sukhpalc@gmail.com");
+  assert.equal(message.to, "nav@evergreenelectrolysisstudio.com");
   assert.equal(message.replyTo, "jane@example.com");
   assert.match(message.text, /Preferred contact method: Email\n/);
   assert.match(message.text, /Treatment areas: Upper lip, Chin & jawline\n/);
@@ -276,11 +282,8 @@ for (const origin of [undefined, "null", "https://attacker.example", `${ORIGIN}.
 
 for (const overrides of [
   { TURNSTILE_SECRET_KEY: "" },
-  { SENDER_EMAIL: "" },
-  { SENDER_EMAIL: "invalid" },
-  { CONSULTATION_EMAIL: undefined },
-  { CONSULTATION_EMAIL: {} },
-  { RECIPIENT_EMAIL: "invalid" },
+  { INQUIRY_MAIL: undefined },
+  { INQUIRY_MAIL: {} },
   { ALLOWED_ORIGINS: "" },
   { ALLOWED_ORIGINS: "https://example.com/path" },
 ]) {
@@ -357,6 +360,25 @@ test("provider rejection returns a non-PII failure, never a successful request",
   assert.doesNotMatch(body.error, /jane@|rejected/);
 });
 
+test("retains caller attempt metadata and never turns an uncertain mail result into success", async () => {
+  const attempt = { submissionId: crypto.randomUUID(), startedAt: Date.now() };
+  const calls = [];
+  const { handler, env } = harness({ env: { INQUIRY_MAIL: { async fetch(request) { calls.push(await request.json()); return Response.json({ outcome: "unconfirmed" }, { status: 503 }); } } } });
+  for (let index = 0; index < 2; index++) {
+    const result = await handler(request({ ...validSubmission, ...attempt }), env);
+    assert.equal(result.status, 503);
+    assert.equal((await result.json()).ok, false);
+  }
+  assert.equal(calls[0].submissionId, attempt.submissionId);
+  assert.deepEqual(calls[0], calls[1]);
+  for (const metadata of [{ ...attempt, startedAt: Date.now() - 24 * 3600_000 }, { ...attempt, submissionId: "not-a-uuid" }]) {
+    const result = await handler(request({ ...validSubmission, ...metadata }), env);
+    assert.equal(result.status, 400);
+    assert.equal((await result.json()).code, "retry_expired");
+  }
+  assert.equal(calls.length, 2);
+});
+
 test("success waits for the email provider to accept the message", async () => {
   let release;
   let entered;
@@ -419,7 +441,7 @@ test("configured Evergreen origin requires its own Turnstile hostname while lega
   const evergreen = "https://evergreenelectrolysisstudio.com";
   const submission = { ...validSubmission, requestType: "interest", permissionVersion: "interest-2026-11-17" };
   const post = (origin) => request(submission, { headers: { Origin: origin, "Content-Type": "application/json" } });
-  const environment = { ALLOWED_ORIGINS: allowed, RECIPIENT_EMAIL: "inbox@example.com" };
+  const environment = { ALLOWED_ORIGINS: allowed };
 
   const accepted = harness({
     env: environment,
@@ -440,7 +462,7 @@ test("configured Evergreen origin requires its own Turnstile hostname while lega
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("Access-Control-Allow-Origin"), evergreen);
   assert.equal(accepted.sent.length, 1);
-  assert.equal(accepted.sent[0].to, "inbox@example.com");
+  assert.equal(accepted.sent[0].to, INQUIRY_SENDER);
   assert(accepted.sent[0].text.includes(`Website: ${evergreen}\n`));
 
   for (const hostname of ["attacker.example", new URL(ORIGIN).hostname]) {
@@ -460,13 +482,41 @@ test("configured Evergreen origin requires its own Turnstile hostname while lega
   }
 });
 
+test("deployment configuration sends both inquiry types from Evergreen only to Nav", async () => {
+  const source = await readFile(new URL("../cloudflare/consultation/wrangler.jsonc", import.meta.url), "utf8");
+  const setting = (name) => source.match(new RegExp(`"${name}"\\s*:\\s*"([^"]+)"`))?.[1];
+  const sender = INQUIRY_SENDER, recipient = INQUIRY_SENDER;
+  assert.equal(sender, "nav@evergreenelectrolysisstudio.com");
+  assert.equal(setting("binding"), "INQUIRY_MAIL");
+  assert.equal(setting("service"), "evergreen-intake-stage-mail");
+  assert.doesNotMatch(source, /send_email|SENDER_EMAIL|RECIPIENT_EMAIL/);
+  const origin = "https://evergreenelectrolysisstudio.com";
+  for (const requestType of ["consultation", "interest"]) {
+    const { handler, env, sent } = harness({
+      env: { ALLOWED_ORIGINS: setting("ALLOWED_ORIGINS") },
+      verify: async () => Response.json({ success: true, hostname: new URL(origin).hostname, action: requestType === "interest" ? "interest_list" : "consultation" }),
+    });
+    const submission = {
+      ...validSubmission, requestType,
+      permissionVersion: requestType === "interest" ? "interest-2026-11-17" : fields.permissionVersion,
+      to: "attacker@example.com", from: "attacker@example.com",
+    };
+    const result = await handler(request(submission, { headers: { Origin: origin, "Content-Type": "application/json" } }), env);
+    assert.equal(result.status, 200);
+    assert.equal(sent.length, 1);
+    assert.equal(sent[0].from, sender);
+    assert.equal(sent[0].to, recipient);
+    assert.equal(sent[0].replyTo, validSubmission.email);
+  }
+});
+
 
 test("delivers interest signups with purpose-specific consent and no appointment promise", async () => {
   const { handler, env, sent } = harness({ verify: async () => Response.json({ success: true, hostname: new URL(ORIGIN).hostname, action: "interest_list" }) });
   const result = await handler(request({ ...validSubmission, email: "", requestType: "interest", permissionVersion: "interest-2026-11-17" }), env);
   assert.equal(result.status, 200);
   assert.equal(sent.length, 1);
-  assert.equal(sent[0].to, "sukhpalc@gmail.com");
+  assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
   assert.equal(sent[0].subject, "New Evergreen Electrolysis Studio interest-list signup");
   assert.match(sent[0].text, /summer 2027 opening/);
   assert.match(sent[0].text, /No appointment was requested or booked/);

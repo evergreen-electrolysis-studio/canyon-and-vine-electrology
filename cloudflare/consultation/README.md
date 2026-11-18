@@ -2,27 +2,79 @@
 
 The homepage form replaces the mail-app link. It requires first name, last name,
 and a full US phone number; email is optional unless an email reply is selected.
-A standalone Cloudflare Worker lets
-both the GitHub Pages export and existing Sites project use the same endpoint.
+A standalone Cloudflare Worker lets the public Evergreen site and preserved
+design previews use the same endpoint.
 Designs 01–06 remain archived; the original homepage is copied to `/concepts/design-01/`.
 
-## Configured service — November 15, 2026
+## Service configuration — November 18, 2026
 
 The email handler is deployed at:
 
 `https://evergreen-consultation.sukhpalc.workers.dev/request`
 
-- Sender: `consultation@tycheventuresllc.com`.
-- Fixed destination: `sukhpalc@gmail.com`.
-- Production origins: `https://tycheventuresllc.com` and
+- Configured sender: `nav@evergreenelectrolysisstudio.com`, through existing Zoho CPaaS.
+- Fixed destination: `nav@evergreenelectrolysisstudio.com`.
+- Production origins: `https://evergreenelectrolysisstudio.com`,
+  `https://tycheventuresllc.com` and
   `https://canyon-and-vine-electrology.sukhpalc.chatgpt.site`.
 - The endpoint and public Turnstile site key are in `config/consultation.json`.
 - `TURNSTILE_SECRET_KEY` is stored as a Worker secret, not in source.
 
-The existing domain already had Email Routing enabled and the destination was
-already verified. No DNS, MX, or mailbox changes were required. No additional
-form or email vendor is used. The temporary localhost origin used for browser QA
-must remain absent from the deployed production allowlist.
+**The sender cutover is verified live.** Private mail Worker version
+`c30a864a-8f2b-4b39-8705-e2d3746388ff` and consultation Worker version
+`dbc9923d-000b-4086-9abf-44d565909c77` delivered a website interest-list request
+to Nav on November 18 at 2:14 PM Pacific. The public form showed success and
+the received message used the Evergreen From address, the submitted visitor
+Reply-To, and the Evergreen website address. Zoho reported SPF, DKIM and DMARC
+passes. The fictional contact was Morgan Reed; no test labels were added to
+the normal message. No new keys, subscription, mailbox, DNS record or Cloudflare
+plan was needed. The updated retry-safe website controller is published through
+the existing GitHub Actions workflow; deploy the mail service before its callers.
+
+The previous live version, `a3bbf2ae-70b3-455d-a7a0-fc0d1b59e349`, used
+`consultation@tycheventuresllc.com`. Cloudflare destination verification completed
+via the new Zoho mailbox. A fictional
+`Zoho / Delivery Test` submitted through the live Evergreen interest-list form
+showed success and arrived in Nav's Zoho Inbox with the expected note, contact
+notice and recipient. A phone-only follow-up also showed success and arrived;
+its body contains the correct fictional name/phone and `Email: Not provided`. The recipient-change regression suite
+passed 96/96 tests and scoped ESLint passed.
+That older path uses Cloudflare Email Service. Although its published pricing
+says verified-destination sends are free, the actual dashboard requires Workers
+Paid to onboard a new Email Sending domain. No upgrade was purchased. The
+selected replacement reuses the already configured CPaaS sender and credits.
+**Do not enable Email Routing on Evergreen's root domain** or replace Zoho's
+working inbound MX records. The temporary localhost QA origin must remain absent
+from the deployed production allowlist.
+
+## Fixed-recipient sender and safe retries
+
+The public handler checks exact origin, bounded contact fields and Turnstile,
+then calls the `INQUIRY_MAIL` private service binding. Its exact
+`https://delivery.internal/inquiry` route accepts only those validated fields,
+the approved source origin and a random attempt ID. It renders the email itself:
+From and To are fixed to Nav, optional Reply-To is the visitor's validated email,
+and neither callers nor form fields can choose a recipient or arbitrary template.
+The mail Worker has no public route, workers.dev address, preview URL or CORS.
+Its invitation/health-record adapter retains separate staging restrictions.
+
+For each attempt, a small private Durable Object stores only a payload digest,
+random ID, times and provider receipt/status. Contact information, questions and
+email text are not stored there. Metadata expires after seven days. The current
+browser controller keeps a stable ID/time when retrying unchanged details;
+changed details deliberately create a new attempt. Retries are bounded to 23
+hours, below Zoho's provider deduplication window. Legacy forms without an ID
+remain compatible, but do not gain cross-request deduplication until refreshed.
+
+The object serializes attempts, records ambiguity before sending, and persists
+provider acceptance. A lost acknowledgment is reconciled through Zoho's exact
+agent/reference logs; a known provider request ID prevents another POST. An
+uncertain result never reports success or falsely says nothing was sent. Retry
+the unchanged form after a fresh security check; an expired attempt directs the
+visitor to Nav. This is receipt recovery, not a background inquiry queue: only
+metadata persists, so Nav's inbox remains the contact list of record. Provider
+acceptance is sufficient for inquiry success; no private-link activation or
+30-day expiry is involved in this public form.
 
 ## Prelaunch interest list — November 17, 2026
 
@@ -77,15 +129,14 @@ For redeployment or provisioning another environment in the existing Cloudflare
 account:
 
 1. Authenticate Wrangler with `pnpm exec wrangler login`.
-2. Keep `RECIPIENT_EMAIL` and the binding's `destination_address` aligned. A new
-   destination must be verified in Email Service before use.
-3. Keep `SENDER_EMAIL` on an onboarded Email Service domain. The current
-   Routing-enabled domain supports delivery to the verified owner. If moving to
-   a different domain, review Email Service onboarding and existing mail records;
-   do not replace working inbound MX records merely to enable form delivery.
-4. Keep the managed Turnstile widget's allowed hostnames aligned with the two
+2. Keep `INQUIRY_MAIL` bound only to the existing private mail Worker. Sender and
+   recipient are fixed constants in the reviewed inquiry module, not form inputs.
+3. Preserve Zoho's verified MX, SPF and DKIM. The private mail Worker uses its
+   existing CPaaS secrets; do not copy those credentials to the public Worker.
+4. Keep the managed Turnstile widget's allowed hostnames aligned with the approved
    production origins. Use exact origins in `ALLOWED_ORIGINS`; remove temporary
-   QA origins after testing.
+   QA origins after testing. The private `INQUIRY_ORIGINS` allowlist in
+   `inquiry.mjs` must also match any deliberately approved origin change.
 5. Run `pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --config cloudflare/consultation/wrangler.jsonc`
    when setting or rotating the secret, and enter it privately. Never commit it.
 6. Deploy with `pnpm exec wrangler deploy --config cloudflare/consultation/wrangler.jsonc`.
@@ -94,6 +145,29 @@ account:
 
 The handler fails closed if required service configuration is missing. A disabled
 form preview is not a substitute for a configured, verified release.
+
+### Cutover order and source synchronization
+
+1. From the private working checkout, deploy the existing mail Worker with
+   `wrangler deploy --config intake/cloudflare/wrangler.mail.jsonc`. This adds
+   the `InquiryDeliveryState` SQLite migration while retaining all four existing
+   Zoho secrets and the invitation routes. Its public/preview addresses stay off.
+2. Deploy this consultation Worker with its explicit configuration. Check the
+   new private service binding and preserve the existing Turnstile secret.
+3. Sync only the reviewed public files to the organization's public repository:
+   the consultation Worker/config/README and `inquiry.mjs`, both shared-controller
+   copies, the exporter/cache key and single changed manifest hash, and the three
+   consultation/form/export test files. Do not push the private intake branch,
+   `intake/`, private tests, package changes, records or credentials.
+4. Merge that public-only change into `main`. The existing Actions workflow
+   tests and exports only `out/evergreen-production/`, then deploys the exact
+   checked artifact to `evergreen-website`. Verify the live controller contains
+   attempt IDs and its HTML reference uses `20261118-inquiry-mail`, preventing a
+   later automatic deployment from restoring the older controller.
+5. Submit fictional interest requests through the real public page with and
+   without email. Check Nav's Inbox, From and Reply-To, and confirm one provider
+   message per submitted request. Preserve the verified prior Worker version
+   and checked artifact for rollback if this actual path fails.
 
 ## Verification and publication
 
@@ -128,12 +202,23 @@ and headers. The historical receipts above predate the optional-answer and
 confirmation-dialog changes. Local email
 binding simulation and mocked tests do not establish real delivery.
 
-Publish the verified website commit to GitHub Pages and the identical clean source
-to the existing Sites project, preserving its audience. Verify the live form and
-archive links afterward. Keep credentials and request contents out of source and
+Deploy the consultation Worker separately from the public website. The public
+website's production artifact is `out/evergreen-production/` on Cloudflare;
+GitHub Pages publishing has been retired. Preserve the private Sites archive's
+audience. Keep credentials and request contents out of source and
 logs. Cloudflare accepting an email is not a guarantee of inbox placement.
 
-## Sources checked November 15, 2026
+## Sources
+
+Cloudflare domain configuration, Workers API and verified-destination pricing
+were rechecked November 18, 2026. The account's Paid-only Email Sending onboarding
+screen determines the actual available plan; the sender instead uses existing
+Zoho CPaaS. The other original references below were checked November 15, 2026.
+
+Zoho's [send API](https://www.zoho.com/cpaas/help/api/email-sending.html),
+[24-hour idempotency policy](https://www.zoho.com/cpaas/help/idempotency_key.html),
+and [specific receipt API](https://www.zoho.com/cpaas/help/api/get-specific-email-log.html)
+were rechecked November 18, 2026 for the replacement transport.
 
 - [Email Worker API](https://developers.cloudflare.com/email-service/api/send-emails/workers-api/)
 - [Fixed-destination bindings](https://developers.cloudflare.com/email-service/configuration/send-bindings/)

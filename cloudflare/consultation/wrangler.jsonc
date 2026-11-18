@@ -5,17 +5,11 @@
   "main": "worker.mjs",
   "compatibility_date": "2026-04-01",
   "workers_dev": true,
+  "observability": { "enabled": false },
   "vars": {
-    "ALLOWED_ORIGINS": "https://tycheventuresllc.com,https://canyon-and-vine-electrology.sukhpalc.chatgpt.site,https://evergreenelectrolysisstudio.com",
-    "RECIPIENT_EMAIL": "sukhpalc@gmail.com",
-    // Required: an address on a domain onboarded to Cloudflare Email Service.
-    "SENDER_EMAIL": "consultation@tycheventuresllc.com"
+    "ALLOWED_ORIGINS": "https://tycheventuresllc.com,https://canyon-and-vine-electrology.sukhpalc.chatgpt.site,https://evergreenelectrolysisstudio.com"
   },
-  "send_email": [
-    {
-      "name": "CONSULTATION_EMAIL",
-      "destination_address": "sukhpalc@gmail.com"
-    }
-  ]
+  // The private service renders and sends only the fixed Nav inquiry template.
+  "services": [{ "binding": "INQUIRY_MAIL", "service": "evergreen-intake-stage-mail" }]
   // Set TURNSTILE_SECRET_KEY with `wrangler secret put`; never put it in this file.
 }

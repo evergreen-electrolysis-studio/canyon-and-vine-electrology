@@ -53,6 +53,7 @@
     let sent = false;
     let returningHome = false;
     let active = true;
+    let deliveryAttempt = null;
     const listeners = [];
     const listen = (element, event, handler, options) => {
       element.addEventListener(event, handler, options);
@@ -227,6 +228,15 @@
       if (!endpoint || !siteKey || !token) { message("Please complete the security check before sending."); return; }
       // Disabled controls are excluded from FormData, so capture before locking.
       const data = new FormData(form);
+      const payload = {
+        firstName: data.get("firstName"), lastName: data.get("lastName"), phone: normalized,
+        email: String(data.get("email") || "").trim(), website: data.get("website"),
+        treatmentAreas: data.getAll("treatmentAreas"), previousMethods: data.getAll("previousMethods"),
+        contactPreference: data.get("contactPreference") || "", notes: String(data.get("notes") || "").trim(),
+        permissionVersion: data.get("permissionVersion"), ...(interest ? { requestType: "interest" } : {}),
+      };
+      const fingerprint = JSON.stringify(payload);
+      if (!deliveryAttempt || deliveryAttempt.fingerprint !== fingerprint) deliveryAttempt = { fingerprint, submissionId: crypto.randomUUID(), startedAt: Date.now() };
       pending = true; button.disabled = true; button.textContent = interest ? "Joining…" : "Sending request…";
       lockFields(true);
       form.setAttribute("aria-busy", "true");
@@ -234,18 +244,17 @@
       try {
         const response = await fetch(endpoint, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            firstName: data.get("firstName"), lastName: data.get("lastName"), phone: normalized,
-            email: String(data.get("email") || "").trim(), website: data.get("website"), turnstileToken: token,
-            treatmentAreas: data.getAll("treatmentAreas"), previousMethods: data.getAll("previousMethods"),
-            contactPreference: data.get("contactPreference") || "", notes: String(data.get("notes") || "").trim(),
-            permissionVersion: data.get("permissionVersion"),
-            ...(interest ? { requestType: "interest" } : {}),
-          }),
+          body: JSON.stringify({ ...payload, turnstileToken: token, submissionId: deliveryAttempt.submissionId, startedAt: deliveryAttempt.startedAt }),
           signal: AbortSignal.timeout(20000),
         });
         const result = await response.json();
         if (!active) return;
+        if (result.code === "retry_expired" || result.code === "payload_changed") {
+          message("We couldn’t confirm this request. Please email nav@evergreenelectrolysisstudio.com so Nav can check before you submit again.");
+          button.textContent = actionLabel;
+          status.focus();
+          return;
+        }
         if (!response.ok || result.ok !== true) throw new Error("Delivery not confirmed");
         sent = true; button.textContent = interest ? "You’re on the list" : "Request sent";
         if (securityStatus) securityMessage("Security check complete.");

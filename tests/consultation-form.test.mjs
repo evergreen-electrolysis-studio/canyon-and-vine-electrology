@@ -86,7 +86,7 @@ function fixture({ configured = true, modalSupported = true, theme, requestType,
       get(name) { return this.values[name]; }
       getAll(name) { return this.multiple[name] ?? []; }
     },
-    AbortSignal, fetch: async (url, options) => { calls.push({ url, ...options }); if (response instanceof Error) throw response; return response; },
+    crypto, AbortSignal, fetch: async (url, options) => { calls.push({ url, ...options }); if (response instanceof Error) throw response; return response; },
   });
   const runController = () => vm.runInContext(controller, context);
   const mutate = () => observers.forEach(callback => callback());
@@ -137,7 +137,10 @@ test("sends normalized full US phone and optional empty email after the security
   assert.equal(f.button.disabled, false);
   await f.submit();
   assert.equal(f.calls.length, 1);
-  assert.deepEqual(JSON.parse(f.calls[0].body), { firstName: "Alex", lastName: "Example", phone: "+17075550123", email: "", website: "", turnstileToken: "valid-token", treatmentAreas: [], previousMethods: [], contactPreference: "", notes: "", permissionVersion: "2026-11-15" });
+  const { submissionId, startedAt, ...payload } = JSON.parse(f.calls[0].body);
+  assert.match(submissionId, /^[0-9a-f-]{36}$/);
+  assert(Number.isSafeInteger(startedAt));
+  assert.deepEqual(payload, { firstName: "Alex", lastName: "Example", phone: "+17075550123", email: "", website: "", turnstileToken: "valid-token", treatmentAreas: [], previousMethods: [], contactPreference: "", notes: "", permissionVersion: "2026-11-15" });
   assert.match(f.status.textContent, /request has been sent/);
   assert.equal(f.fields.phone.value, "(707) 555-0123");
   assert.equal(f.fields.phone.disabled, true);
@@ -157,6 +160,24 @@ test("blocks missing names, incomplete phones, and absent security tokens", asyn
   }
   const f = fixture(); await f.submit(); assert.equal(f.calls.length, 0);
   assert.match(f.status.textContent, /security check/);
+});
+
+test("uncertain delivery retries the same attempt and changed details get a new attempt", async () => {
+  const f = fixture({ response: new Error("Connection closed after acceptance") });
+  f.widgetOptions.callback("first-token");
+  await f.submit();
+  const first = JSON.parse(f.calls[0].body);
+  f.widgetOptions.callback("fresh-token");
+  await f.submit();
+  const retry = JSON.parse(f.calls[1].body);
+  assert.equal(retry.submissionId, first.submissionId);
+  assert.equal(retry.startedAt, first.startedAt);
+  assert.notEqual(retry.turnstileToken, first.turnstileToken);
+  assert.match(f.status.textContent, /couldn’t confirm delivery/);
+  f.fields.notes.value = "Please call after 3 pm.";
+  f.widgetOptions.callback("third-token");
+  await f.submit();
+  assert.notEqual(JSON.parse(f.calls[2].body).submissionId, first.submissionId);
 });
 
 test("formats phone digits during typing, before blur", async () => {
