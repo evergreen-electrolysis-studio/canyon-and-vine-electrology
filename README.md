@@ -8,30 +8,39 @@ five specialist research reports, a reviewed synthesis, current user decisions,
 and corrections to older planning assumptions. The repository's
 [AGENTS.md](AGENTS.md) makes this review part of future project work.
 
-A responsive site for a private electrology practice in American Canyon,
-California. The site uses launch-ready business copy while the phone, email,
-suite address, business hours, and license number remain clearly marked
-placeholders for final replacement.
+A responsive prelaunch website for Evergreen Electrolysis Studio in American
+Canyon, California, planned for summer 2027. The live site uses the approved
+Design 09 and welcomes clients from Napa, Solano, and Marin counties.
 
-Public site: https://tycheventuresllc.com/canyon-and-vine-electrology/
+Public site: https://evergreenelectrolysisstudio.com/
 
-Design archive: https://tycheventuresllc.com/canyon-and-vine-electrology/concepts/
+Source: https://github.com/evergreen-electrolysis-studio/canyon-and-vine-electrology
 
-## Evergreen domain migration
+## Hosting and ownership
 
-The new GitHub organization is
+The website repository belongs to
 [Evergreen Electrolysis Studio LLC](https://github.com/evergreen-electrolysis-studio),
-owned by `sscheema24` on GitHub Free. Repository transfer and domain cutover are
-still pending; see [execution status](docs/electrology/MIGRATION_STATUS.md).
+with `sscheema24` as sole organization owner. The migration, old-URL redirects,
+real form-to-inbox delivery, automatic deployment and temporary-access cleanup
+are complete; see [execution status](docs/electrology/MIGRATION_STATUS.md).
 
-The selected Design 09 is now prepared as a separate, summer 2027 prelaunch
-homepage in `app/evergreen/page.tsx`. Run `pnpm run build:evergreen` and
-`pnpm run preview:evergreen` to review the Cloudflare static-assets artifact.
-The preview does not send inquiries to the real inbox. See the
-[website build and hosting instructions](cloudflare/website/README.md).
-The earlier homepage and design archive remain preserved.
+Cloudflare hosts the production static site. GitHub Actions tests changes and
+publishes successful `main` builds using a credential limited to the existing
+`evergreen-website` Worker. The production environment permits only `main`.
+Native Cloudflare Builds and GitHub Pages publishing are not used.
 
-## What the mockup includes
+The summer 2027 homepage source is `app/evergreen/page.tsx`. Run
+`pnpm run build:evergreen` and `pnpm run preview:evergreen` for the isolated,
+noindex preview; it cannot send inquiries to the real inbox. See the
+[website build and hosting instructions](cloudflare/website/README.md) for the
+production export, deployment, verification and rollback process.
+
+The former Tyche website paths now redirect to the new public site. Earlier
+homepages and concepts remain preserved in source and frozen snapshots. The
+existing Sites concept archive is private to its owner. Current interest-list
+inquiries go to the owner's Gmail; the planned Zoho transition is separate work.
+
+## Preserved website and design work
 
 - launch-ready positioning and consultation calls to action
 - face, selected body, hormonal-hair, personalized planning, grooming, precision,
@@ -63,11 +72,11 @@ replace the separate results, suitability, and medical-information disclaimer.
 
 ## Local development
 
-Requires Node.js `>=22.13.0`.
+Use the tested Node.js version in `.node-version` (24.22.1) and the pinned
+`packageManager` version in `package.json` (pnpm 11.9.0).
 
 ```bash
-corepack enable
-pnpm install
+pnpm install --frozen-lockfile
 pnpm run dev
 ```
 
@@ -80,8 +89,9 @@ pnpm test
 pnpm run lint
 ```
 
-`npm run export:github-pages` creates the static `github-pages/` artifact used
-by the GitHub Pages deployment workflow.
+`pnpm run export:github-pages` preserves the historical static export and its
+regression checks. It is not the production deployment artifact. The production
+static export is `out/evergreen-production/`; only that directory is deployed.
 
 ## Before using the site with customers
 
