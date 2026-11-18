@@ -67,8 +67,8 @@ test("sends a validated consultation to the fixed owner and normalizes the US ph
   assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
   assert.equal(sent[0].from, INQUIRY_SENDER);
   assert.equal(sent[0].replyTo, "jane@example.com");
-  assert.match(sent[0].text, /First name: Jane\n/);
-  assert.match(sent[0].text, /Phone: \+17075550123/);
+  assert.match(sent[0].text, /Name: Jane Smith\n/);
+  assert.match(sent[0].text, /Phone: \+1 \(707\) 555-0123/);
   assert.equal(verified.length, 1);
   assert.equal(verified[0][0], "https://challenges.cloudflare.com/turnstile/v0/siteverify");
   assert.equal(verified[0][1].body.get("secret"), "test-secret");
@@ -84,7 +84,7 @@ for (const email of [undefined, "", "   "]) {
     assert.equal(result.status, 200);
     assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
     assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
-    assert.match(sent[0].text, /Email: Not provided/);
+    assert.doesNotMatch(sent[0].text, /Email:|Not provided/);
   });
 }
 
@@ -94,9 +94,8 @@ test("accepts names with Unicode and punctuation", async () => {
   assert.match(sent[0].text, /María-José/);
 });
 
-test("includes optional answers, the exact versioned notice, and server receipt context in the owner email", async () => {
+test("includes supplied answers with readable spacing and Pacific receipt time, without boilerplate", async () => {
   const { handler, env, sent } = harness();
-  const startedAt = Date.now();
   const result = await handler(request({
     ...validSubmission,
     treatmentAreas: ["Upper lip", "Chin & jawline"],
@@ -112,23 +111,30 @@ test("includes optional answers, the exact versioned notice, and server receipt 
   assert.match(message.text, /Preferred contact method: Email\n/);
   assert.match(message.text, /Treatment areas: Upper lip, Chin & jawline\n/);
   assert.match(message.text, /Previous hair-removal methods: Shaving, Laser or IPL\n/);
-  assert.match(message.text, /Questions \/ notes:\n  I have a scheduling question\.\n  Are afternoons available\?\n/);
-  assert.ok(message.text.includes(`Contact permission notice version: ${fields.permissionVersion}\n${fields.permissionText}`));
-  assert.ok(message.text.includes(`Website: ${ORIGIN}\n`));
-  const timestamp = message.text.match(/Received \(UTC\): (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\n/)?.[1];
-  assert.ok(timestamp);
-  assert.ok(Date.parse(timestamp) >= startedAt && Date.parse(timestamp) <= Date.now());
+  assert.match(message.text, /\n\nQuestions \/ notes:\n  I have a scheduling question\.\n  Are afternoons available\?$/);
+  assert.match(message.text, /^Received: .+ at \d{1,2}:\d{2} [AP]M P[SD]T \(Pacific Time\)\n\nName: Jane Smith/);
+  assert.doesNotMatch(message.text, /Website:|permission notice|2026-11-15|OPTIONAL|Not specified|Not provided|A visitor|American Canyon|nav@evergreenelectrolysisstudio/);
+  assert.equal(message.text.includes(fields.permissionText), false);
 });
 
-test("legacy submissions remain valid without claiming the new contact notice was supplied", async () => {
+test("legacy submissions remain valid and omit unfilled fields and notice metadata", async () => {
   const { handler, env, sent } = harness();
   assert.equal((await handler(request(), env)).status, 200);
-  assert.match(sent[0].text, /Preferred contact method: Not specified/);
-  assert.match(sent[0].text, /Treatment areas: Not specified/);
-  assert.match(sent[0].text, /Previous hair-removal methods: Not specified/);
-  assert.match(sent[0].text, /Questions \/ notes:\n  Not provided/);
-  assert.match(sent[0].text, /Contact permission notice version: Not supplied \(legacy form\)/);
+  assert.doesNotMatch(sent[0].text, /Preferred contact method:|Treatment areas:|Previous hair-removal methods:|Questions \/ notes:|permission notice|Not specified|Not provided/);
   assert.equal(sent[0].text.includes(fields.permissionText), false);
+});
+
+test("receipt time uses the Pacific calendar date and daylight-saving offset", () => {
+  const submission = { requestType: 'consultation', firstName: 'Jane', lastName: 'Smith', phone: '+17075550123', email: '', contactPreference: '', treatmentAreas: [], previousMethods: [], notes: '' };
+  for (const [instant, expected] of [
+    ['2026-11-18T23:05:00.000Z', 'November 18, 2026 at 3:05 PM PST'],
+    ['2027-07-01T22:05:00.000Z', 'July 1, 2027 at 3:05 PM PDT'],
+    ['2026-11-19T07:05:00.000Z', 'November 18, 2026 at 11:05 PM PST'],
+  ]) {
+    const message = inquiryEmail(submission, ORIGIN, instant);
+    assert.equal(message.text, `Received: ${expected} (Pacific Time)\n\nName: Jane Smith\nPhone: +1 (707) 555-0123`);
+    assert.equal(message.subject, 'New Evergreen Electrolysis consultation request');
+  }
 });
 
 for (const contactPreference of ["", "Call", "Text"]) {
@@ -140,7 +146,9 @@ for (const contactPreference of ["", "Call", "Text"]) {
     }), env);
     assert.equal(result.status, 200);
     assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
-    assert.ok(sent[0].text.includes(`Preferred contact method: ${contactPreference || "Not specified"}`));
+    if (contactPreference) assert.ok(sent[0].text.includes(`Preferred contact method: ${contactPreference}`));
+    else assert.doesNotMatch(sent[0].text, /Preferred contact method:/);
+    assert.doesNotMatch(sent[0].text, /Questions \/ notes:|Treatment areas:|Previous hair-removal methods:|Email:|Not specified|Not provided/);
   });
 }
 
@@ -151,10 +159,12 @@ test("deduplicates selections and accepts single exclusive options", async () =>
   }), env);
   assert.equal(duplicate.status, 200);
   assert.match(sent[0].text, /Treatment areas: Upper lip\n/);
-  assert.match(sent[0].text, /Previous hair-removal methods: Shaving\n/);
+  assert.match(sent[0].text, /Previous hair-removal methods: Shaving(?:\n|$)/);
   assert.equal((await handler(request({
     ...validSubmission, treatmentAreas: ["Not sure yet"], previousMethods: ["None"],
   }), env)).status, 200);
+  assert.match(sent[1].text, /Treatment areas: Not sure yet/);
+  assert.match(sent[1].text, /Previous hair-removal methods: None/);
 });
 
 test("accepts the 500-character note boundary with Unicode and line breaks", async () => {
@@ -463,7 +473,7 @@ test("configured Evergreen origin requires its own Turnstile hostname while lega
   assert.equal(response.headers.get("Access-Control-Allow-Origin"), evergreen);
   assert.equal(accepted.sent.length, 1);
   assert.equal(accepted.sent[0].to, INQUIRY_SENDER);
-  assert(accepted.sent[0].text.includes(`Website: ${evergreen}\n`));
+  assert.doesNotMatch(accepted.sent[0].text, /Website:|https:\/\//);
 
   for (const hostname of ["attacker.example", new URL(ORIGIN).hostname]) {
     const mismatch = harness({
@@ -511,17 +521,15 @@ test("deployment configuration sends both inquiry types from Evergreen only to N
 });
 
 
-test("delivers interest signups with purpose-specific consent and no appointment promise", async () => {
+test("interest signup subject identifies the request while its body contains only entered details and time", async () => {
   const { handler, env, sent } = harness({ verify: async () => Response.json({ success: true, hostname: new URL(ORIGIN).hostname, action: "interest_list" }) });
   const result = await handler(request({ ...validSubmission, email: "", requestType: "interest", permissionVersion: "interest-2026-11-17" }), env);
   assert.equal(result.status, 200);
   assert.equal(sent.length, 1);
   assert.equal(sent[0].to, "nav@evergreenelectrolysisstudio.com");
   assert.equal(sent[0].subject, "New Evergreen Electrolysis Studio interest-list signup");
-  assert.match(sent[0].text, /summer 2027 opening/);
-  assert.match(sent[0].text, /No appointment was requested or booked/);
-  assert.match(sent[0].text, /opening updates and consultation availability/);
-  assert.match(sent[0].text, /removed at any time/);
+  assert.match(sent[0].text, /Name: Jane Smith\nPhone: \+1 \(707\) 555-0123$/);
+  assert.doesNotMatch(sent[0].text, /summer 2027|appointment|opening updates|removed at any time|permission|Website:|Email:|Not provided/);
   assert.equal(Object.hasOwn(sent[0], "replyTo"), false);
 });
 
