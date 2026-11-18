@@ -117,4 +117,3 @@ export function inquiryEmail(submission, origin, receivedAt) {
     ...(submission.email ? { replyTo: submission.email } : {}),
   };
 }
-
