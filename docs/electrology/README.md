@@ -17,6 +17,8 @@ The [proposed website migration plan](WEBSITE_MIGRATION_PLAN.md) records the sub
 
 The [migration execution status](MIGRATION_STATUS.md) records authorized work, the verified starting commit and outstanding account actions. Consult it before resuming migration tasks.
 
+The [SEO and discovery review](SEO_AND_DISCOVERY_REVIEW.md) records the subsequent sharing-preview diagnosis, technical SEO baseline, correction verification status, and current Google Search Console/Business Profile guidance for the summer 2027 opening. Read its explicit status before treating proposed fixes or account setup as completed.
+
 ## Five research assignments
 
 | Report | Subject |
