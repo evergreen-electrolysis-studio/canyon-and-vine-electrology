@@ -96,24 +96,33 @@ export function normalizeInquiry(body, now = Date.now()) {
   return { submissionId: body.submissionId, startedAt: body.startedAt, origin: body.origin, submission };
 }
 
-export function inquiryEmail(submission, origin, receivedAt) {
+const receivedTime = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles', month: 'long', day: 'numeric', year: 'numeric',
+  hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+});
+
+export function inquiryEmail(submission, _origin, receivedAt) {
   const interest = submission.requestType === 'interest';
-  const notice = interest ? interestList : fields;
+  const phone = submission.phone.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '+1 ($1) $2-$3');
+  const contact = [
+    `Name: ${submission.firstName} ${submission.lastName}`,
+    `Phone: ${phone}`,
+    ...(submission.email ? [`Email: ${submission.email}`] : []),
+    ...(submission.contactPreference ? [`Preferred contact method: ${submission.contactPreference}`] : []),
+  ];
+  const details = [
+    ...(submission.treatmentAreas.length ? [`Treatment areas: ${submission.treatmentAreas.join(', ')}`] : []),
+    ...(submission.previousMethods.length ? [`Previous hair-removal methods: ${submission.previousMethods.join(', ')}`] : []),
+  ];
   return {
     to: INQUIRY_SENDER, from: INQUIRY_SENDER,
     subject: interest ? 'New Evergreen Electrolysis Studio interest-list signup' : 'New Evergreen Electrolysis consultation request',
     text: [
-      interest ? 'A visitor joined the Evergreen Electrolysis Studio interest list for the summer 2027 opening. No appointment was requested or booked.' : 'A visitor requested a consultation with Evergreen Electrolysis.',
-      '', `First name: ${submission.firstName}`, `Last name: ${submission.lastName}`, `Phone: ${submission.phone}`,
-      `Email: ${submission.email || 'Not provided'}`, `Preferred contact method: ${submission.contactPreference || 'Not specified'}`, '',
-      interest ? 'INTEREST LIST DETAILS (OPTIONAL)' : 'CONSULTATION DETAILS (OPTIONAL)',
-      `Treatment areas: ${submission.treatmentAreas.join(', ') || 'Not specified'}`,
-      `Previous hair-removal methods: ${submission.previousMethods.join(', ') || 'Not specified'}`,
-      'Questions / notes:', ...((submission.notes || 'Not provided').split('\n').map(line => `  ${line}`)), '',
-      `Received (UTC): ${receivedAt}`, `Website: ${origin}`,
-      ...(submission.permissionVersion ? [`Contact permission notice version: ${submission.permissionVersion}`, notice.permissionText] : ['Contact permission notice version: Not supplied (legacy form).']),
-      '', 'Evergreen Electrolysis Studio', 'American Canyon, CA', INQUIRY_SENDER,
-    ].join('\n'),
+      `Received: ${receivedTime.format(new Date(receivedAt))} (Pacific Time)`,
+      contact.join('\n'),
+      ...(details.length ? [details.join('\n')] : []),
+      ...(submission.notes ? [`Questions / notes:\n${submission.notes.split('\n').map(line => `  ${line}`).join('\n')}`] : []),
+    ].join('\n\n'),
     ...(submission.email ? { replyTo: submission.email } : {}),
   };
 }
