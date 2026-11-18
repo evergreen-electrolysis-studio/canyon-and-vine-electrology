@@ -11,11 +11,12 @@ The repository is now
 https://github.com/evergreen-electrolysis-studio/canyon-and-vine-electrology,
 with its identity/history preserved and `sscheema24` admin access verified.
 Legacy project Pages is unpublished and its old URLs redirect successfully.
-The remote `main` still holds baseline `074c9b2`; migration source must be
-pushed before verifying GitHub Actions production deployment. Temporary
-`thetinycart` membership/push access cleanup also remains pending. The Sites
-project is a verified owner-only private concept archive and should be
-preserved. Current versions and evidence are in
+Migration PR #1 is merged at `62706386a2e0fe2660f4fc87fc83b27546896ece`.
+The automatic main-push [Actions run 44249578917](https://github.com/evergreen-electrolysis-studio/canyon-and-vine-electrology/actions/runs/44249578917)
+passed checks and deployed production. All 15 checked public files match that
+run's production artifact byte for byte. The Sites project is a verified
+owner-only private concept archive and should be preserved. Current versions,
+verification evidence, and final access-cleanup status are in
 `docs/electrology/MIGRATION_STATUS.md`.
 
 Verified staging preview:
@@ -114,7 +115,12 @@ user API tokens rather than account tokens, so it is not the selected path.
 Do not enable a second native deployment pipeline for this Worker. See
 [Workers Builds token configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
-The owner must complete this credential setup before the first migration merge:
+The owner created the scoped account token through the existing Worker's
+external-CI setup and stored it directly as the GitHub `production` environment
+secret. That environment permits only `main`, with no tags. The successful
+main-push deployment verifies this credential on the unattended path. No token
+value is stored in this repository. For replacement or rotation, preserve
+these restrictions:
 
 1. In Cloudflare, select the main account
    `4fe85a31fa782a90b1758694d2314e0a`, then **Manage account → Account API tokens
@@ -137,15 +143,16 @@ Deploying a new version of an existing Worker needs Editor; changing its domain
 connection would require additional zone permissions and is outside this job.
 No Global API Key, broad default token, or Cloudflare GitHub App is required.
 
-Push the migration feature branch and verify the pull-request checks first.
-Hold the first merge into `main` until the environment restriction and secret
-are configured. Include removal of the old Pages workflow in that merge, and
-check for any already-running legacy Pages job. The merge then exercises the
-actual automatic production path. Verify that run's commit and deployed Worker
-version plus the public checks above before calling unattended deployment
-complete or removing temporary migration access. Keep the separate staging
-Worker for previews. Future rollback redeployments can use a manual run on
-`main`; changing the desired source requires a reviewed source revert first.
+The first migration merge removed the old Pages workflow and completed the
+actual automatic main-push path. For future changes, verify pull-request checks,
+then follow the main-push deployment through its public checks. Compare served
+bytes with the downloaded artifact from that exact Actions run: Linux and macOS
+builds can produce different CSS hashes, so a separate local build is not the
+reference for a CI deployment. Keep the separate staging Worker for previews.
+Future rollback redeployments can use a manual run on `main`; changing the
+desired source requires a reviewed source revert first. See the migration
+status document for final cleanup of temporary migration access and the unused
+Cloudflare GitHub App.
 
 ## Routing and rollback
 
