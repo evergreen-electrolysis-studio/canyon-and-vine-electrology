@@ -157,7 +157,7 @@ test("every exported page dependency resolves locally and only the reviewed form
   }
   assert.deepEqual((await files(productionDirectory)).sort(), [...expectedFiles].sort(), "No unrelated source, archive or assets may leak into deployment");
   const executableScripts = [...production.matchAll(/<script\b([^>]*)>[\s\S]*?<\/script>/g)].filter(([, attributes]) => !/\btype="application\/ld\+json"/.test(attributes)).map(([tag]) => tag);
-  assert.deepEqual(executableScripts, ['<script src="/consultation-form.js?v=20261118-submit" defer></script>']);
+  assert.deepEqual(executableScripts, ['<script src="/consultation-form.js?v=20261118-inquiry-mail" defer></script>']);
   assert.doesNotMatch(production, /modulepreload/);
   for (const asset of ["consultation-form.js", "evergreen-hero-monochrome-v1.webp", "evergreen-portrait-monochrome-v1.webp", "favicon.svg", "icon-192.png", "apple-touch-icon.png"]) {
     assert.deepEqual(await readFile(path.join(productionDirectory, asset)), await readFile(path.join(projectRoot, "public", asset)), `${asset} must retain its reviewed bytes`);
