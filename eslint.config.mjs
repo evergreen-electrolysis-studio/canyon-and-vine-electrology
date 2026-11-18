@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
     // Local migration artifacts and earlier scratch checkouts are not source.
     "dist/**",
     "work/**",
-    ".wrangler/**",
+    "**/.wrangler/**",
     "outputs/**",
     "next-env.d.ts",
   ]),
