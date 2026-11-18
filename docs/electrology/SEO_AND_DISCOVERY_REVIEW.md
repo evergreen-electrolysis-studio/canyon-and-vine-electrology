@@ -30,7 +30,7 @@ These findings were reported from the parent review's actual source and public-e
 
 The reported iMessage mismatch has a concrete source: sharing metadata references the original green image while the production page renders that image in grayscale. The `d04` query value is historical; it does not by itself prove the live page uses Design 04. Changing page CSS alone cannot repair the image fetched independently by a sharing client.
 
-These checks support a sound technical starting point. They do **not** confirm actual Google indexing, rankings, selected snippets or pictures, Search Console ownership, or real-user Core Web Vitals. Those outcomes remain unverified in this record.
+These checks support a sound technical starting point. They do **not** confirm actual Google indexing, rankings, selected snippets or pictures, Search Console ownership, or real-user Core Web Vitals. Those outcomes were unverified in the baseline; the later Search Console setup below establishes the current Google discovery and live-fetch status.
 
 ## Deployed correction
 
@@ -53,7 +53,7 @@ A new image filename gives sharing crawlers a distinct asset URL. Cached preview
 - All **18** checked public files (homepage, 15 referenced assets, robots and sitemap) match that exact run's downloaded production artifact byte for byte. HTTPS fetches succeed; the share image returns `image/webp`. Three HTTP/www canonical redirects preserve path/query, and an unknown route returns a genuine 404. A Googlebot-labelled request returns the same current HTML; this is not evidence of an actual Google crawl or index entry.
 - Desktop (1280 px) and mobile (390 px) layouts and both raw monochrome portraits were visually checked. The live desktop page renders correctly with no recorded browser console errors. Form source, controller, destination and behavior are unchanged; no new email was sent. The earlier user-confirmed inbox test remains the inquiry-delivery evidence in [migration status](MIGRATION_STATUS.md).
 - **Apple-path reproduction and remedy:** before deployment, `LPMetadataProvider` fetched the exact root URL and returned the green 1024×640 portrait with no icon. After deployment, a new fetch of the **same exact root URL, without a cache-busting query**, returned the correct 1024×640 monochrome portrait and an icon. The exported Apple image has equal R/G/B values at every pixel; the original baseline did not. This verifies actual WebP decoding through Apple's metadata framework on this Mac, so a speculative JPEG fallback was unnecessary.
-- The user explicitly confirmed **a fresh iPhone iMessage preview is now black and white**. No claim is made that every previously cached message card was refreshed. Google index status, selected result imagery/snippets and measured Core Web Vitals remain unverified; Search Console setup is the next recommended step, not a completed account action.
+- The user explicitly confirmed **a fresh iPhone iMessage preview is now black and white**. No claim is made that every previously cached message card was refreshed. The later Search Console setup below establishes current discovery and live-fetch status. Selected search-result imagery/snippets and measured Core Web Vitals remain unverified.
 
 Local evidence is retained in ignored `outputs/seo-review/`: `production-verification.json`, the exact `ci-44253302200` artifact, desktop/mobile screenshots, `apple-link-baseline.json/.png`, `apple-link-postdeployment.json/.png`, `apple-preview-color-comparison.json`, and the reusable `apple-link-preview.swift` fetcher. These are verification evidence, not new public website pages.
 
@@ -65,11 +65,28 @@ Keep useful images in standard HTML image elements, with meaningful text alterna
 
 Use only facts currently known in structured data. Minimal `WebSite` data is appropriate now. Google-supported `LocalBusiness` rich results require the physical business address; defer a complete local-business implementation until the actual premises and publishable contact facts are confirmed. Do not insert a placeholder address, invented hours, unverified licenses, or fabricated reviews to satisfy a validator. [S7]
 
-## Search Console: the next useful Google step
+## Search Console setup — completed November 17, 2026
 
-Website ownership verification can proceed now; it does not depend on forming an LLC. Recommended next action is to add the **Domain property** `evergreenelectrolysisstudio.com` in the owner's Google Search Console account and verify through Cloudflare DNS. Then submit the live sitemap, inspect the homepage, and request indexing if appropriate. No Search Console account/property action is recorded as completed by this review. [S8–S9]
+The user asked to use their signed-in Safari session and let the assistant finish setup. The main Google account identity was verified in the Google UI. The Domain property **`evergreenelectrolysisstudio.com`** is now verified; it covers protocol and subdomain variants. [S8]
 
-After setup, check Google's reported indexing state and selected canonical, crawl errors, and later search impressions. Requesting a crawl does not guarantee inclusion or timing; repeated requests do not accelerate it. Google says recrawling can take days to weeks. Performance lab results, if collected later, must be distinguished from real-user Core Web Vitals. [S9]
+| Item | Verified result |
+|---|---|
+| Ownership | Google displayed **Ownership verified**, method **Domain name provider** |
+| DNS proof | One Google verification TXT record added at the Cloudflare apex, TTL Auto; both authoritative nameservers return it. Existing website records were preserved. No Google-to-Cloudflare account authorization was needed. |
+| Sitemap | `https://evergreenelectrolysisstudio.com/sitemap.xml` submitted; Google displayed **Sitemap processed successfully**, last read **11/17/26**, **1 discovered page** |
+| Indexed-data report | Homepage **Discovered – currently not indexed**; no prior crawl or Google-selected canonical recorded at setup |
+| Live inspection | **URL is available to Google**, **Page can be indexed**; smartphone inspection at **November 17, 2026, 10:56:28 PM America/Los_Angeles** |
+| Live crawl details | Crawl allowed **Yes**; page fetch **Successful**; indexing allowed **Yes**; declared canonical matches the HTTPS apex |
+| Google-rendered page | Google's smartphone screenshot visibly renders the final layout, prelaunch text and monochrome portrait correctly |
+| Indexing request | Google displayed **Indexing requested** and confirmed the homepage was added to a priority crawl queue |
+
+The initial sitemap table briefly showed “Couldn't fetch” immediately after submission; its detail page then showed successful processing with one discovered page. No resubmission or configuration change was required. The final Google result is the evidence, rather than the transient initial label.
+
+Retain the verification TXT record so ownership remains valid. Do not overwrite other verification records if future owners are added. The verification value is intentionally omitted from this public audit. Search Console does not require changing the planned Zoho mailbox arrangement. [S8]
+
+Setup is complete; actual indexing is **not yet confirmed**. Live-test success and an accepted indexing request do not guarantee indexing, rankings, timing, a Google-selected canonical, or chosen search-result images. Do not repeatedly request indexing to try to advance the queue. Revisit the property after Google processes it, then inspect indexing and search impressions. Google says crawling may take days to weeks. No recurring monitoring automation was created. [S9, S19–S20]
+
+Local screenshots are retained under ignored `outputs/search-console/`: `sitemap-success.png`, `google-live-test.png`, and `indexing-requested.png`. The pre-existing user Search Console tab was preserved; the temporary Cloudflare tab was closed.
 
 ## Google Business Profile: recommended timing
 
@@ -79,7 +96,7 @@ Google's published eligibility rules do **not** impose LLC formation as a univer
 
 Google allows a future-opening profile with an opening date up to **one year ahead**; **month and year are sufficient**. After the date is entered and the profile verified, it can appear **90 days before opening**. For a July 2027 opening, that means approximately April 2027. This is Google's current policy, not a promise of an exact display date or successful verification. [S14]
 
-**For Evergreen:** do Search Console groundwork now. Wait to finalize the Business Profile until the real address, customer-facing name, and opening month are reliable and the business can supply the requested verification evidence. The planned January LLC filing may make document consistency easier, but January 1 is not a Google eligibility deadline. Set a truthful future opening date during setup so the business is represented as upcoming.
+**For Evergreen:** Search Console groundwork is complete; monitor its reported indexing status as Google processes the request. Wait to finalize the Business Profile until the real address, customer-facing name, and opening month are reliable and the business can supply the requested verification evidence. The planned January LLC filing may make document consistency easier, but January 1 is not a Google eligibility deadline. Set a truthful future opening date during setup so the business is represented as upcoming.
 
 Apply these platform requirements when setup is authorized:
 
@@ -115,6 +132,8 @@ All links below were checked during this review. Google sources are current plat
 | S14 | [Google: future opening date](https://support.google.com/business/answer/9174409?hl=en) | One-year date window and 90-day preopening visibility |
 | S15 | [Google: business representation guidelines](https://support.google.com/business/answer/3038177?hl=en) | Accurate name/address/model/hours; no fictitious locations |
 | S16 | [American Canyon: business-license information](https://www.americancanyon.gov/files/assets/city/v/1/documents/business/business-license-info-flyer.pdf) | City requirement before conducting business; official search-indexed PDF text reviewed because the main city licensing page returned 403 |
+| S19 | [Google: Sitemaps report](https://support.google.com/webmasters/answer/7451001?hl=en) | Submission, processing status and discovered pages |
+| S20 | [Google: URL Inspection](https://support.google.com/webmasters/answer/9012289?hl=en) | Indexed data versus live test, rendering and indexing requests |
 | S18 | [Apple: rich previews for Messages](https://developer.apple.com/documentation/technotes/tn3156-create-rich-previews-for-messages) | Open Graph, titles, icon/image sizing, and redirect behavior |
 | S17 | [California Board: FAQs](https://www.barbercosmo.ca.gov/forms_pubs/publications/faqs.shtml) | Individual and establishment licensing; location/ownership specificity |
 

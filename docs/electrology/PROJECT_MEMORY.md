@@ -22,6 +22,7 @@ Last reconciled: **2026-11-17**. This file records user preferences and project 
 | Source ownership | Repository transferred to **`evergreen-electrolysis-studio/canyon-and-vine-electrology`**, with **`sscheema24` admin access verified**, history preserved, and migration PR #1 merged | GitHub ownership proves LLC formation; see migration status for temporary-access cleanup |
 | Organization name | User selected **Evergreen Electrolysis Studio LLC**; spelling and saved display name verified | GitHub display naming creates or proves a legal entity |
 | Public website hosting | Cloudflare Worker **`evergreen-website`** serves the apex; GitHub Actions main-push deployment, HTTPS/canonical redirects and old URL fallback are verified; project Pages is unpublished | Zoho migration, private intake or operating readiness is complete |
+| Google Search Console | Domain property verified with the main Google account through Cloudflare TXT; sitemap successfully processed, live smartphone fetch/render passed, and homepage indexing requested **November 17, 2026** | The homepage is already indexed or has guaranteed rankings; see [SEO/discovery review](SEO_AND_DISCOVERY_REVIEW.md) |
 | Email | **Zoho Mail Lite paid**, compatible with Apple Mail | An account, domain authentication, or mailbox has been configured |
 | Scheduling | **Square Free**, with manual scheduling after speaking with the client | Paid calendar synchronization, custom intake features, or a live integration is available |
 | Payments | Cash or similar considered; optional card acceptance remains a business decision | Cards are prohibited, a merchant account/bank is ready, or processing is fee-free |
@@ -37,7 +38,7 @@ Do not conflate the simple consultation-request workflow with the private questi
 - Start with useful core pages and one strong location/directions page. Additional regional pages need distinct useful content.
 - Public contact details, practitioner license status/number, premises, prices, and hours must reflect verified or user-approved facts.
 - Use truthful, respectful, inclusive client language. Avoid guaranteed session counts, painless/no-risk claims, or implying diagnosis or medical licensure.
-- The [SEO and discovery review](SEO_AND_DISCOVERY_REVIEW.md) records the sharing-preview diagnosis, technical baseline, implementation verification status, and sourced Google setup guidance. Search Console groundwork can proceed independently of LLC formation. Finalize a future-opening Business Profile when the real premises and opening month are reliable; do not invent an address or treat client-origin counties as separate service locations.
+- The [SEO and discovery review](SEO_AND_DISCOVERY_REVIEW.md) records the sharing-preview diagnosis, technical baseline, implementation verification status, and sourced Google setup guidance. Search Console setup is complete and independent of LLC formation; preserve the apex verification TXT record. Google currently reports the homepage discovered but not yet indexed, with a successful live test and accepted indexing request. Finalize a future-opening Business Profile when the real premises and opening month are reliable; do not invent an address or treat client-origin counties as separate service locations.
 
 ## Existing repository facts that must not be silently replaced
 
