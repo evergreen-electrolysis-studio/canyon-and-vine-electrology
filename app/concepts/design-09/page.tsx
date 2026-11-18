@@ -73,7 +73,6 @@ export default function AtHomeInYourSkin() {
             <a className={styles.button} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
             <a className={styles.textLink} href="#first-visit">A look at your first visit <span aria-hidden="true">↓</span></a>
           </div>
-          <div className={styles.heroFoot}><span>Face. Body. The small details.</span><span>Care, one follicle at a time.</span></div>
         </section>
 
         <section className={styles.care} id="care" aria-labelledby="care-title">

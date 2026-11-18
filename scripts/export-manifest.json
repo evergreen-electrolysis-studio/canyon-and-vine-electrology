@@ -125,14 +125,16 @@
     "app/components/consultation-form.module.css": "82ad629b18612140193f68225260c5b68f71629e1268f1df3416d44c8a3143ce",
     "public/consultation-form.js": "bc88b8da04e64d4e2227980ac8ae64cb69d5f1fb69464faf61dc500c380f7175",
     "github-pages/consultation-form.js": "bc88b8da04e64d4e2227980ac8ae64cb69d5f1fb69464faf61dc500c380f7175",
-    "app/concepts/design-09/page.tsx": "8178d6bb027a0b6f2c354af55abaeda938e141bb4b3a9f785336e137f82da33a",
-    "app/concepts/design-09/design09.module.css": "892430b62567710f1815009b7f95858851da219655a2d07afad86c1b893ada47",
-    "github-pages/concepts/design-09/index.html": "bd70abe42c84bb920e5b00a67c582b1822b1b611ec93a90b9577588aa3f4ecb5",
-    "github-pages/assets/index-kPmc5OuX.css": "7a1c9de6c7fc770b3a65223c80f1e49578f1b592d6bf59f131c4b6144340923b"
+    "github-pages/assets/index-kPmc5OuX.css": "7a1c9de6c7fc770b3a65223c80f1e49578f1b592d6bf59f131c4b6144340923b",
+    "app/concepts/design-09/page.tsx": "6780194465380c8c3f374d70c3b455ab530f06a432210aab6fe5d4e133c6f4e0",
+    "app/concepts/design-09/design09.module.css": "9887f15618d1174f0cec17f5ac77010b7461bc08311901aaeb0877ac5b394a5a",
+    "github-pages/concepts/design-09/index.html": "763b5bce9bf126e36bc2897d9eab2221440e3e5bb778b5d8cd67c120a70577dc",
+    "github-pages/assets/index-Dhy7_lZ0.css": "ef9980e2bb815a48577a3508aeca34d80487787cd8b0b78b0ee859d2b4266764"
   },
   "maintenance": {
     "date": "2026-11-17",
     "authorization": "Owner requested Design 08 with Design 07 layout and Design 04 portraits/rectangular shapes. Final studio name, American Canyon address, weekday hours, blank phone, and summer 2027 interest list apply only to Designs 04, 07, and 08. Shared phone input formats during typing. Other page snapshots remain unchanged.",
-    "design09_review": "2026-11-17 owner-authorized whole-site09 review: shared phone validation/state fixes; only09 snapshot re-rendered. Prior homepage/01\u201308 source and snapshots remain frozen. Security verification labeled separately; focus/borders/license placeholder repaired."
+    "design09_review": "2026-11-17 owner-authorized whole-site09 review: shared phone validation/state fixes; only09 snapshot re-rendered. Prior homepage/01\u201308 source and snapshots remain frozen. Security verification labeled separately; focus/borders/license placeholder repaired.",
+    "design09_hero_cleanup": "Owner screenshot feedback: remove redundant hero tagline strip and divider, tighten transition into treatment; all other concepts and shared form fixes remain unchanged."
   }
 }
