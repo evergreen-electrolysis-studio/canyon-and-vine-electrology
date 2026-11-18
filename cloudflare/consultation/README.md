@@ -20,15 +20,18 @@ The email handler is deployed at:
 - The endpoint and public Turnstile site key are in `config/consultation.json`.
 - `TURNSTILE_SECRET_KEY` is stored as a Worker secret, not in source.
 
-**Sender cutover is prepared, not yet verified live.** The existing private mail
-Worker has a separate fixed-recipient inquiry route. Deploy that service and its
-metadata-only Durable Object first, then the consultation Worker, then publish
-the updated website controller through the existing GitHub Actions workflow.
-Verify actual public-form delivery and received From/Reply-To headers afterward.
-Mocked tests do not establish hosted inbox delivery. No new keys, subscription,
-mailbox, DNS record or Cloudflare plan is needed for this cutover.
+**The sender cutover is verified live.** Private mail Worker version
+`c30a864a-8f2b-4b39-8705-e2d3746388ff` and consultation Worker version
+`dbc9923d-000b-4086-9abf-44d565909c77` delivered a website interest-list request
+to Nav on November 18 at 2:14 PM Pacific. The public form showed success and
+the received message used the Evergreen From address, the submitted visitor
+Reply-To, and the Evergreen website address. Zoho reported SPF, DKIM and DMARC
+passes. The fictional contact was Morgan Reed; no test labels were added to
+the normal message. No new keys, subscription, mailbox, DNS record or Cloudflare
+plan was needed. The updated retry-safe website controller is published through
+the existing GitHub Actions workflow; deploy the mail service before its callers.
 
-The last verified live version, `a3bbf2ae-70b3-455d-a7a0-fc0d1b59e349`, uses
+The previous live version, `a3bbf2ae-70b3-455d-a7a0-fc0d1b59e349`, used
 `consultation@tycheventuresllc.com`. Cloudflare destination verification completed
 via the new Zoho mailbox. A fictional
 `Zoho / Delivery Test` submitted through the live Evergreen interest-list form
