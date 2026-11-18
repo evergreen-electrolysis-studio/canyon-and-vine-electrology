@@ -130,8 +130,8 @@
     "app/components/ConsultationController.tsx": "68c2012c077d8c67f73b7e21839d7060944db83048c9afcc4e7bd8f79c930128",
     "github-pages/concepts/design-03/index.html": "17169427c3ddc79a734b197bce9cb780146fd5c1284f827e073d1dade2e8b5e1",
     "app/components/ConsultationForm.tsx": "1ab4228c582f45515342bdc0ff7bce245494e84366ad6aa636ee11507b70b97c",
-    "app/concepts/design-09/page.tsx": "ee330aea21ed034ed5f3a58bbb85e5fb1e4d3ebcb4b3810cfa010d1e26aa3756",
-    "github-pages/concepts/design-09/index.html": "506902d0855dab19db3364e727df0b6f8d8ca6dd5c1e4ccc6ee9b59f87b329ed"
+    "app/concepts/design-09/page.tsx": "4965507233343832b92dc705457ffe2b1a2ca86953812e7db115c5669341ff03",
+    "github-pages/concepts/design-09/index.html": "0d5e290230abe2dc429324358759fa85a66cfb2559b68e1e65390cc2ae9d0530"
   },
   "maintenance": {
     "date": "2026-11-17",
@@ -139,6 +139,7 @@
     "design09_review": "2026-11-17 owner-authorized whole-site09 review: shared phone validation/state fixes; only09 snapshot re-rendered. Prior homepage/01\u201308 source and snapshots remain frozen. Security verification labeled separately; focus/borders/license placeholder repaired.",
     "design09_hero_cleanup": "Owner screenshot feedback: remove redundant hero tagline strip and divider, tighten transition into treatment; all other concepts and shared form fixes remain unchanged.",
     "design09_submit_button": "Owner approved larger centered18px/700 submit label,64px minimum height, no arrow. Scoped09 presentation and optional shared label override; retry/security instructions match; other concepts frozen.",
-    "arrow_removal": "Owner authorized site-wide removal of decorative blue-emoji \u2197 arrows. Home/gallery/01\u201309/shared form/dialog regenerated and refrozen. Plain navigation/disclosure indicators retained.05 icon-only links replaced with visible text.09 submit emphasized; shared validation and original content retained."
+    "arrow_removal": "Owner authorized site-wide removal of decorative blue-emoji \u2197 arrows. Home/gallery/01\u201309/shared form/dialog regenerated and refrozen. Plain navigation/disclosure indicators retained.05 icon-only links replaced with visible text.09 submit emphasized; shared validation and original content retained.",
+    "design09_rates_copy": "Owner requested collaborative we language in the09 rates introduction, and removal of the blunt priced-by-time sentence. Only09 paragraph/source/static snapshot updated; rates and layout unchanged."
   }
 }

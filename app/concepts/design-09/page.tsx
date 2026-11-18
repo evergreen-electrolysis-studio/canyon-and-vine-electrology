@@ -111,7 +111,7 @@ export default function AtHomeInYourSkin() {
           <div className={styles.ratesIntro}>
             <p className={styles.eyebrow}>04 / Planning your visits</p>
             <h2 id="rates-title">Treatment rates</h2>
-            <p>Sessions are priced by time. Nav will help you choose a length that suits your treatment area and goals.</p>
+            <p>Together, we’ll choose a session length that fits your treatment area, goals, and comfort.</p>
           </div>
           <details className={styles.rateDisclosure}>
             <summary><span>View treatment rates</span><span className={styles.rateToggle} aria-hidden="true">+</span></summary>
