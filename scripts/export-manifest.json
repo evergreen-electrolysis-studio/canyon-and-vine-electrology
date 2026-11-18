@@ -115,7 +115,7 @@
     "app/concepts/design-03/page.tsx": "df67b2dcb0c14e30dc172516ae38fefd8c38e6aca17adf5fe56d3b6093508cbd",
     "github-pages/assets/index-fJbPtE7C.css": "b381e41aa987c0642be47cbec35aadf2a6a90e9e70b9561a367a9050663b8a5f",
     "app/concepts/design-02/page.tsx": "758cb2e776b7d22d37701518cf126b00d9988d1af792186de400f572e3b972c4",
-    "app/concepts/design-09/design09.module.css": "b7734c028f52c19b2d415cad08b8f53420dc8f24ef398ab059322317d2f7b968",
+    "app/concepts/design-09/design09.module.css": "f0dccf48174bc408b27f593e772537ce1669ede10cc2ff1dd08cfe4cf942e831",
     "app/concepts/design-06/page.tsx": "75302806d9e3868e764517eb54e3311b9c9eb27deac2015459fc6bfe0c17d72f",
     "github-pages/concepts/design-06/index.html": "7c6a10db01586e76965421aa6306050e5a7903b6693aa174830269dcaca952dc",
     "app/components/TreatmentRates.tsx": "6652d006aff302c43a378f4e9f892b53f707838e9e4fd390e9876f196b3ee902",
@@ -131,7 +131,11 @@
     "github-pages/concepts/design-03/index.html": "17169427c3ddc79a734b197bce9cb780146fd5c1284f827e073d1dade2e8b5e1",
     "app/components/ConsultationForm.tsx": "1ab4228c582f45515342bdc0ff7bce245494e84366ad6aa636ee11507b70b97c",
     "app/concepts/design-09/page.tsx": "4965507233343832b92dc705457ffe2b1a2ca86953812e7db115c5669341ff03",
-    "github-pages/concepts/design-09/index.html": "0d5e290230abe2dc429324358759fa85a66cfb2559b68e1e65390cc2ae9d0530"
+    "github-pages/concepts/design-09/index.html": "9fa363b5f0f96a060945689129a7b12813f95f5d00c85df7cbd064e903509ec7",
+    "github-pages/assets/index-BR2yYXvt.css": "c4dc5671d35090469c6ccf4a98f63c22244852b0734a353cdeb9c5e0b04c0960",
+    "github-pages/assets/index-5szOhokL.css": "f828914d160ce4745501fec8bf39ff9b24c145834ac176cd468645c1fca28408",
+    "github-pages/assets/index-C-rNey_G.css": "212470f868f44b2fdfbc3202d26a59a8da3ade104a73577236420d143b82c510",
+    "github-pages/assets/index-CXQkxaIJ.css": "34460455a4ab376aba36b96efaec9d1a257a0c0e47080e9159d7cc8c57676640"
   },
   "maintenance": {
     "date": "2026-11-17",
@@ -140,6 +144,7 @@
     "design09_hero_cleanup": "Owner screenshot feedback: remove redundant hero tagline strip and divider, tighten transition into treatment; all other concepts and shared form fixes remain unchanged.",
     "design09_submit_button": "Owner approved larger centered18px/700 submit label,64px minimum height, no arrow. Scoped09 presentation and optional shared label override; retry/security instructions match; other concepts frozen.",
     "arrow_removal": "Owner authorized site-wide removal of decorative blue-emoji \u2197 arrows. Home/gallery/01\u201309/shared form/dialog regenerated and refrozen. Plain navigation/disclosure indicators retained.05 icon-only links replaced with visible text.09 submit emphasized; shared validation and original content retained.",
-    "design09_rates_copy": "Owner requested collaborative we language in the09 rates introduction, and removal of the blunt priced-by-time sentence. Only09 paragraph/source/static snapshot updated; rates and layout unchanged."
+    "design09_rates_copy": "Owner requested collaborative we language in the09 rates introduction, and removal of the blunt priced-by-time sentence. Only09 paragraph/source/static snapshot updated; rates and layout unchanged.",
+    "design09_rates_divider": "Owner approved removal of the redundant section-bottom border below View treatment rates; keep disclosure borders and spacing. Only09 CSS/snapshot and standard gallery CSS reference refreshed."
   }
 }

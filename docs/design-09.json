@@ -30,5 +30,6 @@
   "submit_button": "Owner approved18px bold centered Join the interest list label, full-width forest-green button with64px minimum height, and no arrow. Scoped to09 submit button. Security instructions and retry labels use the same custom wording; pending/success behavior remains intact.",
   "arrow_cleanup": "Owner clarified that blue emoji-style diagonal arrows look cheap. Removed decorative ↗ icons site-wide from home, gallery, all numbered concepts and shared submit/confirmation controls. Plain navigation arrows and disclosure/select indicators remain. Design05 icon-only area links now read Discuss this area with appropriate sizing and accessible names.",
   "visual_review_polish": "Three agents reviewed rendered desktop/mobile screenshots and source. Removed repeated pre-form action heading by naming09 form Your contact details, and removed the redundant promotional sentence before inputs. Preserved compact rates, useful plain navigation/disclosure cues and existing credential presentation.",
-  "rates_intro": "Together, we’ll choose a session length that fits your treatment area, goals, and comfort."
+  "rates_intro": "Together, we’ll choose a session length that fits your treatment area, goals, and comfort.",
+  "rates_divider": "Owner approved removing the redundant rates-section bottom divider. Preserve the disclosure borders and existing spacing. For similar small clear visual fixes, proceed directly and verify rather than asking again."
 }
