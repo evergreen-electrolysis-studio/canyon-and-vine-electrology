@@ -9,7 +9,8 @@ const expectedRates = [[15, 65], [30, 95], [45, 135], [60, 175], [90, 265], [120
 const controllerTag = '<script src="/canyon-and-vine-electrology/consultation-form.js" defer></script>';
 
 function assertConsultationControllerOnly(html) {
-  const expected = html.includes('data-request-type="interest"') ? controllerTag.replace('.js"', '.js?v=20261117-interest"') : controllerTag;
+  const version = html.includes('data-security-status') ? "?v=20261118-validation" : html.includes('data-request-type="interest"') ? "?v=20261117-interest" : "";
+  const expected = controllerTag.replace('.js"', `.js${version}"`);
   assert.deepEqual([...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map(([script]) => script), [expected]);
   assert.equal((html.match(/<script\b/gi) ?? []).length, 1);
   assert.doesNotMatch(html, /rel="modulepreload"/i);
@@ -375,4 +376,18 @@ test("selected prelaunch designs use the approved studio details and summer 2027
   const css = await readFile(new URL("../app/concepts/design-08/design08.module.css", import.meta.url), "utf8");
   assert.match(css, /grid-template-areas: "heading photo" "intro photo" "foot foot"/);
   assert.doesNotMatch(css, /border-radius: (?:48|42)%/);
+});
+
+
+test("Design 09 separates security verification from submission and exposes persistent phone errors", async () => {
+  const html = await readFile(new URL("../github-pages/concepts/design-09/index.html", import.meta.url), "utf8");
+  const phone = html.match(/<input[^>]*name="phone"[^>]*>/)[0];
+  assert.match(phone, /aria-describedby="consultation-phone-hint consultation-phone-error"/);
+  assert.doesNotMatch(phone, /maxLength|minLength/i, "formatting and digit limits must not truncate pasted country codes");
+  assert.match(html, /id="consultation-phone-error"[^>]*data-phone-error/);
+  assert.match(html, /aria-labelledby="consultation-security-title"/);
+  assert.match(html, /data-security-status/);
+  assert.match(html, /Security check/);
+  assert.doesNotMatch(html, /\[ADD NUMBER\]/);
+  assert.match(html, /Licensed electrologist/);
 });

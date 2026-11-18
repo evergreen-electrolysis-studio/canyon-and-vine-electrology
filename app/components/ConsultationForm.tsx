@@ -19,8 +19,9 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
           <label htmlFor="consultation-last-name">Last name <span>(required)</span><input id="consultation-last-name" name="lastName" autoComplete="family-name" required maxLength={80} /></label>
         </div>
         <label htmlFor="consultation-phone">Phone number <span>(required)</span></label>
-        <div className={styles.phone}><span aria-hidden="true">US +1</span><input id="consultation-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="(707) 555-0123" aria-describedby="consultation-phone-hint" required minLength={10} maxLength={24} /></div>
+        <div className={styles.phone}><span aria-hidden="true">US +1</span><input id="consultation-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="(707) 555-0123" aria-describedby="consultation-phone-hint consultation-phone-error" required /></div>
         <p id="consultation-phone-hint" className={styles.hint}>United States (+1). Include all 10 digits, starting with the area code.</p>
+        <p id="consultation-phone-error" data-phone-error role="status" aria-live="polite" className={styles.error} hidden />
         <label htmlFor="consultation-email">Email address <span>(optional)</span><input id="consultation-email" name="email" type="email" autoComplete="email" inputMode="email" maxLength={254} /></label>
         <label htmlFor="consultation-contact-preference">Preferred way to reach you <span>(optional)</span>
           <select id="consultation-contact-preference" name="contactPreference" defaultValue="" aria-describedby="consultation-contact-hint">
@@ -48,7 +49,11 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
         </details>
         <div className={styles.honeypot} aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
         <input type="hidden" name="permissionVersion" value={notice.permissionVersion} />
-        <div data-turnstile-container />
+        <div className={styles.security} role="group" aria-labelledby="consultation-security-title">
+          <p id="consultation-security-title" className={styles.securityTitle}>Security check</p>
+          <div data-turnstile-container />
+          <p data-security-status role="status" aria-live="polite" className={styles.hint}>This check prevents spam. Complete your details, then choose “{action}” to send them.</p>
+        </div>
         <p className={styles.note}>{notice.permissionText}</p>
         <details className={styles.privacy}>
           <summary>How we use your information</summary>

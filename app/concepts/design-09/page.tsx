@@ -58,7 +58,7 @@ export default function AtHomeInYourSkin() {
         </nav>
         <a className={styles.headerCta} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
       </header>
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <section className={styles.hero} aria-labelledby="hero-title">
           <div className={styles.heroHeading}>
             <p className={styles.eyebrow}>American Canyon, California · Coming summer 2027</p>
@@ -104,7 +104,7 @@ export default function AtHomeInYourSkin() {
           <dl className={styles.credentials}>
             <div><dt>Education</dt><dd>UC Davis<span>Microbiology</span></dd></div>
             <div><dt>Professional training</dt><dd>California Electrology Academy<span>Corona, California</span></dd></div>
-            <div><dt>California licensure</dt><dd>Licensed electrologist<span>License # [ADD NUMBER]</span></dd></div>
+            <div><dt>California licensure</dt><dd>Licensed electrologist</dd></div>
           </dl>
         </section>
 

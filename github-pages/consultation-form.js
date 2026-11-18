@@ -36,6 +36,8 @@
     form.dataset.initialized = "true";
     const button = form.querySelector('button[type="submit"]');
     const status = form.querySelector("[data-form-status]");
+    const securityStatus = form.querySelector("[data-security-status]");
+    const phoneError = form.querySelector("[data-phone-error]");
     const phone = form.elements.namedItem("phone");
     const email = form.elements.namedItem("email");
     const contactPreference = form.elements.namedItem("contactPreference");
@@ -52,11 +54,25 @@
     let returningHome = false;
     let active = true;
     const listeners = [];
-    const listen = (element, event, handler) => {
-      element.addEventListener(event, handler);
-      listeners.push(() => element.removeEventListener(event, handler));
+    const listen = (element, event, handler, options) => {
+      element.addEventListener(event, handler, options);
+      listeners.push(() => element.removeEventListener(event, handler, options));
     };
     const message = (text) => { status.textContent = text; };
+    const securityMessage = (text) => { (securityStatus || status).textContent = text; };
+    const validationMessage = () => message("Please check the highlighted fields. Your details have not been sent.");
+    const controls = [...form.querySelectorAll("input, select, textarea")];
+    const disabledBefore = new Map(controls.map(control => [control, control.disabled]));
+    function lockFields(locked) {
+      for (const control of controls) control.disabled = locked || disabledBefore.get(control);
+    }
+    if (endpoint && siteKey) message("");
+    for (const control of controls) listen(control, "input", () => control.removeAttribute("aria-invalid"));
+    listen(form, "invalid", (event) => {
+      event.target.setAttribute("aria-invalid", "true");
+      if (event.target === phone) setPhoneError(phoneInputError || phoneValidationError());
+      validationMessage();
+    }, true);
     function updateEmailPreference() {
       if (!contactPreference || !emailPreference) return;
       emailPreference.disabled = !email.value.trim() || !email.validity.valid;
@@ -105,18 +121,52 @@
       if (digits.length === 11 && digits.startsWith("1")) digits = digits.slice(1);
       return /^[2-9]\d{2}[2-9]\d{6}$/.test(digits) ? `+1${digits}` : null;
     }
+    let phoneInputError = "";
+    let acceptedPhone = phone.value;
+    let phoneSelection = [phone.selectionStart, phone.selectionEnd];
+    function setPhoneError(text) {
+      phone.setCustomValidity(text);
+      if (text) phone.setAttribute("aria-invalid", "true");
+      else phone.removeAttribute("aria-invalid");
+      if (phoneError) { phoneError.textContent = text; phoneError.hidden = !text; }
+      else if (text) message(text);
+    }
+    function phoneValidationError() {
+      if (normalizedPhone()) return "";
+      const digits = phone.value.replace(/\D/g, "");
+      return digits.length < 10
+        ? "Enter all 10 digits of your US phone number, including the area code."
+        : "Enter a valid US phone number. Check the area code and the next three digits.";
+    }
+    function insertionError(raw) {
+      raw = raw.trim();
+      if (raw && !/^\+?[()\d .-]+$/.test(raw)) return "Use digits only, with an optional +1 country code. Extensions were not added; edit the number to continue.";
+      let digits = raw.replace(/\D/g, "");
+      if (raw.startsWith("+") && (!digits.startsWith("1") || digits.length !== 11)) return "Use a 10-digit US phone number, with an optional +1 country code. The pasted number was not added.";
+      if (digits.length === 11 && digits.startsWith("1")) digits = digits.slice(1);
+      return digits.length > 10 ? "Use 10 digits. Extra digits were not added; check and edit the number to continue." : "";
+    }
+    function rejectPhone(text) {
+      phoneInputError = text;
+      setPhoneError(text);
+    }
     function formatPhone(event = {}) {
-      phone.setCustomValidity("");
       if (event.isComposing) return;
       const raw = phone.value;
-      // Leave invalid or overlong input visible so validation cannot silently
-      // turn an international number or an extra digit into a different number.
-      if (raw && !/^\+?[()\d .-]+$/.test(raw)) return;
+      const error = insertionError(raw);
+      // Reject the entire insertion, including autofill/paste without beforeinput.
+      // Never trim a longer number into a different, apparently valid contact.
+      if (error) {
+        phone.value = acceptedPhone;
+        phone.setSelectionRange?.(...phoneSelection);
+        rejectPhone(error);
+        return;
+      }
+      phoneInputError = "";
+      setPhoneError("");
       let digits = raw.replace(/\D/g, "");
       let before = raw.slice(0, phone.selectionStart ?? raw.length).replace(/\D/g, "").length;
-      if (raw.startsWith("+") && (!digits.startsWith("1") || digits.length !== 11)) return;
       if (digits.length === 11 && digits.startsWith("1")) { digits = digits.slice(1); before = Math.max(0, before - 1); }
-      if (digits.length > 10) return;
       const formatted = !digits ? "" : digits.length <= 3 ? `(${digits}` : digits.length <= 6
         ? `(${digits.slice(0, 3)}) ${digits.slice(3)}`
         : `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
@@ -127,13 +177,24 @@
         cursor++;
       }
       phone.setSelectionRange?.(cursor, cursor);
+      acceptedPhone = formatted;
+      phoneSelection = [cursor, cursor];
     }
     listen(phone, "input", formatPhone);
     listen(phone, "compositionend", formatPhone);
+    function checkInsertion(event, text) {
+      if (text == null || event.isComposing) return;
+      const start = phone.selectionStart ?? phone.value.length, end = phone.selectionEnd ?? start;
+      const error = insertionError(phone.value.slice(0, start) + text + phone.value.slice(end));
+      if (error) { event.preventDefault(); rejectPhone(error); }
+    }
+    listen(phone, "paste", event => checkInsertion(event, event.clipboardData?.getData("text")));
     // Backspace/delete beside an inserted separator should remove the adjacent
     // digit, rather than repeatedly restoring the same punctuation.
     listen(phone, "beforeinput", (event) => {
       const start = phone.selectionStart, end = phone.selectionEnd;
+      phoneSelection = [start, end];
+      if (event.inputType?.startsWith("insert")) { checkInsertion(event, event.data); return; }
       if (start == null || start !== end || event.isComposing) return;
       const backward = event.inputType === "deleteContentBackward";
       const forward = event.inputType === "deleteContentForward";
@@ -150,25 +211,27 @@
       formatPhone();
     });
     listen(phone, "blur", () => {
-      const normalized = normalizedPhone();
-      if (normalized) { const d = normalized.slice(2); phone.value = `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`; }
+      if (phone.value || phoneInputError) setPhoneError(phoneInputError || phoneValidationError());
     });
     listen(form, "submit", async (event) => {
       event.preventDefault();
       if (!active || pending || sent) return;
       const normalized = normalizedPhone();
-      phone.setCustomValidity(normalized ? "" : "Enter a complete 10-digit US phone number, including the area code.");
+      setPhoneError(phoneInputError || phoneValidationError());
       for (const name of ["firstName", "lastName"]) {
         const field = form.elements.namedItem(name);
         field.value = field.value.trim();
       }
       email.setCustomValidity(contactPreference?.value === "Email" && !email.value.trim() ? "Enter an email address or choose another contact preference." : "");
-      if (!form.reportValidity()) return;
+      if (!form.reportValidity()) { validationMessage(); return; }
       if (!endpoint || !siteKey || !token) { message("Please complete the security check before sending."); return; }
+      // Disabled controls are excluded from FormData, so capture before locking.
+      const data = new FormData(form);
       pending = true; button.disabled = true; button.textContent = interest ? "Joining…" : "Sending request…";
+      lockFields(true);
+      form.setAttribute("aria-busy", "true");
       message("");
       try {
-        const data = new FormData(form);
         const response = await fetch(endpoint, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -184,8 +247,8 @@
         const result = await response.json();
         if (!active) return;
         if (!response.ok || result.ok !== true) throw new Error("Delivery not confirmed");
-        sent = true; form.reset(); button.textContent = interest ? "You’re on the list" : "Request sent";
-        updateEmailPreference();
+        sent = true; button.textContent = interest ? "You’re on the list" : "Request sent";
+        if (securityStatus) securityMessage("Security check complete.");
         message(interest ? "Thank you. You’re on the interest list. We’ll share studio opening updates and consultation availability." : "Thank you. Your consultation request has been sent. We’ll contact you to discuss the next step.");
         showConfirmation(String(data.get("firstName")));
       } catch {
@@ -195,18 +258,20 @@
         status.focus();
       } finally {
         pending = false; token = "";
+        form.setAttribute("aria-busy", "false");
+        if (!sent) lockFields(false);
         if (active && window.turnstile && widget !== undefined && !sent) window.turnstile.reset(widget);
       }
     });
     const fail = () => {
-      if (active) message("The security check could not load. Refresh the page to try again.");
+      if (active) securityMessage("The security check could not load. Refresh the page to try again.");
     };
     const render = () => {
       if (!active || widget !== undefined) return;
       widget = window.turnstile.render(form.querySelector("[data-turnstile-container]"), {
         sitekey: siteKey, action: interest ? "interest_list" : "consultation", size: "flexible", theme: form.dataset.theme === "light" ? "light" : "dark",
-        callback: (value) => { if (!active) return; token = value; button.disabled = pending || sent; if (!pending && !sent) message(""); },
-        "expired-callback": () => { if (!active || sent) return; token = ""; button.disabled = true; message("The security check expired. Please complete it again."); },
+        callback: (value) => { if (!active) return; token = value; button.disabled = pending || sent; if (!pending && !sent && securityStatus) securityMessage(`Security check complete. Choose “${actionLabel}” to send your details.`); },
+        "expired-callback": () => { if (!active || sent) return; token = ""; button.disabled = true; securityMessage("The security check expired. Please complete it again."); },
         "error-callback": () => { if (!active || sent) return; token = ""; button.disabled = true; fail(); },
       });
     };

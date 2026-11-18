@@ -98,7 +98,6 @@
     "github-pages/concepts/design-06/index.html": "e49dd013aef1e76cfa2f0cdeaa5b29b6bd3b1aaf38911ffc2403a6bbebb480ad",
     "app/concepts/design-01/page.tsx": "97e88e0b1c38cce009bb9d7d2017016298bc85e7b6925a18d1630f8e7bd37a8b",
     "github-pages/concepts/design-01/index.html": "dd43365e194a46b41ec6aa80e8dd96988461847790b12fb1155459d653282b2a",
-    "app/components/consultation-form.module.css": "788cfc6f9fd9dceeb36d5b3d36d5f0bd2e17789c69bf0be9337a6159ebfaf378",
     "app/components/TreatmentRates.tsx": "6652d006aff302c43a378f4e9f892b53f707838e9e4fd390e9876f196b3ee902",
     "app/components/treatment-rates.module.css": "6836ef6ee5d07297842a2c1ec641ffe4796e6e7e5367c25c957924e0ce56cc73",
     "config/treatment-pricing.json": "7938ae488f0ae83955dacbc1b49ee86dfe6c22e179243bb242d6564c36b15681",
@@ -114,23 +113,26 @@
     "app/concepts/design-08/design08.module.css": "a73a44f57b5ec61bbebc55bc1768e7a0850606154b962c7b6463db02820c4c03",
     "github-pages/assets/index-CmRsbMM0.css": "41350ffc12c01213cca18eb3ae04db20fd9d057f184859d2b0dfd6a4f32b79ff",
     "github-pages/concepts/design-07/index.html": "a66e561223ad2da9fd90f74de32525cc5c497ea081cb3621f8d173fa77e501e3",
-    "app/components/ConsultationController.tsx": "8d5f748d855071c273788db54b5f2be6e911b581b7aab41b23158f6f615d7f9a",
     "config/interest-list.json": "02120da8715467dd480b9f6b283b3e763451325cafc01f71db1d08bf136cbdf6",
-    "github-pages/consultation-form.js": "772d4d24d6515f82c9c61af450de208aa97bb2925dc6405ccd66fccd9e17f5e2",
-    "public/consultation-form.js": "772d4d24d6515f82c9c61af450de208aa97bb2925dc6405ccd66fccd9e17f5e2",
     "app/concepts/design-08/page.tsx": "9f4ec0af92b83ebc5f2d044559515db79edcc1754c6d30680bda8e8d3f16d995",
-    "app/components/ConsultationForm.tsx": "fa5d6e6b2efd9d282f1f29133391e7a368bb54cbcda1f16e3fd49f6813c66389",
     "github-pages/concepts/design-04/index.html": "9c5f90dfcedd937cb26d48fcfbb255526209fb7be3defd6aa4e2a033224c191a",
     "app/concepts/design-07/page.tsx": "fa9fad47405147ba9b68b6033aabe9ccf90353acec0fd7abf42da8a90aa18250",
     "app/concepts/design-04/page.tsx": "9e7d635a6315353eb8bdf60debf8a3df0cfbb6c7140dc5d85e04d2bc9799fe25",
     "github-pages/concepts/design-08/index.html": "8dda093b043546b728dc162f26e397252f04f7f1c7cc6c0c246d36e278844bcb",
-    "app/concepts/design-09/page.tsx": "1080576463c123ddb6717182606baee1812e7373f1083ce8c099332678ce849b",
-    "app/concepts/design-09/design09.module.css": "999b94b22725e7fed3846dc8cc87c30169d37db9741d27e671922b2888eb996e",
-    "github-pages/concepts/design-09/index.html": "490e41598a3aaad08220b7b5f8230d5b41f90405b2696a348fd9d527d52ca508",
-    "github-pages/assets/index-BkgCzuLf.css": "ac79e6e789bee59f84db490984c1f7394ad09dd2ba9abf9a757e724a79c4f830"
+    "github-pages/assets/index-BkgCzuLf.css": "ac79e6e789bee59f84db490984c1f7394ad09dd2ba9abf9a757e724a79c4f830",
+    "app/components/ConsultationForm.tsx": "a9dcccb4c0893bec34c888a67610f921fb7d3cca580aaec1954b792f2dfa7846",
+    "app/components/ConsultationController.tsx": "3fe84040f29a6cbe8cb187e7f15dfd2170118b2375ae368bf81303fac997e809",
+    "app/components/consultation-form.module.css": "82ad629b18612140193f68225260c5b68f71629e1268f1df3416d44c8a3143ce",
+    "public/consultation-form.js": "bc88b8da04e64d4e2227980ac8ae64cb69d5f1fb69464faf61dc500c380f7175",
+    "github-pages/consultation-form.js": "bc88b8da04e64d4e2227980ac8ae64cb69d5f1fb69464faf61dc500c380f7175",
+    "app/concepts/design-09/page.tsx": "8178d6bb027a0b6f2c354af55abaeda938e141bb4b3a9f785336e137f82da33a",
+    "app/concepts/design-09/design09.module.css": "892430b62567710f1815009b7f95858851da219655a2d07afad86c1b893ada47",
+    "github-pages/concepts/design-09/index.html": "bd70abe42c84bb920e5b00a67c582b1822b1b611ec93a90b9577588aa3f4ecb5",
+    "github-pages/assets/index-kPmc5OuX.css": "7a1c9de6c7fc770b3a65223c80f1e49578f1b592d6bf59f131c4b6144340923b"
   },
   "maintenance": {
     "date": "2026-11-17",
-    "authorization": "Owner requested Design 08 with Design 07 layout and Design 04 portraits/rectangular shapes. Final studio name, American Canyon address, weekday hours, blank phone, and summer 2027 interest list apply only to Designs 04, 07, and 08. Shared phone input formats during typing. Other page snapshots remain unchanged."
+    "authorization": "Owner requested Design 08 with Design 07 layout and Design 04 portraits/rectangular shapes. Final studio name, American Canyon address, weekday hours, blank phone, and summer 2027 interest list apply only to Designs 04, 07, and 08. Shared phone input formats during typing. Other page snapshots remain unchanged.",
+    "design09_review": "2026-11-17 owner-authorized whole-site09 review: shared phone validation/state fixes; only09 snapshot re-rendered. Prior homepage/01\u201308 source and snapshots remain frozen. Security verification labeled separately; focus/borders/license placeholder repaired."
   }
 }

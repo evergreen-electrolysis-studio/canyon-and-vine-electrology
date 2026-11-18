@@ -142,7 +142,7 @@ async function renderRoute(route) {
   // Only this small, reviewed form script runs in the static export.
   // React hydration payloads and all other scripts remain removed.
   if (html.includes('data-consultation-form')) {
-    const version = html.includes('data-request-type="interest"') ? "?v=20261117-interest" : "";
+    const version = "?v=20261118-validation";
     html = html.replace('</body>', `<script src="${basePath}/consultation-form.js${version}" defer></script></body>`);
   }
   return html;

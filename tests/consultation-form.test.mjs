@@ -8,6 +8,9 @@ const controller = await readFile(new URL("../public/consultation-form.js", impo
 function eventTarget() {
   return {
     listeners: {}, handlers: new Map(),
+    attributes: {}, disabled: false,
+    setAttribute(name, value) { this.attributes[name] = String(value); },
+    removeAttribute(name) { delete this.attributes[name]; },
     addEventListener(event, fn) {
       this.listeners[event] = fn;
       if (!this.handlers.has(event)) this.handlers.set(event, new Set());
@@ -36,6 +39,8 @@ function pageFixture({ configured = true, modalSupported = true, theme, requestT
   const button = { disabled: true, textContent: "Request a consultation" };
   const emailOption = { disabled: true };
   const status = { textContent: "", focused: false, focus() { this.focused = true; } };
+  const phoneError = { textContent: "", hidden: true };
+  const securityStatus = { textContent: "" };
   const node = () => ({ ...eventTarget(), textContent: "", focused: false, focus() { this.focused = true; } });
   const dialogNodes = Object.fromEntries(["close", "home", "name", "title"].map((key) => [key, node()]));
   const dialog = { ...eventTarget(), open: false, querySelector: (selector) => dialogNodes[selector.match(/data-success-(\w+)/)[1]], close() { this.open = false; this.dispatch("close"); } };
@@ -48,12 +53,12 @@ function pageFixture({ configured = true, modalSupported = true, theme, requestT
     fields, choices,
     parentElement: { querySelector: () => dialog },
     elements: { namedItem: (name) => fields[name] },
-    querySelector: (selector) => selector.includes("button") ? button : selector.includes("status") ? status : selector.includes("email-preference") ? emailOption : widgetContainer,
-    querySelectorAll: (selector) => choices[selector.match(/name="([^\"]+)"/)[1]] ?? [],
+    querySelector: (selector) => selector.includes("button") ? button : selector.includes("phone-error") ? phoneError : selector.includes("security-status") ? securityStatus : selector.includes("status") ? status : selector.includes("email-preference") ? emailOption : widgetContainer,
+    querySelectorAll: (selector) => selector === "input, select, textarea" ? [...Object.values(fields), ...Object.values(choices).flat()] : choices[selector.match(/name="([^\"]+)"/)[1]] ?? [],
     reportValidity: () => Boolean(fields.firstName.value && fields.lastName.value && fields.phone.validity.valid && fields.email.validity.valid),
     reset: () => { Object.entries(fields).forEach(([key, field]) => { field.value = key === "permissionVersion" ? initial.permissionVersion : ""; }); Object.values(choices).flat().forEach((choice) => { choice.checked = false; }); },
   };
-  return { form, fields, choices, button, emailOption, status, dialog, dialogNodes, top, get widgetOptions() { return widgetContainer.options; }, submit: () => form.dispatch("submit", { preventDefault() {} }) };
+  return { form, fields, choices, button, emailOption, status, phoneError, securityStatus, dialog, dialogNodes, top, get widgetOptions() { return widgetContainer.options; }, submit: () => form.dispatch("submit", { preventDefault() {} }) };
 }
 
 function fixture({ configured = true, modalSupported = true, theme, requestType, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
@@ -77,7 +82,7 @@ function fixture({ configured = true, modalSupported = true, theme, requestType,
     },
     MutationObserver: class { constructor(callback) { observers.push(callback); } observe() {} },
     FormData: class {
-      constructor(form) { this.values = Object.fromEntries(Object.entries(form.fields).map(([key, field]) => [key, field.value])); this.multiple = Object.fromEntries(Object.entries(form.choices).map(([key, options]) => [key, options.filter((option) => option.checked).map((option) => option.value)])); }
+      constructor(form) { this.values = Object.fromEntries(Object.entries(form.fields).filter(([, field]) => !field.disabled).map(([key, field]) => [key, field.value])); this.multiple = Object.fromEntries(Object.entries(form.choices).map(([key, options]) => [key, options.filter((option) => option.checked && !option.disabled).map((option) => option.value)])); }
       get(name) { return this.values[name]; }
       getAll(name) { return this.multiple[name] ?? []; }
     },
@@ -134,7 +139,8 @@ test("sends normalized full US phone and optional empty email after the security
   assert.equal(f.calls.length, 1);
   assert.deepEqual(JSON.parse(f.calls[0].body), { firstName: "Alex", lastName: "Example", phone: "+17075550123", email: "", website: "", turnstileToken: "valid-token", treatmentAreas: [], previousMethods: [], contactPreference: "", notes: "", permissionVersion: "2026-11-15" });
   assert.match(f.status.textContent, /request has been sent/);
-  assert.equal(f.fields.phone.value, "");
+  assert.equal(f.fields.phone.value, "(707) 555-0123");
+  assert.equal(f.fields.phone.disabled, true);
   assert.equal(f.dialog.open, true);
   assert.equal(f.dialogNodes.name.textContent, "Alex");
   assert.equal(f.dialogNodes.title.focused, true);
@@ -343,9 +349,109 @@ test("phone formatting handles country-code paste, middle edits, separators, and
   for (const invalid of ["70755501234", "+44 7700 900123", "7075550123 ext 2"]) {
     phone.value = invalid; phone.selectionStart = invalid.length;
     await phone.dispatch("input", { inputType: "insertFromPaste" });
-    assert.equal(phone.value, invalid, "invalid digits remain visible, never silently discarded");
+    assert.equal(phone.value, "", "reject the whole paste without silently trimming it into a different number");
+    assert.equal(f.phoneError.hidden, false);
     f.widgetOptions.callback("token"); await f.submit();
     assert.equal(f.calls.length, 0);
+  }
+});
+
+test("rejects extra digits at the end or middle and keeps validation through security success", async () => {
+  for (const cursor of [14, 7]) {
+    const f = fixture(), phone = f.fields.phone;
+    phone.setSelectionRange(cursor, cursor);
+    let prevented = false;
+    await phone.dispatch("beforeinput", { inputType: "insertText", data: "4", preventDefault() { prevented = true; } });
+    assert.equal(prevented, true);
+    assert.equal(phone.value, "(707) 555-0123");
+    assert.equal(phone.selectionStart, cursor);
+    assert.equal(phone.attributes["aria-invalid"], "true");
+    assert.match(f.phoneError.textContent, /10|extra/i);
+    f.widgetOptions.callback("token");
+    await f.submit();
+    const validation = f.status.textContent;
+    assert.match(validation, /not been sent/);
+    f.widgetOptions.callback("new-token");
+    assert.equal(f.status.textContent, validation);
+    assert.equal(f.calls.length, 0);
+    assert.equal(f.dialog.open, false);
+    phone.value = "7075550123"; phone.selectionStart = 10;
+    await phone.dispatch("input", { inputType: "insertReplacementText" });
+    assert.equal(f.phoneError.hidden, true);
+    assert.equal(phone.attributes["aria-invalid"], undefined);
+    await f.submit();
+    assert.equal(f.calls.length, 1, "a deliberate valid edit allows submission");
+  }
+});
+
+test("replacement and +1 paste are accepted, but excess paste never submits the previous number", async () => {
+  const f = fixture(), phone = f.fields.phone;
+  phone.setSelectionRange(6, 7);
+  let prevented = false;
+  await phone.dispatch("beforeinput", { inputType: "insertText", data: "6", preventDefault() { prevented = true; } });
+  assert.equal(prevented, false);
+  phone.value = "(707) 655-0123"; phone.selectionStart = 7;
+  await phone.dispatch("input");
+  phone.setSelectionRange(0, phone.value.length);
+  await phone.dispatch("paste", { clipboardData: { getData: () => "+1 (707) 555-0123" }, preventDefault() { prevented = true; } });
+  assert.equal(prevented, false);
+  phone.value = "+1 (707) 555-0123"; phone.selectionStart = phone.value.length;
+  await phone.dispatch("input", { inputType: "insertFromPaste" });
+  assert.equal(phone.value, "(707) 555-0123");
+  for (const copied of [" +1 (707) 555-0123 ", "7075550123\n"]) {
+    phone.setSelectionRange(0, phone.value.length); prevented = false;
+    await phone.dispatch("paste", { clipboardData: { getData: () => copied }, preventDefault() { prevented = true; } });
+    assert.equal(prevented, false, "outer clipboard whitespace should not reject a valid number");
+    phone.value = copied; phone.selectionStart = copied.length;
+    await phone.dispatch("input", { inputType: "insertFromPaste" });
+    assert.equal(phone.value, "(707) 555-0123");
+  }
+  for (const invalid of ["70755501234567890123456789", "+44 7700 900123", "7075550123 ext 2"]) {
+    phone.setSelectionRange(0, phone.value.length); prevented = false;
+    await phone.dispatch("paste", { clipboardData: { getData: () => invalid }, preventDefault() { prevented = true; } });
+    assert.equal(prevented, true);
+    assert.equal(phone.value, "(707) 555-0123");
+    f.widgetOptions.callback("token"); await f.submit();
+    assert.equal(f.calls.length, 0);
+    assert.equal(f.dialog.open, false);
+  }
+});
+
+test("native validation has persistent feedback and incorrect ten-digit numbers get a useful error", async () => {
+  const f = fixture();
+  f.fields.firstName.value = "";
+  await f.form.dispatch("invalid", { target: f.fields.firstName });
+  assert.equal(f.fields.firstName.attributes["aria-invalid"], "true");
+  assert.match(f.status.textContent, /not been sent/);
+  f.widgetOptions.callback("token");
+  assert.match(f.status.textContent, /not been sent/);
+  f.fields.firstName.value = "Alex";
+  await f.fields.firstName.dispatch("input");
+  assert.equal(f.fields.firstName.attributes["aria-invalid"], undefined);
+  f.fields.phone.value = "(707) 055-0123";
+  await f.submit();
+  assert.match(f.phoneError.textContent, /valid US phone number/);
+  assert.equal(f.calls.length, 0);
+});
+
+test("locks fields while sending, retains the original payload, and restores editing only on failure", async () => {
+  for (const ok of [true, false]) {
+    let resolveResponse;
+    const f = fixture({ response: new Promise(resolve => { resolveResponse = resolve; }) });
+    f.widgetOptions.callback("token");
+    const pending = f.submit();
+    assert.equal(f.fields.phone.disabled, true);
+    assert.equal(f.fields.firstName.disabled, true);
+    assert.equal(f.choices.treatmentAreas[0].disabled, true);
+    assert.equal(f.form.attributes["aria-busy"], "true");
+    await f.submit();
+    assert.equal(f.calls.length, 1);
+    assert.equal(JSON.parse(f.calls[0].body).phone, "+17075550123");
+    resolveResponse({ ok, json: async () => ({ ok }) }); await pending;
+    assert.equal(f.fields.phone.disabled, ok);
+    assert.equal(f.fields.phone.value, "(707) 555-0123");
+    assert.equal(f.form.attributes["aria-busy"], "false");
+    assert.equal(f.dialog.open, ok);
   }
 });
 

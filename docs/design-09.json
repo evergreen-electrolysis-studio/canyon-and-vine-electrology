@@ -17,6 +17,13 @@
   },
   "images": "Same04 hero and treatment portraits, with the exact Design02 CSS treatment grayscale(1) contrast(0.94). Original image files unchanged. No new AI imagery or bitmap edits.",
   "pricing": "Proposed lower-emphasis presentation: below Meet Nav, same paper background, smaller heading, native details/summary closed by default, six canonical rates in a compact16px list. Rates remain reachable from navigation and usable withoutJavaScript; no prices or fees changed.",
-  "preserved": "All prior homepage and01\u201308 source/static/assets remain at approved baselines. Shared interest-list form, live backend, phone controller, consent/privacy, exactprices and studiofacts unchanged.",
-  "launch": "Evergreen Electrolysis Studio; Coming summer2027; American Canyon, CA; Monday\u2013Friday8am\u20134pm; blankphonelisting; licensedNav."
+  "preserved": "All prior homepage and01–08 source/static/assets remain at approved baselines. Shared interest-list form, live backend, phone controller, consent/privacy, exactprices and studiofacts unchanged.",
+  "launch": "Evergreen Electrolysis Studio; Coming summer2027; American Canyon, CA; Monday–Friday8am–4pm; blankphonelisting; licensedNav.",
+  "review_2026_11_17": {
+    "request": "Three agents reviewed the entire Design09 site, followed by root review, fixes and browser verification.",
+    "confirmed": "Extra digits were accepted. Invalid submissions made zero requests; the visible Success was Turnstile verification, not signup confirmation. Additional findings: editable pending/completed forms, faint borders, unfinished license placeholder, and mobile skip target hidden by the sticky header.",
+    "changes": "Reject whole excess phone insertions without truncation, preserve +1 and surrounding whitespace on paste, maintain inline errors through security callbacks, separate security and submission status, lock fields during sending/after success and restore on failure. Remove09 license-number placeholder, strengthen borders, and fix09 skip-link focus/scroll position.",
+    "scope": "Shared form/controller fixes also serve hydrated Sites forms. Only09 static HTML is re-rendered; homepage and01–08 static snapshots, imagery, prices, branding and source copy remain frozen. New09 script URL prevents stale-controller caching.",
+    "coverage": "Regression tests cover extra digit/end/middle, selection replacement, excessive/foreign/extension paste, valid +1 whitespace paste, native validation feedback, pending/success/failure locks and no false success. Browser verification covers full09 navigation, disclosures, optional form controls and responsive widths."
+  }
 }

@@ -19,7 +19,7 @@ export default function ConsultationController() {
     const shouldAppend = !script;
     if (!script) {
       script = document.createElement("script");
-      script.src = "/consultation-form.js?v=20261117-interest";
+      script.src = "/consultation-form.js?v=20261118-validation";
       script.async = true;
       script.dataset.consultationController = "true";
     }
