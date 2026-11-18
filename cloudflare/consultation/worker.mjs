@@ -1,17 +1,9 @@
-import fields from "../../config/consultation-fields.json" with { type: "json" };
-
-import interestList from "../../config/interest-list.json" with { type: "json" };
+import { validateSubmission, validInquiryAttempt } from "./inquiry.mjs";
 
 const MAX_BODY_BYTES = 8 * 1024;
-const DEFAULT_RECIPIENT = "sukhpalc@gmail.com";
 const TURNSTILE_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const UNAVAILABLE = "Consultation requests are temporarily unavailable. Please try again later.";
 const VERIFICATION_FAILED = "Please complete the security check and try again.";
-
-function isEmail(value) {
-  return typeof value === "string" && value.length <= 254 &&
-    !/[\p{Cc}\p{Cf}]/u.test(value) && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
-}
 
 function allowedOrigins(value) {
   if (typeof value !== "string" || !value.trim()) return null;
@@ -74,76 +66,9 @@ async function readBody(request) {
   return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
 }
 
-function validName(value) {
-  return typeof value === "string" && value.trim().length > 0 &&
-    value.trim().length <= 80 && !/[\p{Cc}\p{Cf}]/u.test(value);
-}
-
-function normalizePhone(value) {
-  if (typeof value !== "string" || value.length > 40) return null;
-  const phone = value.trim();
-  if (!/^\+?[\d ().-]+$/.test(phone)) return null;
-  let digits = phone.replace(/\D/g, "");
-  if (phone.startsWith("+") && (digits.length !== 11 || !digits.startsWith("1"))) return null;
-  if (digits.length === 11 && digits.startsWith("1")) digits = digits.slice(1);
-  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(digits)) return null;
-  return `+1${digits}`;
-}
-
-function selectedOptions(value, options, exclusiveOption) {
-  if (value === undefined) return [];
-  if (!Array.isArray(value) || value.length > options.length ||
-      value.some((option) => typeof option !== "string" || !options.includes(option))) return null;
-  const selected = [...new Set(value)];
-  if (selected.length > 1 && selected.includes(exclusiveOption)) return null;
-  return selected;
-}
-
-function validateSubmission(body) {
-  if (!body || typeof body !== "object" || Array.isArray(body)) return null;
-  const requestType = body.requestType ?? "consultation";
-  if (!["consultation", "interest"].includes(requestType)) return null;
-  const notice = requestType === "interest" ? interestList : fields;
-  if (requestType === "interest" && body.permissionVersion !== notice.permissionVersion) return null;
-  if (!validName(body.firstName) || !validName(body.lastName)) return null;
-  const phone = normalizePhone(body.phone);
-  if (!phone) return null;
-  if (body.email !== undefined && typeof body.email !== "string") return null;
-  const email = (body.email ?? "").trim();
-  if (email && !isEmail(email)) return null;
-  const treatmentAreas = selectedOptions(body.treatmentAreas, fields.treatmentAreas, "Not sure yet");
-  const previousMethods = selectedOptions(body.previousMethods, fields.previousMethods, "None");
-  if (!treatmentAreas || !previousMethods) return null;
-  const contactPreference = body.contactPreference === undefined ? "" : body.contactPreference;
-  if (typeof contactPreference !== "string" ||
-      (contactPreference !== "" && !fields.contactPreferences.includes(contactPreference)) ||
-      (contactPreference === "Email" && !email)) return null;
-  if (body.notes !== undefined && (typeof body.notes !== "string" || body.notes.length > 500 ||
-      /[\p{Cc}\p{Cf}]/u.test(body.notes.replace(/[\r\n\t]/g, "")))) return null;
-  const notes = (body.notes ?? "").replace(/\r\n?/g, "\n").trim();
-  if (body.permissionVersion !== undefined && body.permissionVersion !== notice.permissionVersion) return null;
-  if (body.website !== undefined && (typeof body.website !== "string" || body.website.trim())) return null;
-  if (typeof body.turnstileToken !== "string" || !body.turnstileToken.trim() ||
-      body.turnstileToken.length > 2048) return null;
-  return {
-    requestType,
-    firstName: body.firstName.trim(),
-    lastName: body.lastName.trim(),
-    phone,
-    email,
-    treatmentAreas,
-    previousMethods,
-    contactPreference,
-    notes,
-    permissionVersion: body.permissionVersion,
-    turnstileToken: body.turnstileToken,
-  };
-}
-
 // Dependencies make the complete request path testable without sending real email.
 export function createHandler({ fetch: fetcher = globalThis.fetch, verificationTimeoutMs = 5000 } = {}) {
   return async function handleRequest(request, env = {}) {
-    const receivedAt = new Date().toISOString();
     if (new URL(request.url).pathname !== "/request") return failure(404, "Not found.");
     const origins = allowedOrigins(env.ALLOWED_ORIGINS);
     if (!origins) return failure(503, UNAVAILABLE);
@@ -174,10 +99,8 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
       result.headers.set("Allow", "POST, OPTIONS");
       return result;
     }
-    const recipient = env.RECIPIENT_EMAIL ?? DEFAULT_RECIPIENT;
     if (typeof env.TURNSTILE_SECRET_KEY !== "string" || !env.TURNSTILE_SECRET_KEY.trim() ||
-        !isEmail(env.SENDER_EMAIL) || !isEmail(recipient) ||
-        typeof env.CONSULTATION_EMAIL?.send !== "function") {
+        typeof env.INQUIRY_MAIL?.fetch !== "function") {
       return failure(503, UNAVAILABLE, origin);
     }
     if (request.headers.get("Content-Type")?.split(";", 1)[0].trim().toLowerCase() !== "application/json") {
@@ -223,39 +146,26 @@ export function createHandler({ fetch: fetcher = globalThis.fetch, verificationT
       return failure(400, VERIFICATION_FAILED, origin);
     }
 
-    const interest = submission.requestType === "interest";
-    const notice = interest ? interestList : fields;
+    // Legacy callers without an attempt ID still work. The current controller
+    // retains the same UUID and original payload across uncertain retries.
+    const submissionId = body.submissionId ?? crypto.randomUUID();
+    const startedAt = body.startedAt ?? Date.now();
+    if (!validInquiryAttempt(submissionId, startedAt)) {
+      return response(400, { ok: false, code: "retry_expired", error: "This request can no longer be retried safely. Please contact nav@evergreenelectrolysisstudio.com." }, origin);
+    }
+    delete submission.turnstileToken;
+    submission.permissionVersion ??= null;
     try {
-      await env.CONSULTATION_EMAIL.send({
-        to: recipient,
-        from: env.SENDER_EMAIL,
-        subject: interest ? "New Evergreen Electrolysis Studio interest-list signup" : "New Evergreen Electrolysis consultation request",
-        text: [
-          interest ? "A visitor joined the Evergreen Electrolysis Studio interest list for the summer 2027 opening. No appointment was requested or booked." : "A visitor requested a consultation with Evergreen Electrolysis.",
-          "",
-          `First name: ${submission.firstName}`,
-          `Last name: ${submission.lastName}`,
-          `Phone: ${submission.phone}`,
-          `Email: ${submission.email || "Not provided"}`,
-          `Preferred contact method: ${submission.contactPreference || "Not specified"}`,
-          "",
-          interest ? "INTEREST LIST DETAILS (OPTIONAL)" : "CONSULTATION DETAILS (OPTIONAL)",
-          `Treatment areas: ${submission.treatmentAreas.join(", ") || "Not specified"}`,
-          `Previous hair-removal methods: ${submission.previousMethods.join(", ") || "Not specified"}`,
-          "Questions / notes:",
-          ...((submission.notes || "Not provided").split("\n").map((line) => `  ${line}`)),
-          "",
-          `Received (UTC): ${receivedAt}`,
-          `Website: ${origin}`,
-          ...(submission.permissionVersion ? [
-            `Contact permission notice version: ${submission.permissionVersion}`,
-            notice.permissionText,
-          ] : ["Contact permission notice version: Not supplied (legacy form)."]),
-        ].join("\n"),
-        ...(submission.email ? { replyTo: submission.email } : {}),
-      });
+      const delivered = await env.INQUIRY_MAIL.fetch(new Request("https://delivery.internal/inquiry", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submissionId, startedAt, origin, submission }),
+      }));
+      const result = await delivered.json();
+      if (!delivered.ok || result.outcome !== "accepted") {
+        return response(503, { ok: false, code: result.code === "payload_changed" ? "payload_changed" : "delivery_unconfirmed", error: "Delivery is not confirmed. Your details are still here. Please wait a moment and retry the same request." }, origin);
+      }
     } catch {
-      return failure(503, "Your request could not be sent. Please try again later.", origin);
+      return failure(503, "Delivery is not confirmed. Your details are still here. Please wait a moment and retry the same request.", origin);
     }
     return response(200, { ok: true }, origin);
   };
