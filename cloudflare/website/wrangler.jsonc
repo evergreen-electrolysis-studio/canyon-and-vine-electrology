@@ -1,0 +1,14 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Separate preview deployment: no custom-domain route or production binding.
+  "name": "evergreen-website-preview",
+  "account_id": "4fe85a31fa782a90b1758694d2314e0a",
+  "compatibility_date": "2026-04-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "../../out/evergreen",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

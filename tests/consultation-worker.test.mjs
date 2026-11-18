@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import worker, { createHandler } from "../cloudflare/consultation/worker.mjs";
 import fields from "../config/consultation-fields.json" with { type: "json" };
@@ -409,6 +410,54 @@ test("supports comma-separated origins with a matching Turnstile hostname", asyn
   assert.equal(result.status, 200);
   assert.equal(result.headers.get("Access-Control-Allow-Origin"), secondOrigin);
   assert.equal(sent.length, 1);
+});
+
+test("configured Evergreen origin requires its own Turnstile hostname while legacy origins remain available", async () => {
+  const config = await readFile(new URL("../cloudflare/consultation/wrangler.jsonc", import.meta.url), "utf8");
+  const allowed = config.match(/"ALLOWED_ORIGINS"\s*:\s*"([^"]+)"/)?.[1];
+  assert(allowed, "Worker deployment must supply an origin allowlist");
+  const evergreen = "https://evergreenelectrolysisstudio.com";
+  const submission = { ...validSubmission, requestType: "interest", permissionVersion: "interest-2026-11-17" };
+  const post = (origin) => request(submission, { headers: { Origin: origin, "Content-Type": "application/json" } });
+  const environment = { ALLOWED_ORIGINS: allowed, RECIPIENT_EMAIL: "inbox@example.com" };
+
+  const accepted = harness({
+    env: environment,
+    verify: async () => Response.json({ success: true, hostname: new URL(evergreen).hostname, action: "interest_list" }),
+  });
+  for (const origin of [evergreen, ORIGIN, "https://canyon-and-vine-electrology.sukhpalc.chatgpt.site"]) {
+    const preflight = request(undefined, {
+      method: "OPTIONS", body: undefined,
+      headers: { Origin: origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type" },
+    });
+    const response = await accepted.handler(preflight, accepted.env);
+    assert.equal(response.status, 204, `${origin} should retain its approved preflight`);
+    assert.equal(response.headers.get("Access-Control-Allow-Origin"), origin);
+  }
+  assert.equal(accepted.verified.length, 0);
+  assert.equal(accepted.sent.length, 0);
+  const response = await accepted.handler(post(evergreen), accepted.env);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), evergreen);
+  assert.equal(accepted.sent.length, 1);
+  assert.equal(accepted.sent[0].to, "inbox@example.com");
+  assert(accepted.sent[0].text.includes(`Website: ${evergreen}\n`));
+
+  for (const hostname of ["attacker.example", new URL(ORIGIN).hostname]) {
+    const mismatch = harness({
+      env: environment,
+      verify: async () => Response.json({ success: true, hostname, action: "interest_list" }),
+    });
+    assert.equal((await mismatch.handler(post(evergreen), mismatch.env)).status, 400);
+    assert.equal(mismatch.verified.length, 1);
+    assert.equal(mismatch.sent.length, 0, "Tokens issued for another hostname cannot send email");
+  }
+  for (const origin of ["https://attacker.example", `${evergreen}.attacker.example`, "https://www.evergreenelectrolysisstudio.com"]) {
+    const rejected = harness({ env: environment });
+    assert.equal((await rejected.handler(post(origin), rejected.env)).status, 403);
+    assert.equal(rejected.verified.length, 0);
+    assert.equal(rejected.sent.length, 0);
+  }
 });
 
 

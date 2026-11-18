@@ -1,0 +1,96 @@
+name: Check and deploy Evergreen website
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build, export, and test
+        run: pnpm test
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Export production static assets
+        run: node scripts/export-evergreen.mjs --production
+
+      - name: Save checked production artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: evergreen-production
+          path: out/evergreen-production/
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: checks
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://evergreenelectrolysisstudio.com/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install locked deployment dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore checked production artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: evergreen-production
+          path: out/evergreen-production/
+
+      - name: Deploy existing production Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Add CLOUDFLARE_API_TOKEN to the production environment before deploying."
+            exit 1
+          fi
+          pnpm exec wrangler deploy --config cloudflare/website/wrangler.production.jsonc
