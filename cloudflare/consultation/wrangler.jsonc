@@ -6,7 +6,7 @@
   "compatibility_date": "2026-04-01",
   "workers_dev": true,
   "vars": {
-    "ALLOWED_ORIGINS": "https://tycheventuresllc.com,https://canyon-and-vine-electrology.sukhpalc.chatgpt.site",
+    "ALLOWED_ORIGINS": "https://tycheventuresllc.com,https://canyon-and-vine-electrology.sukhpalc.chatgpt.site,https://evergreenelectrolysisstudio.com",
     "RECIPIENT_EMAIL": "sukhpalc@gmail.com",
     // Required: an address on a domain onboarded to Cloudflare Email Service.
     "SENDER_EMAIL": "consultation@tycheventuresllc.com"
