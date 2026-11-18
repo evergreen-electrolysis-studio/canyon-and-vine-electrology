@@ -6,7 +6,8 @@ Last reconciled: **2026-11-17**. This file records user preferences and project 
 
 - The user purchased **evergreenelectrolysisstudio.com** through **Cloudflare**.
 - The intended studio is in **American Canyon, California**, welcoming clients from **Napa, Solano, and Marin counties**.
-- The launch target is **summer 2027**, not an immediate launch. The exact opening date remains unknown.
+- The launch target is **summer 2027**, not an immediate launch. In the subsequent SEO/Google discussion, the user confirmed that the **studio address and opening month are still being decided**.
+- The user intends to **apply for the LLC on January 1, 2027**. This is a future plan, not a completed filing, formed entity, or licensing approval.
 - The business has **no clients yet** and expects a slow start; volume is unknown. Do not turn a hypothetical client count into a forecast.
 - Avoid accumulating paid subscriptions before demand exists. Paid form/practice-management systems were researched, not selected or purchased.
 - Use **client** terminology in product copy and workflows. The chosen direction is a **client health questionnaire and electrolysis consent**.
@@ -36,6 +37,7 @@ Do not conflate the simple consultation-request workflow with the private questi
 - Start with useful core pages and one strong location/directions page. Additional regional pages need distinct useful content.
 - Public contact details, practitioner license status/number, premises, prices, and hours must reflect verified or user-approved facts.
 - Use truthful, respectful, inclusive client language. Avoid guaranteed session counts, painless/no-risk claims, or implying diagnosis or medical licensure.
+- The [SEO and discovery review](SEO_AND_DISCOVERY_REVIEW.md) records the sharing-preview diagnosis, technical baseline, implementation verification status, and sourced Google setup guidance. Search Console groundwork can proceed independently of LLC formation. Finalize a future-opening Business Profile when the real premises and opening month are reliable; do not invent an address or treat client-origin counties as separate service locations.
 
 ## Existing repository facts that must not be silently replaced
 

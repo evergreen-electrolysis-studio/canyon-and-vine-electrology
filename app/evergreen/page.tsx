@@ -8,7 +8,8 @@ import TreatmentRates from "../components/TreatmentRates";
 import styles from "../concepts/design-09/design09.module.css";
 
 const url = "https://evergreenelectrolysisstudio.com/";
-const image = "https://evergreenelectrolysisstudio.com/quiet-practice-hero.jpg?v=d04-20261111";
+const image = "https://evergreenelectrolysisstudio.com/evergreen-hero-monochrome-v1.webp";
+const imageAlt = "Black-and-white portrait of a woman against a dark background";
 const description = "Feel at home in your skin. Thoughtful electrolysis care in American Canyon, California. Evergreen Electrolysis Studio is coming summer 2027; join the interest list.";
 
 export const metadata: Metadata = {
@@ -18,11 +19,19 @@ export const metadata: Metadata = {
   description,
   alternates: { canonical: url },
   robots: { index: false, follow: true },
-  openGraph: {
-    title: "Electrolysis in American Canyon | Evergreen Electrolysis Studio", description, url, type: "website",
-    images: [{ url: image, width: 1586, height: 992, alt: "Portrait of a woman against a dark background" }],
+  icons: {
+    icon: [
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
   },
-  twitter: { card: "summary_large_image", title: "Electrolysis in American Canyon | Evergreen Electrolysis Studio", description, images: [image] },
+  openGraph: {
+    title: "Electrolysis in American Canyon", description, url, type: "website",
+    siteName: "Evergreen Electrolysis Studio",
+    images: [{ url: image, width: 1586, height: 992, alt: imageAlt }],
+  },
+  twitter: { card: "summary_large_image", title: "Electrolysis in American Canyon | Evergreen Electrolysis Studio", description, images: [{ url: image, alt: imageAlt }] },
 };
 
 const areas = [
@@ -65,7 +74,7 @@ export default function EvergreenHomepage() {
           </div>
           <div className={styles.heroPhoto}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/quiet-practice-hero.jpg?v=d04-20261111" alt="Portrait of a woman against a dark background" width="1586" height="992" loading="eager" fetchPriority="high" />
+            <img src="/evergreen-hero-monochrome-v1.webp" alt={imageAlt} width="1586" height="992" loading="eager" fetchPriority="high" />
           </div>
           <div className={styles.heroIntroduction}>
             <p>Thoughtful, one-follicle-at-a-time care for every skin tone and hair color, with a treatment plan tailored to your goals.</p>
@@ -82,7 +91,7 @@ export default function EvergreenHomepage() {
             <p className={styles.scope}>Electrolysis for every natural hair color, across skin tones. Intimate-area services are not offered.</p>
             <figure className={styles.treatmentPortrait}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/editorial-portrait-v2.jpg?v=d04-20261111" alt="Portrait showing natural skin texture" width="1122" height="1402" loading="lazy" />
+              <img src="/evergreen-portrait-monochrome-v1.webp" alt="Black-and-white portrait showing natural skin texture" width="1122" height="1402" loading="lazy" />
             </figure>
           </div>
           <div className={styles.areaList}>

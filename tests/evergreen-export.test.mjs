@@ -50,7 +50,7 @@ test("preview cannot submit to the live form, and publication requires an explic
   assert(production.includes(`action="${consultation.endpoint}"`));
   assert(production.includes(`data-site-key="${consultation.turnstileSiteKey}"`));
   assert.doesNotMatch(production, /__preview__|1x00000000000000000000AA/);
-  assert.match(production, /name="robots" content="index, follow"/);
+  assert.match(production, /name="robots" content="index, follow, max-image-preview:large"/);
   const productionHeaders = await readFile(path.join(productionDirectory, "_headers"), "utf8");
   assert.doesNotMatch(productionHeaders.split(/\n\n/)[0], /X-Robots-Tag/);
   assert.match(productionHeaders, /workers\.dev\/\*\n  X-Robots-Tag: noindex/);
@@ -104,6 +104,31 @@ test("production indexing names only the new canonical homepage and previews rem
   assert.doesNotMatch(notFound, /data-consultation-form|rel="canonical"/);
 });
 
+test("search and share metadata use the final brand and monochrome image without inventing business details", () => {
+  for (const html of [preview, production]) {
+    const meta = new Map([...html.matchAll(/<meta\b[^>]*(?:name|property)="([^"]+)"[^>]*content="([^"]*)"[^>]*>/g)].map(([, key, value]) => [key, value]));
+    const image = `${canonical}evergreen-hero-monochrome-v1.webp`;
+    assert.equal(meta.get("og:title"), "Electrolysis in American Canyon");
+    assert.equal(meta.get("og:site_name"), "Evergreen Electrolysis Studio");
+    assert.equal(meta.get("og:image"), image);
+    assert.equal(meta.get("twitter:image"), image);
+    assert.equal(meta.get("og:image:width"), "1586");
+    assert.equal(meta.get("og:image:height"), "992");
+    assert.equal(meta.get("og:image:alt"), "Black-and-white portrait of a woman against a dark background");
+    assert.equal(meta.get("twitter:image:alt"), meta.get("og:image:alt"));
+    assert.match(meta.get("description"), /coming summer 2027/);
+    assert.match(html, /<img\b[^>]*src="\/evergreen-hero-monochrome-v1\.webp"/);
+    assert.match(html, /<img\b[^>]*src="\/evergreen-portrait-monochrome-v1\.webp"/);
+    assert.doesNotMatch(html, /quiet-practice-hero\.jpg|editorial-portrait-v2\.jpg/);
+    const links = [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) => new Map([...tag.matchAll(/\b([\w-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value])));
+    for (const [relation, file] of [["icon", "favicon.svg"], ["icon", "icon-192.png"], ["apple-touch-icon", "apple-touch-icon.png"]]) {
+      assert(links.some((link) => link.get("rel") === relation && new URL(link.get("href"), canonical).href === `${canonical}${file}`), `Missing ${file} icon link`);
+    }
+    const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(([, body]) => JSON.parse(body));
+    assert.deepEqual(data, [{ "@context": "https://schema.org", "@type": "WebSite", name: "Evergreen Electrolysis Studio", url: canonical }]);
+  }
+});
+
 test("every exported page dependency resolves locally and only the reviewed form script executes", async () => {
   const expectedFiles = new Set(["index.html", "404.html", "sitemap.xml", "robots.txt", "_headers"]);
   async function checkDependency(reference, base = canonical) {
@@ -131,9 +156,10 @@ test("every exported page dependency resolves locally and only the reviewed form
     return result;
   }
   assert.deepEqual((await files(productionDirectory)).sort(), [...expectedFiles].sort(), "No unrelated source, archive or assets may leak into deployment");
-  assert.deepEqual([...production.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/g)].map(([tag]) => tag), ['<script src="/consultation-form.js?v=20261118-submit" defer></script>']);
+  const executableScripts = [...production.matchAll(/<script\b([^>]*)>[\s\S]*?<\/script>/g)].filter(([, attributes]) => !/\btype="application\/ld\+json"/.test(attributes)).map(([tag]) => tag);
+  assert.deepEqual(executableScripts, ['<script src="/consultation-form.js?v=20261118-submit" defer></script>']);
   assert.doesNotMatch(production, /modulepreload/);
-  for (const asset of ["consultation-form.js", "quiet-practice-hero.jpg", "editorial-portrait-v2.jpg"]) {
+  for (const asset of ["consultation-form.js", "evergreen-hero-monochrome-v1.webp", "evergreen-portrait-monochrome-v1.webp", "favicon.svg", "icon-192.png", "apple-touch-icon.png"]) {
     assert.deepEqual(await readFile(path.join(productionDirectory, asset)), await readFile(path.join(projectRoot, "public", asset)), `${asset} must retain its reviewed bytes`);
   }
 });
@@ -142,6 +168,9 @@ test("exporting both environments leaves the complete historical baseline untouc
   const { preservedFiles } = JSON.parse(await readFile(new URL("../scripts/export-manifest.json", import.meta.url), "utf8"));
   for (const [file, expected] of Object.entries(preservedFiles)) {
     assert.equal(createHash("sha256").update(await readFile(path.join(projectRoot, file))).digest("hex"), expected, file);
+  }
+  for (const image of ["quiet-practice-hero.jpg", "editorial-portrait-v2.jpg"]) {
+    assert.equal(createHash("sha256").update(await readFile(path.join(projectRoot, "public", image))).digest("hex"), preservedFiles[`github-pages/${image}`], image);
   }
 });
 

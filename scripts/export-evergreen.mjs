@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const projectRoot = fileURLToPath(new URL("..", import.meta.url));
 const clientDirectory = path.join(projectRoot, "dist/client");
 const canonicalUrl = "https://evergreenelectrolysisstudio.com/";
+const siteName = "Evergreen Electrolysis Studio";
 const authoringRoute = "/evergreen";
 const previewEndpoint = "/__preview__/request";
 // Cloudflare's documented public, always-pass test key; never a production key.
@@ -33,6 +34,11 @@ for (const [file, expected] of Object.entries(preservedFiles)) {
   const actual = createHash("sha256").update(await readFile(path.join(projectRoot, file))).digest("hex");
   assert.equal(actual, expected, `Published baseline changed: ${file}`);
 }
+// The monochrome production copies must not replace the historical originals.
+for (const image of ["quiet-practice-hero.jpg", "editorial-portrait-v2.jpg"]) {
+  const actual = createHash("sha256").update(await readFile(path.join(projectRoot, "public", image))).digest("hex");
+  assert.equal(actual, preservedFiles[`github-pages/${image}`], `Historical image changed: public/${image}`);
+}
 const consultation = JSON.parse(await readFile(new URL("../config/consultation.json", import.meta.url), "utf8"));
 const interest = JSON.parse(await readFile(new URL("../config/interest-list.json", import.meta.url), "utf8"));
 assert.equal(new URL(consultation.endpoint).protocol, "https:");
@@ -53,13 +59,22 @@ function replaceOnce(pattern, replacement, label) {
   html = html.replace(pattern, replacement);
 }
 
-// Rendered React payloads are unnecessary for this static page. Its only script
-// is the existing reviewed controller; native details/summary remain usable.
+// Rendered React payloads are unnecessary for this static page. Its only
+// executable script is the reviewed controller; structured data is added below.
 assert((html.match(/<script\b/gi) ?? []).length > 0, "Expected server-rendered React scripts");
 html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
 html = html.replace(/<link\b[^>]*rel=["']modulepreload["'][^>]*\/?\s*>/gi, "");
 assert.doesNotMatch(html, /<script\b|modulepreload/i);
-replaceOnce(/(<meta name="robots" content=")noindex, follow("\s*\/?>)/, `$1${production ? "index, follow" : "noindex, follow"}$2`, "robots directive");
+replaceOnce(/(<meta name="robots" content=")noindex, follow("\s*\/?>)/, `$1${production ? "index, follow, max-image-preview:large" : "noindex, follow"}$2`, "robots directive");
+
+// Keep only the verified site identity. Address, opening date and business
+// licensing details are deliberately absent until those facts are confirmed.
+const website = { "@context": "https://schema.org", "@type": "WebSite", name: siteName, url: canonicalUrl };
+assert(html.includes(`property="og:site_name" content="${website.name}"`), "Structured site name must agree with page metadata");
+assert(html.includes(`rel="canonical" href="${website.url}"`), "Structured site URL must agree with canonical metadata");
+const structuredData = JSON.stringify(website).replaceAll("<", "\\u003c");
+assert.deepEqual(JSON.parse(structuredData), website);
+replaceOnce(/<\/head>/, `<script type="application/ld+json">${structuredData}</script></head>`, "head closing tag");
 
 assert.equal((html.match(/\bdata-consultation-form(?:=|\s|>)/g) ?? []).length, 1, "Expected exactly one interest-list form");
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -108,7 +123,10 @@ async function collectAsset(reference, relativeTo = canonicalUrl) {
 for (const [, reference] of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) await collectAsset(reference);
 for (const [, reference] of html.matchAll(/<meta (?:property="og:image"|name="twitter:image") content="([^"]+)"/g)) await collectAsset(reference);
 assert(assets.has("/consultation-form.js"));
-assert(assets.has("/quiet-practice-hero.jpg") && assets.has("/editorial-portrait-v2.jpg"));
+for (const asset of ["/evergreen-hero-monochrome-v1.webp", "/evergreen-portrait-monochrome-v1.webp", "/favicon.svg", "/icon-192.png", "/apple-touch-icon.png"]) {
+  assert(assets.has(asset), `Missing production image or icon: ${asset}`);
+}
+assert(!assets.has("/quiet-practice-hero.jpg") && !assets.has("/editorial-portrait-v2.jpg"), "Production must use the monochrome copies");
 assert([...assets].some((asset) => asset.endsWith(".css")));
 assert([...assets].some((asset) => asset.endsWith(".woff2")));
 assert.deepEqual(await readFile(path.join(clientDirectory, "consultation-form.js")), await readFile(path.join(projectRoot, "public/consultation-form.js")), "Exported controller must match its reviewed source");
