@@ -2,7 +2,7 @@
 
 Review date: **November 17, 2026 (America/Los_Angeles)**; official sources checked during this review, including November 18 UTC. Site: **https://evergreenelectrolysisstudio.com/**. This record synthesizes the parent audit and separate social-preview, technical-SEO, and Google Business Profile research assignments.
 
-**Implementation and local verification complete; deployment verification pending.** The baseline findings describe the site before this review's fixes. Local tests and desktop/mobile visual checks have passed; publication must be verified separately.
+**Implemented, deployed, and verified.** The automatic main-push deployment passed. Fresh public responses match the exact CI artifact, and Apple LinkPresentation now returns the monochrome image from the same root URL that previously returned the green image. The user also confirmed that a fresh iPhone iMessage preview is now black and white; existing message-card caches are not controlled by this change.
 
 ## User decisions and limits
 
@@ -32,7 +32,7 @@ The reported iMessage mismatch has a concrete source: sharing metadata reference
 
 These checks support a sound technical starting point. They do **not** confirm actual Google indexing, rankings, selected snippets or pictures, Search Console ownership, or real-user Core Web Vitals. Those outcomes remain unverified in this record.
 
-## Implemented correction — production verification pending
+## Deployed correction
 
 The correction reuses the approved photographs and rendered monochrome treatment. Original images and frozen concepts remain unchanged.
 
@@ -46,15 +46,16 @@ The correction reuses the approved photographs and rendered monochrome treatment
 
 A new image filename gives sharing crawlers a distinct asset URL. Cached previews may still persist in previously created messages; do not promise an instant refresh of every existing iMessage card. The public form's behavior is unchanged.
 
-The parent must complete and record:
+## Verification record
 
-1. Appropriate export/rendered-HTML regression checks, including metadata, image paths and dimensions, icon links, canonical URL, and robots/sitemap output.
-2. Visual checks of the production layout and the actual monochrome image files at desktop and mobile sizes.
-3. The authorized deployment through the existing publishing workflow, with its commit/run/version recorded.
-4. Fresh production fetches of the homepage, exact sharing-image URL, icons, robots, sitemap, canonical redirects, and a missing route; compare deployed output with the deployment artifact where appropriate.
-5. A fresh sharing-preview check where available. If only server metadata/assets were verified, say so; do not describe that as an observed iMessage refresh.
+- [PR #2](https://github.com/evergreen-electrolysis-studio/canyon-and-vine-electrology/pull/2) merged at **`d3b052c3d40e80f05b0f922bdb429aa667f154ff`** through the main owner account `sscheema24`. All **11** uploaded files matched the reviewed local bytes before merge. No old-account access was restored.
+- Automatic main-push [Actions run **44253302200**](https://github.com/evergreen-electrolysis-studio/canyon-and-vine-electrology/actions/runs/44253302200) passed full tests (**162/162**), lint, export and production deployment. The exporter verified **15 referenced assets and 79 historical hashes**. Worker version: **`ea3cd5b3-698b-48fb-84ef-f3b823091f40`**.
+- All **18** checked public files (homepage, 15 referenced assets, robots and sitemap) match that exact run's downloaded production artifact byte for byte. HTTPS fetches succeed; the share image returns `image/webp`. Three HTTP/www canonical redirects preserve path/query, and an unknown route returns a genuine 404. A Googlebot-labelled request returns the same current HTML; this is not evidence of an actual Google crawl or index entry.
+- Desktop (1280 px) and mobile (390 px) layouts and both raw monochrome portraits were visually checked. The live desktop page renders correctly with no recorded browser console errors. Form source, controller, destination and behavior are unchanged; no new email was sent. The earlier user-confirmed inbox test remains the inquiry-delivery evidence in [migration status](MIGRATION_STATUS.md).
+- **Apple-path reproduction and remedy:** before deployment, `LPMetadataProvider` fetched the exact root URL and returned the green 1024×640 portrait with no icon. After deployment, a new fetch of the **same exact root URL, without a cache-busting query**, returned the correct 1024×640 monochrome portrait and an icon. The exported Apple image has equal R/G/B values at every pixel; the original baseline did not. This verifies actual WebP decoding through Apple's metadata framework on this Mac, so a speculative JPEG fallback was unnecessary.
+- The user explicitly confirmed **a fresh iPhone iMessage preview is now black and white**. No claim is made that every previously cached message card was refreshed. Google index status, selected result imagery/snippets and measured Core Web Vitals remain unverified; Search Console setup is the next recommended step, not a completed account action.
 
-**Verification record:** full tests passed **162/162** and full lint passed. After the final short Open Graph title adjustment, the project rebuilt, all **7/7** export tests and scoped lint passed, and production export verified **15 referenced assets and 79 frozen hashes**. Desktop (1280 px) and mobile (390 px) layouts and both raw monochrome portraits were visually checked. Deployment and production asset/metadata checks are PENDING. Fresh iMessage rendering is not yet observed. No new delivery test is claimed here. The earlier user-confirmed inbox test remains the inquiry-delivery evidence described in [migration status](MIGRATION_STATUS.md).
+Local evidence is retained in ignored `outputs/seo-review/`: `production-verification.json`, the exact `ci-44253302200` artifact, desktop/mobile screenshots, `apple-link-baseline.json/.png`, `apple-link-postdeployment.json/.png`, `apple-preview-color-comparison.json`, and the reusable `apple-link-preview.swift` fetcher. These are verification evidence, not new public website pages.
 
 ## What Google can and cannot be instructed to show
 
@@ -117,4 +118,4 @@ All links below were checked during this review. Google sources are current plat
 | S18 | [Apple: rich previews for Messages](https://developer.apple.com/documentation/technotes/tn3156-create-rich-previews-for-messages) | Open Graph, titles, icon/image sizing, and redirect behavior |
 | S17 | [California Board: FAQs](https://www.barbercosmo.ca.gov/forms_pubs/publications/faqs.shtml) | Individual and establishment licensing; location/ownership specificity |
 
-The parent's implementation and verification entries must remain distinct from these research conclusions. No ranking, search-picture selection, consent validity, treatment readiness, or business formation is certified by this audit.
+The implementation and verification entries above are distinct from the platform research conclusions. No ranking, search-picture selection, consent validity, treatment readiness, or business formation is certified by this audit.
