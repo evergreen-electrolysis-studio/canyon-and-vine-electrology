@@ -33,7 +33,6 @@
 .panel .privacy a { color: var(--form-text); text-decoration: underline; text-underline-offset: 3px; }
 .form button { border: 1px solid var(--form-button-bg); border-radius: 5px; background: var(--form-button-bg); color: var(--form-button-text); display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; min-height: 54px; font: inherit; font-weight: 700; cursor: pointer; gap: 15px; }
 .form button:disabled { background: #d0d0cc; border-color: var(--form-muted); color: #151515; cursor: not-allowed; }
-.form button span { font-size: 22px; }
 .form .status { font-size: 13px; line-height: 1.6; color: var(--form-text); margin: 8px 0 0; }
 .status:empty { display: none; }
 .honeypot, .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }

@@ -56,7 +56,7 @@ export default function AtHomeInYourSkin() {
         <nav className={styles.navigation} aria-label="Primary navigation">
           <a href="#care">Treatment</a><a href="#nav">Meet Nav</a><a href="#rates">Rates</a><a href="#questions">Questions</a>
         </nav>
-        <a className={styles.headerCta} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
+        <a className={styles.headerCta} href="#contact">Join interest list</a>
       </header>
       <main id="main-content" tabIndex={-1}>
         <section className={styles.hero} aria-labelledby="hero-title">
@@ -70,7 +70,7 @@ export default function AtHomeInYourSkin() {
           </div>
           <div className={styles.heroIntroduction}>
             <p>Thoughtful, one-follicle-at-a-time care for every skin tone and hair color, with a treatment plan tailored to your goals.</p>
-            <a className={styles.button} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
+            <a className={styles.button} href="#contact">Join interest list</a>
             <a className={styles.textLink} href="#first-visit">A look at your first visit <span aria-hidden="true">↓</span></a>
           </div>
         </section>
@@ -88,7 +88,7 @@ export default function AtHomeInYourSkin() {
           </div>
           <div className={styles.areaList}>
             {areas.map(area => <article key={area.number}><span className={styles.areaNumber}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div></article>)}
-            <a className={styles.lightLink} href="#contact">Join the interest list <span aria-hidden="true">↗</span></a>
+            <a className={styles.lightLink} href="#contact">Join the interest list</a>
           </div>
         </section>
 
@@ -128,14 +128,14 @@ export default function AtHomeInYourSkin() {
         </section>
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-title">
-          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Coming summer 2027</p><h2 id="contact-title">Join the<br /><em>interest list.</em></h2><p>Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for opening updates and first news of consultation availability.</p><p>A little closer to a routine that feels like you.</p></div><div className={styles.location}><h3>Evergreen Electrolysis Studio</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Address</dt><dd>American Canyon, CA</dd></div><div><dt>Phone</dt><dd></dd></div><div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div></dl></div></div>
-          <div className={styles.formWrap}><ConsultationForm tone="light" intent="interest" /></div>
+          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Coming summer 2027</p><h2 id="contact-title">Join the<br /><em>interest list.</em></h2><p>Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for opening updates and first news of consultation availability.</p></div><div className={styles.location}><h3>Evergreen Electrolysis Studio</h3><p>American Canyon, California<br />Serving nearby Napa–Solano communities.</p><dl><div><dt>Address</dt><dd>American Canyon, CA</dd></div><div><dt>Phone</dt><dd></dd></div><div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div></dl></div></div>
+          <div className={styles.formWrap}><ConsultationForm tone="light" intent="interest" submitLabel="Join the interest list" heading="Your contact details" /></div>
         </section>
       </main>
       <footer className={styles.footer}>
         <div className={styles.footerTop}><a href="#top">Evergreen<span>Electrolysis Studio</span></a><p>Personal care.<br />American Canyon, California.</p></div>
         <p className={styles.disclaimer}>Results and treatment timelines vary by individual. Suitability is assessed during consultation. Information on this site is educational and is not medical advice; consult a qualified healthcare professional about medical concerns.</p>
-        <div className={styles.footerBottom}><span>Design 09 · At Home in Your Skin</span><Link href="/concepts/">Compare all designs ↗</Link><Link href="/">Current homepage ↗</Link><a href="#top">Back to top ↑</a></div>
+        <div className={styles.footerBottom}><span>Design 09 · At Home in Your Skin</span><Link href="/concepts/">Compare all designs</Link><Link href="/">Current homepage</Link><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );

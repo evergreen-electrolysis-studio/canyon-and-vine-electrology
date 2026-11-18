@@ -52,7 +52,7 @@ export default function ConceptsPage() {
               <h2>{concept.title}</h2>
               <p>{concept.description}</p>
               <Link className={styles.openLink} href={concept.href}>
-                Open design <span aria-hidden="true">↗</span>
+                Open design
               </Link>
             </div>
           </article>

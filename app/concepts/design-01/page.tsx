@@ -176,7 +176,6 @@ export default function Home() {
             <div className="hero-actions">
               <a className="button button-primary" href="#contact">
                 Request a consultation
-                <span aria-hidden="true">↗</span>
               </a>
               <a className="text-link" href="#process">
                 How electrolysis works <span aria-hidden="true">↓</span>

@@ -331,7 +331,7 @@ export default function QuietPractice() {
               <span>Progress over a series of visits</span>
             </div>
             <a className={styles.guidanceLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">
-              California Board consumer guidance <span aria-hidden="true">↗</span>
+              California Board consumer guidance
             </a>
           </div>
           <figure className={styles.methodImage}>

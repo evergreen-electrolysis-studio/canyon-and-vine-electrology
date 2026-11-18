@@ -46,7 +46,7 @@
     const endpoint = form.dataset.endpoint;
     const siteKey = form.dataset.siteKey;
     const interest = form.dataset.requestType === "interest";
-    const actionLabel = interest ? "Join interest list" : "Request a consultation";
+    const actionLabel = form.dataset.submitLabel || (interest ? "Join interest list" : "Request a consultation");
     let token = "";
     let widget;
     let pending = false;

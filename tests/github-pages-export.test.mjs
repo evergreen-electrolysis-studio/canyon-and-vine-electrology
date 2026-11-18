@@ -9,7 +9,7 @@ const expectedRates = [[15, 65], [30, 95], [45, 135], [60, 175], [90, 265], [120
 const controllerTag = '<script src="/canyon-and-vine-electrology/consultation-form.js" defer></script>';
 
 function assertConsultationControllerOnly(html) {
-  const version = html.includes('data-security-status') ? "?v=20261118-validation" : html.includes('data-request-type="interest"') ? "?v=20261117-interest" : "";
+  const version = html.includes('data-security-status') ? "?v=20261118-submit" : html.includes('data-request-type="interest"') ? "?v=20261117-interest" : "";
   const expected = controllerTag.replace('.js"', `.js${version}"`);
   assert.deepEqual([...html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi)].map(([script]) => script), [expected]);
   assert.equal((html.match(/<script\b/gi) ?? []).length, 1);
@@ -190,7 +190,7 @@ test("exports a self-contained GitHub Pages site", async () => {
   assert.match(html, /width="1003" height="1568"/);
   assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
   assert.equal((html.match(/<script\b/g) ?? []).length, 1);
-  assert.match(html, /<script src="\/canyon-and-vine-electrology\/consultation-form.js" defer><\/script>/);
+  assertConsultationControllerOnly(html);
   assert.doesNotMatch(html, /rel="modulepreload"/i);
   assert.doesNotMatch(html, /(?:href|src)="\/assets\//);
   assert.doesNotMatch(html, /name="robots" content="noindex, nofollow"/i);

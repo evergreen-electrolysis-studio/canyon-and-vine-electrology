@@ -4,16 +4,17 @@ import interestList from "../../config/interest-list.json";
 import ConsultationController from "./ConsultationController";
 import styles from "./consultation-form.module.css";
 
-export default function ConsultationForm({ tone = "dark", intent = "consultation" }: { tone?: "dark" | "light"; intent?: "consultation" | "interest" }) {
+export default function ConsultationForm({ tone = "dark", intent = "consultation", submitLabel, heading }: { tone?: "dark" | "light"; intent?: "consultation" | "interest"; submitLabel?: string; heading?: string }) {
   const interest = intent === "interest";
   const notice = interest ? interestList : fields;
   const action = interest ? "Join interest list" : "Request a consultation";
+  const submitAction = submitLabel || action;
   const brand = interest ? "Evergreen Electrolysis Studio" : "Evergreen Electrolysis";
   return (
     <div className={`${styles.panel} ${tone === "light" ? styles.light : ""}`}>
-      <h3 className={styles.heading}>{action}</h3>
+      <h3 className={styles.heading}>{heading || action}</h3>
       <p className={styles.description}>Tell us how to reach you. First name, last name, and phone number are required.</p>
-      <form className={styles.form} data-consultation-form data-request-type={interest ? "interest" : undefined} data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} data-theme={tone} method="post" action={config.endpoint || "#contact"}>
+      <form className={styles.form} data-consultation-form data-submit-label={submitLabel} data-request-type={interest ? "interest" : undefined} data-endpoint={config.endpoint} data-site-key={config.turnstileSiteKey} data-theme={tone} method="post" action={config.endpoint || "#contact"}>
         <div className={styles.names}>
           <label htmlFor="consultation-first-name">First name <span>(required)</span><input id="consultation-first-name" name="firstName" autoComplete="given-name" required maxLength={80} /></label>
           <label htmlFor="consultation-last-name">Last name <span>(required)</span><input id="consultation-last-name" name="lastName" autoComplete="family-name" required maxLength={80} /></label>
@@ -52,7 +53,7 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
         <div className={styles.security} role="group" aria-labelledby="consultation-security-title">
           <p id="consultation-security-title" className={styles.securityTitle}>Security check</p>
           <div data-turnstile-container />
-          <p data-security-status role="status" aria-live="polite" className={styles.hint}>This check prevents spam. Complete your details, then choose “{action}” to send them.</p>
+          <p data-security-status role="status" aria-live="polite" className={styles.hint}>This check prevents spam. Complete your details, then choose “{submitAction}” to send them.</p>
         </div>
         <p className={styles.note}>{notice.permissionText}</p>
         <details className={styles.privacy}>
@@ -61,7 +62,7 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
           <p>Cloudflare Turnstile processes technical information, such as your IP address and browser information, to help prevent spam. Read <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s privacy policy<span className={styles.srOnly}> (opens in a new tab)</span></a>.</p>
           <p>{interest ? "You can ask Nav to remove you from the interest list at any time by replying to an update or letting her know when she contacts you. We will use this list only for studio opening updates and consultation availability." : "This form does not subscribe you to marketing. You can ask Nav about the information you submitted when she contacts you."}</p>
         </details>
-        <button type="submit" disabled>{action} <span aria-hidden="true">↗</span></button>
+        <button type="submit" disabled>{submitAction}</button>
         <p data-form-status role="status" aria-live="polite" tabIndex={-1} className={styles.status}>{config.endpoint && config.turnstileSiteKey ? "Loading the request form…" : "Preview only: request delivery is not connected yet."}</p>
         <noscript>Please enable JavaScript to {interest ? "join the interest list" : "send your consultation request"}.</noscript>
       </form>
@@ -76,7 +77,7 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
         </div>
         {/* The static form controller closes the dialog and returns to the page top. */}
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a className={styles.homeButton} href="/" data-success-home>Back to home <span aria-hidden="true">↗</span></a>
+        <a className={styles.homeButton} href="/" data-success-home>Back to home</a>
       </dialog>
       <ConsultationController />
     </div>

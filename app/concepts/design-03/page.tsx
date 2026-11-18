@@ -93,7 +93,7 @@ export default function PortraitOfPrecision() {
       <div className={styles.conceptBar}>
         <Link href="/concepts/">← All concepts</Link>
         <span>Design 03 · Portrait of Precision</span>
-        <Link href="/">Current homepage ↗</Link>
+        <Link href="/">Current homepage</Link>
       </div>
 
       <header className={styles.header}>
@@ -130,7 +130,7 @@ export default function PortraitOfPrecision() {
             </p>
             <div className={styles.heroActions}>
               <a className={styles.primaryButton} href="#contact">
-                Start with a consultation <span aria-hidden="true">↗</span>
+                Start with a consultation
               </a>
               <a className={styles.secondaryLink} href="#treatment">
                 Is it right for me? <span aria-hidden="true">↓</span>
@@ -221,7 +221,7 @@ export default function PortraitOfPrecision() {
               </article>
             </div>
             <a className={styles.boardLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">
-              Read California Board consumer guidance <span aria-hidden="true">↗</span>
+              Read California Board consumer guidance
             </a>
           </div>
         </section>
@@ -376,7 +376,7 @@ export default function PortraitOfPrecision() {
       </footer>
 
       <a className={styles.mobileCta} href="#contact">
-        Request a consultation <span aria-hidden="true">↗</span>
+        Request a consultation
       </a>
     </main>
   );

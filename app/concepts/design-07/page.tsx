@@ -56,7 +56,7 @@ export default function PersonalEdit() {
         <nav className={styles.navigation} aria-label="Primary navigation">
           <a href="#care">Treatment</a><a href="#rates">Prices</a><a href="#nav">Meet Nav</a><a href="#questions">Questions</a>
         </nav>
-        <a className={styles.headerCta} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
+        <a className={styles.headerCta} href="#contact">Join interest list</a>
       </header>
       <main id="main-content">
         <section className={styles.hero} aria-labelledby="hero-title">
@@ -70,7 +70,7 @@ export default function PersonalEdit() {
           </div>
           <div className={styles.heroIntroduction}>
             <p>One-on-one electrolysis with Nav, shaped around your hair, your skin, and what matters to you.</p>
-            <a className={styles.button} href="#contact">Join interest list <span aria-hidden="true">↗</span></a>
+            <a className={styles.button} href="#contact">Join interest list</a>
             <a className={styles.textLink} href="#first-visit">A look at your first visit <span aria-hidden="true">↓</span></a>
           </div>
           <div className={styles.heroFoot}><span>Face. Body. The small details.</span><span>Care, one follicle at a time.</span></div>
@@ -85,7 +85,7 @@ export default function PersonalEdit() {
           </div>
           <div className={styles.areaList}>
             {areas.map(area => <article key={area.number}><span className={styles.areaNumber}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div></article>)}
-            <a className={styles.lightLink} href="#contact">Join the interest list <span aria-hidden="true">↗</span></a>
+            <a className={styles.lightLink} href="#contact">Join the interest list</a>
           </div>
         </section>
 
@@ -96,7 +96,7 @@ export default function PersonalEdit() {
 
         <section className={styles.ratesSection} id="rates" aria-labelledby="rates-title">
           <div><p className={styles.eyebrow}>03 / Treatment prices</p><h2 id="rates-title">Your time.<br /><em>Clearly priced.</em></h2><p>Choose session length with Nav based on the area and your treatment plan. These are treatment rates; consultation availability will be shared as opening approaches.</p></div>
-          <div className={styles.rateSheet}><TreatmentRates /><p>Be the first to hear when consultations become available. Join with your name and phone number.</p><a className={styles.textLink} href="#contact">Join interest list <span aria-hidden="true">↗</span></a></div>
+          <div className={styles.rateSheet}><TreatmentRates /><p>Be the first to hear when consultations become available. Join with your name and phone number.</p><a className={styles.textLink} href="#contact">Join interest list</a></div>
         </section>
 
         <section className={styles.practitioner} id="nav" aria-labelledby="nav-title">
@@ -121,7 +121,7 @@ export default function PersonalEdit() {
       <footer className={styles.footer}>
         <div className={styles.footerTop}><a href="#top">Evergreen<span>Electrolysis Studio</span></a><p>Personal care.<br />American Canyon, California.</p></div>
         <p className={styles.disclaimer}>Results and treatment timelines vary by individual. Suitability is assessed during consultation. Information on this site is educational and is not medical advice; consult a qualified healthcare professional about medical concerns.</p>
-        <div className={styles.footerBottom}><span>Design 07 · The Personal Edit</span><Link href="/concepts/">Compare all designs ↗</Link><Link href="/">Current homepage ↗</Link><a href="#top">Back to top ↑</a></div>
+        <div className={styles.footerBottom}><span>Design 07 · The Personal Edit</span><Link href="/concepts/">Compare all designs</Link><Link href="/">Current homepage</Link><a href="#top">Back to top ↑</a></div>
       </footer>
     </div>
   );

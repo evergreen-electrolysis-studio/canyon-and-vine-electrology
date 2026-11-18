@@ -35,7 +35,6 @@ const questions = [
   { question: "How much will treatment cost?", answer: `${treatmentRateSummary}. All prices are in USD. Total cost depends on session length and the course of treatment. Your consultation is the place to discuss a practical starting schedule before making a commitment.` },
 ];
 
-function Arrow() { return <span aria-hidden="true">↗</span>; }
 
 export default function EverydayEdit() {
   return (
@@ -50,7 +49,7 @@ export default function EverydayEdit() {
         <nav className={styles.navigation} aria-label="Primary navigation">
           <a href="#treatment">The treatment</a><a href="#nav">Meet Nav</a><a href="#first-visit">Your first visit</a>
         </nav>
-        <a className={styles.headerCta} href="#consultation">Let’s begin <Arrow /></a>
+        <a className={styles.headerCta} href="#consultation">Let’s begin</a>
       </header>
       <nav className={styles.mobileNavigation} aria-label="Mobile navigation">
         <a href="#treatment">Treatment</a><a href="#nav">Meet Nav</a><a href="#first-visit">First visit</a><a href="#questions">FAQs</a>
@@ -62,7 +61,7 @@ export default function EverydayEdit() {
             <p className={styles.eyebrow}>American Canyon, California</p>
             <h1 id="hero-title">A little less<br /> hair.<br /><em>A little more<br /> you.</em></h1>
             <p className={styles.heroLede}>Permanent hair removal, with a personal plan.<br />One-on-one electrolysis with Nav.</p>
-            <a className={styles.button} href="#consultation">Start with a consultation <Arrow /></a>
+            <a className={styles.button} href="#consultation">Start with a consultation</a>
             <a className={styles.textLink} href="#treatment">New to electrolysis? Start here <span aria-hidden="true">↓</span></a>
           </div>
           <div className={styles.heroVisual}>
@@ -75,7 +74,7 @@ export default function EverydayEdit() {
         <div className={styles.introBand}>
           <p>A personal choice.<br /><strong>A precise approach.</strong></p>
           <p>From a few chin hairs to a larger treatment area, start with clear answers and a plan that makes sense for you.</p>
-          <a href="#first-visit">Meet your first visit <Arrow /></a>
+          <a href="#first-visit">Meet your first visit</a>
         </div>
 
         <section className={styles.treatment} id="treatment" aria-labelledby="treatment-title">
@@ -85,7 +84,7 @@ export default function EverydayEdit() {
             <p>Electrolysis uses a fine probe and a controlled electrical current to treat individual hair follicles. It works independently of hair pigment, so light, gray, and red hairs can be treated too.</p>
           </div>
           <div className={styles.areaList}>
-            {areas.map(area => <article key={area.number}><span className={styles.number}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div><a href="#consultation" aria-label={`Discuss ${area.title.toLowerCase()} at a consultation`}><Arrow /></a></article>)}
+            {areas.map(area => <article key={area.number}><span className={styles.number}>{area.number}</span><div><h3>{area.title}</h3><p>{area.text}</p></div><a href="#consultation" aria-label={`Discuss this area: ${area.title.toLowerCase()} at a consultation`}>Discuss this area</a></article>)}
             <p className={styles.scopeNote}>Intimate-area services are not offered. Every treatment area is subject to consultation and individual suitability.</p>
           </div>
         </section>
@@ -98,7 +97,7 @@ export default function EverydayEdit() {
             <div><span aria-hidden="true">02 —</span><h3>Remove the treated hair</h3><p>The treated hair is gently removed. Technique and settings reflect the area, hair, and skin response.</p></div>
             <div><span aria-hidden="true">03 —</span><h3>Return as growth appears</h3><p>Hair grows in cycles. A series of visits allows treatment of hairs as they become available, with the plan reviewed along the way.</p></div>
           </div>
-          <a className={styles.textLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">Read California’s electrology guide <Arrow /></a>
+          <a className={styles.textLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">Read California’s electrology guide</a>
         </section>
 
         <section className={styles.practitioner} id="nav" aria-labelledby="nav-title">
@@ -118,7 +117,7 @@ export default function EverydayEdit() {
         </section>
 
         <section className={styles.visit} id="first-visit" aria-labelledby="visit-title">
-          <div className={styles.visitHeading}><p className={styles.eyebrow}>03 / Your first visit</p><h2 id="visit-title">You don’t need<br />all the answers.<br /><em>Bring your questions.</em></h2><p>Start with a consultation and, if appropriate, a small test treatment. Together, you’ll work through what comes next.</p><a className={styles.button} href="#consultation">Plan your first visit <Arrow /></a></div>
+          <div className={styles.visitHeading}><p className={styles.eyebrow}>03 / Your first visit</p><h2 id="visit-title">You don’t need<br />all the answers.<br /><em>Bring your questions.</em></h2><p>Start with a consultation and, if appropriate, a small test treatment. Together, you’ll work through what comes next.</p><a className={styles.button} href="#consultation">Plan your first visit</a></div>
           <div className={styles.visitGuide}>
             <ol>
               <li><span>01</span><div><h3>Talk it through</h3><p>Your goals, hair-removal history, skin response, and relevant health information help shape the plan.</p></div></li>
@@ -140,7 +139,7 @@ export default function EverydayEdit() {
         </section>
 
         <section className={styles.contact} id="consultation" aria-labelledby="contact-title">
-          <div className={styles.contactTop}><p className={styles.eyebrow}>Your next step</p><span aria-hidden="true">↗</span></div>
+          <div className={styles.contactTop}><p className={styles.eyebrow}>Your next step</p></div>
           <h2 id="contact-title">Make room<br /><em>for you.</em></h2>
           <div className={styles.contactBottom}>
             <div className={styles.contactIntro}><p>A conversation about your goals.<br />A thoughtful place to begin.</p><p>Send your request using the form. We’ll contact you to discuss your goals and an appointment time.</p>
@@ -151,7 +150,7 @@ export default function EverydayEdit() {
         </section>
       </main>
       <footer className={styles.footer}>
-        <div className={styles.footerTop}><a className={styles.brand} href="#top">evergreen<span>electrolysis</span></a><p>American Canyon, California<br />Serving the Napa–Solano community.</p><Link href="/concepts/">Compare all designs <Arrow /></Link></div>
+        <div className={styles.footerTop}><a className={styles.brand} href="#top">evergreen<span>electrolysis</span></a><p>American Canyon, California<br />Serving the Napa–Solano community.</p><Link href="/concepts/">Compare all designs</Link></div>
         <p className={styles.disclaimer}>Results and treatment timelines vary by individual and cannot be guaranteed. This website provides general information only and is not medical advice. Services are subject to consultation and individual suitability; consult a qualified healthcare professional about medical conditions or medications.</p>
         <div className={styles.footerEnd}><span>© 2026 Evergreen Electrolysis</span><a href="#top">Back to top ↑</a><span>Design 05 · The Everyday Edit</span></div>
       </footer>

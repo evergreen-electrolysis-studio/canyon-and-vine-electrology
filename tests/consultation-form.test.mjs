@@ -26,7 +26,7 @@ function eventTarget() {
   };
 }
 
-function pageFixture({ configured = true, modalSupported = true, theme, requestType } = {}) {
+function pageFixture({ configured = true, modalSupported = true, theme, requestType, submitLabel } = {}) {
   const initial = { firstName: " Alex ", lastName: " Example ", phone: "(707) 555-0123", email: "", website: "", contactPreference: "", notes: "", permissionVersion: "2026-11-15" };
   const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, {
     ...eventTarget(), value, customValidity: "", selectionStart: value.length, selectionEnd: value.length,
@@ -49,7 +49,7 @@ function pageFixture({ configured = true, modalSupported = true, theme, requestT
   const widgetContainer = {};
   const form = {
     ...eventTarget(), isConnected: false,
-    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key", theme, requestType } : {},
+    dataset: configured ? { endpoint: "https://requests.example.test/request", siteKey: "public-test-key", theme, requestType, submitLabel } : {},
     fields, choices,
     parentElement: { querySelector: () => dialog },
     elements: { namedItem: (name) => fields[name] },
@@ -61,8 +61,8 @@ function pageFixture({ configured = true, modalSupported = true, theme, requestT
   return { form, fields, choices, button, emailOption, status, phoneError, securityStatus, dialog, dialogNodes, top, get widgetOptions() { return widgetContainer.options; }, submit: () => form.dispatch("submit", { preventDefault() {} }) };
 }
 
-function fixture({ configured = true, modalSupported = true, theme, requestType, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
-  const page = pageFixture({ configured, modalSupported, theme, requestType });
+function fixture({ configured = true, modalSupported = true, theme, requestType, submitLabel, initiallyMounted = true, apiReady = true, response = { ok: true, json: async () => ({ ok: true }) } } = {}) {
+  const page = pageFixture({ configured, modalSupported, theme, requestType, submitLabel });
   let current = initiallyMounted ? page : null;
   page.form.isConnected = initiallyMounted;
   const calls = [], observers = [], scripts = [], removedWidgets = [];
@@ -475,4 +475,18 @@ test("failed interest-list delivery retains details and restores the correct act
   assert.equal(f.button.textContent, "Join interest list");
   assert.equal(f.fields.phone.value, "(707) 555-0123");
   assert.equal(f.dialog.open, false);
+});
+
+
+test("custom submit wording stays consistent through verification and retry", async () => {
+  const label = "Join the interest list";
+  const f = fixture({ requestType: "interest", submitLabel: label, response: new Error("offline") });
+  f.widgetOptions.callback("token");
+  assert.ok(f.securityStatus.textContent.includes(label));
+  await f.submit();
+  assert.equal(f.button.textContent, label);
+  assert.equal(f.fields.phone.disabled, false);
+  assert.equal(f.dialog.open, false);
+  f.widgetOptions.callback("retry-token");
+  assert.ok(f.securityStatus.textContent.includes(label));
 });

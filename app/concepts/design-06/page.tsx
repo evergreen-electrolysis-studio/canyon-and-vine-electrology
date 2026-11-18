@@ -34,7 +34,6 @@ const questions = [
   { question: "How are appointments priced?", answer: `${treatmentRateSummary}. All prices are in USD. Session length and your course of treatment determine the overall cost. Discuss recommended appointment lengths and scheduling at your consultation before committing to a plan.` },
 ];
 
-function Arrow() { return <span aria-hidden="true">↗</span>; }
 
 export default function ClearPath() {
   return (
@@ -44,7 +43,7 @@ export default function ClearPath() {
       <header className={styles.header}>
         <a className={styles.wordmark} href="#top" aria-label="Evergreen Electrolysis, top of page">evergreen<span>ELECTROLYSIS</span></a>
         <nav className={styles.navigation} aria-label="Primary navigation"><a href="#treatment">Treatment</a><a href="#meet-nav">Meet Nav</a><a href="#your-path">Your first visit</a><a href="#questions">Questions</a></nav>
-        <a className={styles.headerCta} href="#begin">Let’s begin <Arrow /></a>
+        <a className={styles.headerCta} href="#begin">Let’s begin</a>
       </header>
       <main id="main-content">
         <section className={styles.hero} aria-labelledby="hero-title">
@@ -52,7 +51,7 @@ export default function ClearPath() {
             <p className={styles.eyebrow}>Permanent hair removal / American Canyon, CA</p>
             <h1 id="hero-title">A clear way<br /><span>forward.</span></h1>
             <p className={styles.heroIntro}>Less uncertainty. More understanding.<br />Electrolysis with a personal plan, guided by Nav.</p>
-            <a className={styles.button} href="#begin">Start with a consultation <Arrow /></a>
+            <a className={styles.button} href="#begin">Start with a consultation</a>
             <a className={styles.heroLink} href="#treatment">Get to know electrolysis <span aria-hidden="true">↓</span></a>
             <div className={styles.heroFoot}><span>Individual care.</span><span>One follicle at a time.</span></div>
           </div>
@@ -62,16 +61,16 @@ export default function ClearPath() {
           </div>
         </section>
 
-        <div className={styles.orientation} aria-label="Explore the practice"><p>A thoughtful place<br /> to start.</p><a href="#treatment"><span>01</span> Understand your options <Arrow /></a><a href="#meet-nav"><span>02</span> Know your practitioner <Arrow /></a><a href="#your-path"><span>03</span> See what comes next <Arrow /></a></div>
+        <div className={styles.orientation} aria-label="Explore the practice"><p>A thoughtful place<br /> to start.</p><a href="#treatment"><span>01</span> Understand your options</a><a href="#meet-nav"><span>02</span> Know your practitioner</a><a href="#your-path"><span>03</span> See what comes next</a></div>
 
         <section className={styles.treatment} id="treatment" aria-labelledby="treatment-title">
           <div className={styles.sectionIntro}><p className={styles.eyebrow}>01 / The treatment</p><h2 id="treatment-title">Small areas.<br />Personal priorities.</h2><p>Electrolysis treats individual hair follicles using a fine probe and a controlled electrical current. Your plan begins with the hair you want to address.</p><a className={styles.textLink} href="#how-it-works">How it works <span aria-hidden="true">↓</span></a></div>
-          <div className={styles.areas}>{areas.map(area => <details key={area.number}><summary><span className={styles.number}>{area.number}</span><span><strong>{area.name}</strong><small>{area.intro}</small></span><span className={styles.plus} aria-hidden="true">+</span></summary><div className={styles.areaContent}><p>{area.detail}</p><a className={styles.textLink} href="#begin">Discuss this at your consultation <Arrow /></a></div></details>)}<p className={styles.scope}>Intimate-area services are not offered. All treatment areas are subject to consultation and individual suitability.</p></div>
+          <div className={styles.areas}>{areas.map(area => <details key={area.number}><summary><span className={styles.number}>{area.number}</span><span><strong>{area.name}</strong><small>{area.intro}</small></span><span className={styles.plus} aria-hidden="true">+</span></summary><div className={styles.areaContent}><p>{area.detail}</p><a className={styles.textLink} href="#begin">Discuss this at your consultation</a></div></details>)}<p className={styles.scope}>Intimate-area services are not offered. All treatment areas are subject to consultation and individual suitability.</p></div>
         </section>
 
         <section className={styles.method} id="how-it-works" aria-labelledby="method-title">
           <div><p className={styles.eyebrow}>The science, simply</p><h2 id="method-title">At the follicle.<br />Beyond the surface.</h2></div>
-          <div className={styles.methodCopy}><p>A fine probe follows the follicle’s natural opening. A small electrical current treats the cells responsible for hair growth, and the treated hair is removed.</p><p>Because treatment does not rely on hair pigment, electrolysis can address light and dark hair across skin tones. A series of visits makes room for hair growth cycles.</p><details><summary>Three methods. One individual plan.<span className={styles.plus} aria-hidden="true">+</span></summary><dl><div><dt>Galvanic</dt><dd>Uses a chemical reaction in the follicle.</dd></div><div><dt>Thermolysis</dt><dd>Uses heat to treat the follicle.</dd></div><div><dt>Blend</dt><dd>Combines galvanic current and thermolysis.</dd></div></dl><p>Nav will discuss the approach and settings appropriate to your treatment.</p></details><a className={styles.textLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">California’s guide to electrology <span className={styles.pdf}>(PDF)</span> <Arrow /></a></div>
+          <div className={styles.methodCopy}><p>A fine probe follows the follicle’s natural opening. A small electrical current treats the cells responsible for hair growth, and the treated hair is removed.</p><p>Because treatment does not rely on hair pigment, electrolysis can address light and dark hair across skin tones. A series of visits makes room for hair growth cycles.</p><details><summary>Three methods. One individual plan.<span className={styles.plus} aria-hidden="true">+</span></summary><dl><div><dt>Galvanic</dt><dd>Uses a chemical reaction in the follicle.</dd></div><div><dt>Thermolysis</dt><dd>Uses heat to treat the follicle.</dd></div><div><dt>Blend</dt><dd>Combines galvanic current and thermolysis.</dd></div></dl><p>Nav will discuss the approach and settings appropriate to your treatment.</p></details><a className={styles.textLink} href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">California’s guide to electrology <span className={styles.pdf}>(PDF)</span></a></div>
         </section>
 
         <section className={styles.practitioner} id="meet-nav" aria-labelledby="nav-title">
@@ -100,7 +99,7 @@ export default function ClearPath() {
           <ConsultationForm tone="light" />
         </section>
       </main>
-      <footer className={styles.footer}><div className={styles.footerTop}><a className={styles.wordmark} href="#top">evergreen<span>ELECTROLYSIS</span></a><p>American Canyon, California<br />Serving the Napa–Solano community.</p><Link className={styles.textLink} href="/concepts/">Compare all designs <Arrow /></Link></div><p className={styles.disclaimer}>Results and treatment timelines vary by individual and cannot be guaranteed. This website provides general information only and is not medical advice. Services are subject to consultation and individual suitability; consult a qualified healthcare professional about medical conditions or medications.</p><div className={styles.footerEnd}><span>© 2026 Evergreen Electrolysis</span><span>Design 06 · The Clear Path</span><a href="#top">Back to top ↑</a></div></footer>
+      <footer className={styles.footer}><div className={styles.footerTop}><a className={styles.wordmark} href="#top">evergreen<span>ELECTROLYSIS</span></a><p>American Canyon, California<br />Serving the Napa–Solano community.</p><Link className={styles.textLink} href="/concepts/">Compare all designs</Link></div><p className={styles.disclaimer}>Results and treatment timelines vary by individual and cannot be guaranteed. This website provides general information only and is not medical advice. Services are subject to consultation and individual suitability; consult a qualified healthcare professional about medical conditions or medications.</p><div className={styles.footerEnd}><span>© 2026 Evergreen Electrolysis</span><span>Design 06 · The Clear Path</span><a href="#top">Back to top ↑</a></div></footer>
     </div>
   );
 }

@@ -78,7 +78,7 @@ export default function WineCountryJournal() {
       <div className={styles.conceptBar}>
         <Link href="/concepts/">← All concepts</Link>
         <span>Design 02 · Wine Country Journal</span>
-        <Link href="/">View current homepage ↗</Link>
+        <Link href="/">View current homepage</Link>
       </div>
 
       <header className={styles.header}>
@@ -230,7 +230,7 @@ export default function WineCountryJournal() {
                 <li>Contact a healthcare professional about severe or unexpected symptoms.</li>
               </ul>
               <a href="https://www.barbercosmo.ca.gov/forms_pubs/publications/electrology.pdf">
-                California Board consumer guidance ↗
+                California Board consumer guidance
               </a>
             </article>
           </div>
