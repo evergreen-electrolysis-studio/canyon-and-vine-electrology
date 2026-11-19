@@ -101,7 +101,13 @@ const receivedTime = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
 });
 
-export function inquiryEmail(submission, _origin, receivedAt) {
+export function inquiryEmail(submission, _origin, receivedAt, { requestId, staffOrigin } = {}) {
+  let trackerLink = null;
+  if (requestId !== undefined || staffOrigin !== undefined) {
+    const origin = new URL(staffOrigin);
+    if (origin.protocol !== 'https:' || origin.origin !== staffOrigin || origin.username || origin.password || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId ?? '')) throw new Error('A valid private request destination is required.');
+    trackerLink = `${staffOrigin}/?request=${requestId.toLowerCase()}`;
+  }
   const interest = submission.requestType === 'interest';
   const phone = submission.phone.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '+1 ($1) $2-$3');
   const contact = [
@@ -122,6 +128,7 @@ export function inquiryEmail(submission, _origin, receivedAt) {
       contact.join('\n'),
       ...(details.length ? [details.join('\n')] : []),
       ...(submission.notes ? [`Questions / notes:\n${submission.notes.split('\n').map(line => `  ${line}`).join('\n')}`] : []),
+      ...(trackerLink ? [`Track this request:\n${trackerLink}`] : []),
     ].join('\n\n'),
     ...(submission.email ? { replyTo: submission.email } : {}),
   };
