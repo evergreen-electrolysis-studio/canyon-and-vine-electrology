@@ -86,7 +86,7 @@ const siteKeyPattern = new RegExp(`data-site-key="${escapeRegex(consultation.tur
 replaceOnce(endpointPattern, `data-endpoint="${production ? consultation.endpoint : previewEndpoint}"`, "form endpoint");
 replaceOnce(actionPattern, `action="${production ? consultation.endpoint : previewEndpoint}"`, "form action");
 replaceOnce(siteKeyPattern, `data-site-key="${production ? consultation.turnstileSiteKey : previewSiteKey}"`, "Turnstile site key");
-replaceOnce(/<\/body>/, '<script src="/consultation-form.js?v=20261118-inquiry-mail" defer></script></body>', "body closing tag");
+replaceOnce(/<\/body>/, '<script src="/consultation-form.js?v=20261119-phone-fix" defer></script></body>', "body closing tag");
 assert.equal((html.match(/rel="canonical"/g) ?? []).length, 1);
 assert(html.includes(`rel="canonical" href="${canonicalUrl}"`));
 assert(html.includes('data-request-type="interest"'));

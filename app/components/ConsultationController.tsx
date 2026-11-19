@@ -19,7 +19,7 @@ export default function ConsultationController() {
     const shouldAppend = !script;
     if (!script) {
       script = document.createElement("script");
-      script.src = "/consultation-form.js?v=20261118-submit";
+      script.src = "/consultation-form.js?v=20261119-phone-fix";
       script.async = true;
       script.dataset.consultationController = "true";
     }

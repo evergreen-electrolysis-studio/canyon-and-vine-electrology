@@ -377,7 +377,7 @@ test("phone formatting handles country-code paste, middle edits, separators, and
   }
 });
 
-test("rejects extra digits at the end or middle and keeps validation through security success", async () => {
+test("rejecting an eleventh typed digit does not leave the valid ten-digit number stuck invalid", async () => {
   for (const cursor of [14, 7]) {
     const f = fixture(), phone = f.fields.phone;
     phone.setSelectionRange(cursor, cursor);
@@ -386,23 +386,28 @@ test("rejects extra digits at the end or middle and keeps validation through sec
     assert.equal(prevented, true);
     assert.equal(phone.value, "(707) 555-0123");
     assert.equal(phone.selectionStart, cursor);
-    assert.equal(phone.attributes["aria-invalid"], "true");
+    assert.equal(phone.attributes["aria-invalid"], undefined);
     assert.match(f.phoneError.textContent, /10|extra/i);
     f.widgetOptions.callback("token");
     await f.submit();
-    const validation = f.status.textContent;
-    assert.match(validation, /not been sent/);
-    f.widgetOptions.callback("new-token");
-    assert.equal(f.status.textContent, validation);
-    assert.equal(f.calls.length, 0);
-    assert.equal(f.dialog.open, false);
-    phone.value = "7075550123"; phone.selectionStart = 10;
-    await phone.dispatch("input", { inputType: "insertReplacementText" });
-    assert.equal(f.phoneError.hidden, true);
-    assert.equal(phone.attributes["aria-invalid"], undefined);
-    await f.submit();
-    assert.equal(f.calls.length, 1, "a deliberate valid edit allows submission");
+    assert.equal(f.calls.length, 1, "the unchanged complete number stays valid after the rejected extra key");
   }
+});
+
+test("overlength paste followed by backspace and correction returns to valid ten-digit input", async () => {
+  const f = fixture(), phone = f.fields.phone;
+  phone.value = "70755501234"; phone.selectionStart = 11;
+  await phone.dispatch("input", { inputType: "insertFromPaste" });
+  assert.ok(phone.customValidity);
+  phone.value = "707555012"; phone.selectionStart = 9;
+  await phone.dispatch("input", { inputType: "deleteContentBackward" });
+  await phone.dispatch("blur");
+  assert.match(phone.customValidity, /all 10 digits/);
+  phone.value = "7075550123"; phone.selectionStart = 10;
+  await phone.dispatch("input", { inputType: "insertText", data: "3" });
+  assert.equal(phone.customValidity, ""); assert.equal(phone.attributes["aria-invalid"], undefined);
+  f.widgetOptions.callback("token"); await f.submit();
+  assert.equal(f.calls.length, 1);
 });
 
 test("replacement and +1 paste are accepted, but excess paste never submits the previous number", async () => {
