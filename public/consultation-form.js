@@ -151,6 +151,14 @@
       phoneInputError = text;
       setPhoneError(text);
     }
+    function explainFullNumber() {
+      // Rejecting an eleventh typed digit must not leave a valid, unchanged
+      // ten-digit number stuck in customValidity. A rejected whole paste is
+      // different: keep its error until the caller deliberately edits it.
+      phoneInputError = "";
+      setPhoneError("");
+      if (phoneError) { phoneError.textContent = "All 10 digits are entered. Select a digit to replace it."; phoneError.hidden = false; }
+    }
     function formatPhone(event = {}) {
       if (event.isComposing) return;
       const raw = phone.value;
@@ -160,6 +168,7 @@
       if (error) {
         phone.value = acceptedPhone;
         phone.setSelectionRange?.(...phoneSelection);
+        if (event.inputType === "insertText" && /^\d$/.test(event.data || "") && normalizedPhone()) { explainFullNumber(); return; }
         rejectPhone(error);
         return;
       }
@@ -187,7 +196,11 @@
       if (text == null || event.isComposing) return;
       const start = phone.selectionStart ?? phone.value.length, end = phone.selectionEnd ?? start;
       const error = insertionError(phone.value.slice(0, start) + text + phone.value.slice(end));
-      if (error) { event.preventDefault(); rejectPhone(error); }
+      if (error) {
+        event.preventDefault();
+        if (event.inputType === "insertText" && /^\d$/.test(text) && normalizedPhone()) explainFullNumber();
+        else rejectPhone(error);
+      }
     }
     listen(phone, "paste", event => checkInsertion(event, event.clipboardData?.getData("text")));
     // Backspace/delete beside an inserted separator should remove the adjacent
