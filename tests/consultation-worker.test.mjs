@@ -15,6 +15,32 @@ const validSubmission = {
   turnstileToken: "valid-test-token",
 };
 
+test('Nav inquiry shortcut uses only the saved opaque request ID and configured authenticated workspace', () => {
+  const submission = { requestType: 'interest', firstName: 'Jane', lastName: 'Smith', phone: '+17075550123', email: 'jane@example.test', contactPreference: 'Email', treatmentAreas: ['Chin & jawline'], previousMethods: ['Tweezing'], notes: 'Please call after 5.' };
+  const requestId = '26e12e97-a9e3-42ce-8e44-19cd9d8bd6b9';
+  const destination = { requestId, staffOrigin: 'https://staff.example.test' };
+  const mail = inquiryEmail(submission, 'https://evergreenelectrolysisstudio.com', '2026-11-18T23:05:00.000Z', destination);
+  const link = mail.text.split('Track this request:\n')[1];
+  assert.equal(link, `https://staff.example.test/?request=${requestId}`);
+  assert.equal(mail.to, INQUIRY_SENDER); assert.equal(mail.replyTo, submission.email);
+  assert.doesNotMatch(link, /jane|Smith|token|Chin|5550123/i);
+  assert.equal(new URL(link).searchParams.size, 1);
+});
+
+test('tracker shortcuts reject malformed destinations and identifiers rather than generating misleading email links', () => {
+  const submission = { requestType: 'consultation', firstName: 'Jane', lastName: 'Smith', phone: '+17075550123', email: '', contactPreference: '', treatmentAreas: [], previousMethods: [], notes: '' };
+  const requestId = '26e12e97-a9e3-42ce-8e44-19cd9d8bd6b9';
+  for (const options of [
+    { requestId, staffOrigin: 'http://staff.example.test' },
+    { requestId, staffOrigin: 'https://staff.example.test/unrelated' },
+    { requestId, staffOrigin: 'https://staff.example.test?token=secret' },
+    { requestId, staffOrigin: 'https://user:password@staff.example.test' },
+    { requestId: 'mailto:someone@example.test', staffOrigin: 'https://staff.example.test' },
+    { requestId }, { staffOrigin: 'https://staff.example.test' },
+  ]) assert.throws(() => inquiryEmail(submission, '', '2026-11-18T23:05:00.000Z', options));
+  assert.doesNotMatch(inquiryEmail(submission, '', '2026-11-18T23:05:00.000Z').text, /Track this request/);
+});
+
 function request(body = validSubmission, options = {}) {
   return new Request("https://consultation.example.workers.dev/request", {
     method: "POST",

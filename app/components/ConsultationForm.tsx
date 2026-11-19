@@ -58,7 +58,7 @@ export default function ConsultationForm({ tone = "dark", intent = "consultation
         <p className={styles.note}>{notice.permissionText}</p>
         <details className={styles.privacy}>
           <summary>How we use your information</summary>
-          <p>{brand} uses your contact details and any optional answers {interest ? "to share studio opening updates and consultation availability" : "to respond to your request and arrange next steps"}. Your submission is sent through Cloudflare to the practice’s email inbox and retained there for follow-up.</p>
+          <p>{brand} uses your contact details and any optional answers {interest ? "to share studio opening updates and consultation availability" : "to respond to your request and arrange next steps"}. Your submission is stored in the practice’s private request tracker on Cloudflare and sent to its Zoho email inbox for follow-up. Access to the tracker requires staff sign-in.</p>
           <p>Cloudflare Turnstile processes technical information, such as your IP address and browser information, to help prevent spam. Read <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s privacy policy<span className={styles.srOnly}> (opens in a new tab)</span></a>.</p>
           <p>{interest ? "You can ask Nav to remove you from the interest list at any time by replying to an update or letting her know when she contacts you. We will use this list only for studio opening updates and consultation availability." : "This form does not subscribe you to marketing. You can ask Nav about the information you submitted when she contacts you."}</p>
         </details>
