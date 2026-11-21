@@ -1,3 +1,4 @@
+
 // Production authoring route: the Evergreen exporter publishes this page at /.
 // Historical designs, styles, and shared form behavior remain unchanged.
 import type { Metadata } from "next";
@@ -6,6 +7,7 @@ import "@fontsource-variable/newsreader/wght.css";
 import ConsultationForm from "../components/ConsultationForm";
 import TreatmentRates from "../components/TreatmentRates";
 import styles from "../concepts/design-09/design09.module.css";
+import additions from "./evergreen.module.css";
 
 const url = "https://evergreenelectrolysisstudio.com/";
 const image = "https://evergreenelectrolysisstudio.com/evergreen-hero-monochrome-v1.webp";
@@ -41,9 +43,9 @@ const areas = [
 ];
 
 const steps = [
-  { title: "A conversation first.", text: "Bring your goals and questions. Talk with Nav about the area, your previous hair removal, and what you hope to change." },
-  { title: "Get to know the process.", text: "Review your hair and skin, discuss suitability, and try a small test treatment if appropriate. There is room to ask questions." },
-  { title: "A next step that makes sense.", text: "Discuss session length, appointment spacing, preparation, aftercare, and costs before deciding how to move forward." },
+  { title: "A conversation first.", text: "Talk with Nav by phone about your goals, previous hair removal, how electrolysis works, session length, costs, and any questions." },
+  { title: "Your forms, in private.", text: "When you’re ready, Nav sends a private link to your questionnaire and treatment consent. She reviews your answers and follows up on anything that needs discussion before your appointment." },
+  { title: "Your first visit.", text: "Confirm your appointment with Nav. At the visit, review your skin, treatment area, and any changes together. A small test treatment may be offered if appropriate, with preparation and aftercare explained." },
 ];
 
 const questions = [
@@ -51,7 +53,7 @@ const questions = [
   { title: "Does my hair color or skin tone matter?", text: "Electrolysis does not depend on hair pigment. It can treat every natural hair color, including blonde, red, gray, and white, across skin tones. Your consultation is the place to discuss your skin, hair, and individual suitability." },
   { title: "Why is more than one visit needed?", text: "Hair grows in cycles, and not every hair is ready to treat at the same time. The amount and structure of hair, previous removal methods, hormones, and appointment consistency affect the course of treatment. Your schedule is reviewed as you go; there is no single timeline for everyone." },
   { title: "What does a treatment feel like?", text: "You may feel brief heat, a pinch, or a sting. Sensitivity varies with the person and the area. Discuss comfort with Nav; a small test treatment, when appropriate, can help you understand the sensation before a longer session." },
-  { title: "What should I know before and after a visit?", text: "Ask Nav how much visible growth to leave, pause tweezing, waxing, and threading, and arrive with clean skin. Discuss medications and recent skin treatments at your consultation. Temporary redness or tenderness can follow treatment. Follow your individual aftercare guidance and seek medical advice for severe or unexpected symptoms." },
+  { title: "What should I know before and after a visit?", text: "Leave enough visible hair for treatment and discuss skin products, medicines, and recent procedures with Nav. Our preparation and aftercare guide covers the basics; Nav will tailor instructions to your skin and treatment area.", guide: true },
   { title: "Can we discuss hair associated with hormonal changes?", text: "Yes. Visible hair associated with hormonal changes, including PCOS or menopause, can be part of your treatment discussion. Electrolysis removes hair; it does not diagnose or treat the underlying condition. Medical concerns belong with your healthcare professional." },
 ];
 
@@ -101,8 +103,9 @@ export default function EvergreenHomepage() {
         </section>
 
         <section className={styles.visit} id="first-visit" aria-labelledby="visit-title">
-          <div className={styles.sectionHeading}><p className={styles.eyebrow}>02 / The first visit</p><h2 id="visit-title">Less wondering.<br /><em>More understanding.</em></h2><p>You don’t need to know which treatment or session length to choose before getting in touch.</p></div>
+          <div className={styles.sectionHeading}><p className={styles.eyebrow}>02 / The first visit</p><h2 id="visit-title">Less wondering.<br /><em>More understanding.</em></h2><p>You don’t need to choose a treatment or session length before getting in touch. Here’s how we’ll get started when consultations open.</p></div>
           <ol className={styles.steps}>{steps.map((step, index) => <li key={step.title}><span aria-hidden="true">0{index + 1}</span><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
+          <div className={additions.visitNote}><p>Joining the interest list or completing forms does not book an appointment.</p><a className={styles.textLink} href="#preparation-aftercare">Preparation &amp; aftercare guide</a></div>
         </section>
 
 
@@ -132,11 +135,54 @@ export default function EvergreenHomepage() {
 
         <section className={styles.questions} id="questions" aria-labelledby="questions-title">
           <div><p className={styles.eyebrow}>05 / A little clarity</p><h2 id="questions-title">Good questions.<br /><em>Thoughtful answers.</em></h2><p>Understanding the process is part of feeling ready.</p></div>
-          <div className={styles.answers}>{questions.map(question => <details key={question.title}><summary>{question.title}<span className={styles.plus} aria-hidden="true">+</span></summary><p>{question.text}</p></details>)}</div>
+          <div className={styles.answers}>{questions.map(question => <details key={question.title}><summary>{question.title}<span className={styles.plus} aria-hidden="true">+</span></summary><p>{question.text}{question.guide && <><br /><a className={additions.inlineLink} href="#preparation-aftercare">Read the preparation &amp; aftercare guide</a></>}</p></details>)}</div>
+        </section>
+
+        <section className={additions.guide} id="preparation-aftercare" aria-labelledby="guide-title">
+          <div className={additions.guideHeader}>
+            <p className={styles.eyebrow}>Your visit guide</p>
+            <h2 id="guide-title">Preparation &amp; <em>aftercare.</em></h2>
+            <p>A little preparation helps us plan your visit and care for your skin. This general guide supports the individual instructions Nav will provide for your treatment area, skin response, and products used.</p>
+          </div>
+          <div className={additions.guideColumns}>
+            <div>
+              <h3>Before your appointment</h3>
+              <ul>
+                <li>Complete your private questionnaire and consent. Tell Nav about changes in medicines, skin products, health, implants, or recent procedures before each visit.</li>
+                <li>Leave enough visible hair for treatment. Avoid tweezing, waxing, or threading the area; ask Nav when to pause shaving or trimming.</li>
+                <li>Arrive with gently cleansed skin, without makeup on the treatment area. Let Nav know about irritation, sunburn, broken skin, a rash, or illness before coming in.</li>
+                <li>Discuss exfoliants, retinoids, and numbing products beforehand. Do not change prescribed medicine without your prescriber’s advice. Follow product directions; never cover an over-the-counter numbing product with plastic wrap.</li>
+                <li>Bring your questions and tell Nav about comfort, positioning, or communication needs.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>After treatment</h3>
+              <p>Some temporary redness or tenderness can occur. The response varies by person and treatment area.</p>
+              <ul>
+                <li>Keep the area clean and handle it gently. Wash your hands before necessary contact; avoid rubbing, scratching, picking, or squeezing.</li>
+                <li>For the first day, avoid makeup on the treated area, excessive sweating, tanning, and prolonged sun exposure. Continue avoiding activities or products that irritate the area, and follow the instructions provided for your visit.</li>
+                <li>Use shade or protective clothing outdoors. Ask Nav about suitable skincare and when to resume exfoliation, active products, and your usual routine.</li>
+                <li>Tell Nav about your skin’s response before the next appointment so she can review the treatment plan.</li>
+              </ul>
+            </div>
+          </div>
+          <div className={additions.guideHelp}>
+            <h3>When to get help</h3>
+            <p>Contact Nav about an unexpected reaction or symptoms that are not settling. Increasing redness, warmth, swelling or pain, pus, fever, blistering, or persistent bleeding need prompt medical advice; do not wait for a studio email reply. For breathing difficulty, collapse, or another emergency, call 911.</p>
+            <p>For routine questions, <a href="mailto:nav@evergreenelectrolysisstudio.com">email Nav</a>. Keep detailed health information and photographs in the private process agreed with Nav.</p>
+          </div>
+          <details className={additions.sources}>
+            <summary>Further reading</summary>
+            <ul>
+              <li><a href="https://electrology.com/faqs-about-permanent-hair-removal/what-is-the-electrolysis-process.php" target="_blank" rel="noopener noreferrer">American Electrology Association: treatment and aftercare</a></li>
+              <li><a href="https://www.fda.gov/news-events/press-announcements/fda-warns-consumers-avoid-certain-topical-pain-relief-products-due-potential-dangerous-health" target="_blank" rel="noopener noreferrer">FDA: topical pain-relief product precautions</a></li>
+              <li><a href="https://medlineplus.gov/ency/patientinstructions/000741.htm" target="_blank" rel="noopener noreferrer">MedlinePlus: skin healing and warning signs</a></li>
+            </ul>
+          </details>
         </section>
 
         <section className={styles.contact} id="contact" aria-labelledby="contact-title">
-          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Coming summer 2027</p><h2 id="contact-title">Join the<br /><em>interest list.</em></h2><p>Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for opening updates and first news of consultation availability.</p></div><div className={styles.location}><h3>Evergreen Electrolysis Studio</h3><p>American Canyon, California<br />Welcoming clients from Napa, Solano, and Marin counties.</p><dl><div><dt>Address</dt><dd>American Canyon, CA</dd></div><div><dt>Phone</dt><dd></dd></div><div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div></dl></div></div>
+          <div className={styles.contactIntro}><div className={styles.contactCopy}><p className={styles.eyebrow}>06 / Coming summer 2027</p><h2 id="contact-title">Join the<br /><em>interest list.</em></h2><p>Be part of what’s next for Evergreen Electrolysis Studio. Leave your details for opening updates and first news of consultation availability.</p></div><div className={styles.location}><h3>Evergreen Electrolysis Studio</h3><p>American Canyon, California<br />Welcoming clients from Napa, Solano, and Marin counties.</p><dl><div><dt>Address</dt><dd>American Canyon, CA</dd></div><div><dt>Email Nav</dt><dd><a className={additions.email} href="mailto:nav@evergreenelectrolysisstudio.com">nav@evergreenelectrolysisstudio.com</a></dd></div><div><dt>Hours</dt><dd>Monday–Friday · 8am–4pm</dd></div></dl><p className={additions.contactNote}>Use email for general questions and appointment messages. Ask Nav how to share health information or photos privately.</p></div></div>
           <div className={styles.formWrap}><ConsultationForm tone="light" intent="interest" submitLabel="Join the interest list" heading="Your contact details" /></div>
         </section>
       </main>

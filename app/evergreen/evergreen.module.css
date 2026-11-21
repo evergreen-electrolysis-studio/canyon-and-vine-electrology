@@ -1,0 +1,29 @@
+.visitNote { margin-top: 2rem; color: var(--muted); font-size: 1rem; }
+.visitNote a { margin-top: .4rem; }
+.inlineLink { display: inline-block; margin-top: .75rem; text-decoration: underline; }
+.email { overflow-wrap: anywhere; text-decoration: underline; font-size: 1rem; }
+.contactNote { max-width: 32rem; }
+.guide { padding: 4.5rem 7% 5.5rem; border-top: 1px solid var(--line); }
+.guideHeader { max-width: 48rem; }
+.guideHeader h2 { margin: 1.25rem 0 !important; }
+.guideHeader > p:last-child { color: var(--muted); }
+.guideColumns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; margin-top: 2.5rem; }
+.guideColumns > div { border-top: 1px solid var(--line); padding-top: 1.5rem; }
+.guide h3 { font-size: 1.2rem; line-height: 1.4; margin-bottom: 1rem !important; }
+.guide p, .guide li { font-size: 1rem; }
+.guide ul { list-style: disc; padding-left: 1.25rem; margin: 1.15rem 0 0; }
+.guide li { padding-left: .2rem; margin-bottom: 1rem; }
+.guide li::marker { color: var(--moss); }
+.guideHelp { margin-top: 2rem; background: var(--warm); padding: 1.75rem 2rem; }
+.guideHelp p + p { margin-top: .8rem !important; }
+.guideHelp a { text-decoration: underline; overflow-wrap: anywhere; }
+.sources { margin-top: 1.5rem; font-size: .875rem; color: var(--muted); }
+.sources summary { cursor: pointer; width: fit-content; padding: .5rem 0; }
+.sources ul { margin-top: .5rem; }
+.sources li { font-size: .875rem; margin-bottom: .45rem; }
+.sources a { text-decoration: underline; }
+@media (max-width: 760px) {
+  .guide { padding: 3.5rem 5%; }
+  .guideColumns { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; margin-top: 1.8rem; }
+  .guideHelp { padding: 1.3rem; }
+}
